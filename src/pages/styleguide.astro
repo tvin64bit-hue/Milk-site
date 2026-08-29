@@ -12,6 +12,8 @@ import FotoBlyuda from '../components/FotoBlyuda.astro';
 import { BLYUDA, blyudoPoId, blyudaKategorii } from '../lib/menu';
 import { put } from '../lib/put';
 import { FORMY_BLOBA } from '../../scripts/blob.mjs';
+import siluet from '../lib/siluet-logotipa.json';
+import vypadayushchie from '../lib/vypadayushchie-fony.json';
 
 const CVETA = [
   ['--milk', '#F8EEE4', 'Основной фон страницы'],
@@ -56,18 +58,32 @@ const PODPISI_DUDLOV = ['Бутылка молока', 'Круассан', 'Ча
 
 // Четыре типа фона, на которых сняты исходники: под маской они ведут себя по-разному.
 const FONY = [
-  ['shakshuka', 'Бежевое кресло — 85 снимков'],
+  ['shakshuka', 'Бежевое кресло'],
   ['salat-cezar', 'Светлое дерево'],
-  ['filadelfiya-layt', 'Чёрный сланец — 2 снимка'],
-  ['kaliforniya-klassik', 'Чисто-белый фон — 1 снимок'],
+  ['filadelfiya-layt', 'Чёрный сланец, после правки'],
+  ['kaliforniya-klassik', 'Чисто-белый, после правки'],
 ] as const;
 
-// Три снимка, чей фон выпадает из молочной гаммы.
-const VYPADAYUSCHIE = [
-  ['kaliforniya-klassik', 'Чисто-белый фон'],
-  ['filadelfiya-layt', 'Чёрный сланец'],
-  ['filadelfiya-ugor-layt', 'Чёрный сланец'],
-] as const;
+// Снимки, чей фон выпадает из молочной гаммы, и сводка по типам.
+type Vypadayuschiy = { id: string; kategoriya: string; tip: string };
+const VYPADAYUSCHIE = vypadayushchie as Vypadayuschiy[];
+const SVODKA = Object.entries(
+  VYPADAYUSCHIE.reduce<Record<string, Vypadayuschiy[]>>((acc, v) => {
+    (acc[v.tip] ??= []).push(v);
+    return acc;
+  }, {}),
+).sort((a, b) => b[1].length - a[1].length);
+
+// В ряд сравнения берём по одному представителю каждого типа.
+const VYPADAYUSCHIE_POKAZ = ['kaliforniya-klassik', 'mini-s-lososem', 'vafli-s-bekonom', 'skovoroda-s-rvanoy-govyadinoy']
+  .map((id) => VYPADAYUSCHIE.find((v) => v.id === id)!);
+
+// Соседи по каталогу для сравнения в одном ряду.
+const SOSEDI = ['filadelfiya-lyuks', 'ebi-tempura', 'tori'] as const;
+
+// Восемь карточек подряд — проверка, читается ли чередование форм.
+const VOSEM = ['picca-4-syra', 'shakshuka', 'picca-pepperoni', 'set-hit-n1',
+  'picca-korrida', 'borsch', 'picca-gavayskaya', 'salat-cezar'] as const;
 
 const piccy = blyudaKategorii('picca');
 const primery = ['shakshuka', 'set-hit-n1', 'mini-s-ogurcom', 'siropy'].map((id) => blyudoPoId(id)!);
@@ -172,19 +188,39 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
       <h2>Блоб — четыре формы</h2>
       <p class="melkiy priglushenno">В сетке каталога назначаются по кругу: 1-я карточка первая форма, 5-я снова первая.</p>
       <div class="bloby">
+        <figure class="blob-obrazec blob-obrazec--etalon">
+          <svg viewBox="0 0 1 1" aria-hidden="true"><path d={siluet.put} fill="var(--coffee-dark)" /></svg>
+          <figcaption class="melkiy priglushenno">Эталон: силуэт логотипа</figcaption>
+        </figure>
         {FORMY_BLOBA.map((d, i) => (
           <figure class="blob-obrazec">
             <svg viewBox="0 0 1 1" aria-hidden="true"><path d={d} fill="var(--coffee)" /></svg>
-            <figcaption class="melkiy priglushenno">Форма {i + 1}</figcaption>
+            <figcaption class="melkiy priglushenno">{['3 волны, широкая', '5 волн, квадратная', '7 волн, вертикальная', '4 волны, наклонная'][i]}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <h3 class="podzagolovok">Восемь карточек подряд — видно ли чередование</h3>
+      <p class="melkiy priglushenno">
+        Формы разведены по частоте волн, пропорции и повороту. Глубже 0.40 впадину
+        опускать нельзя: контур превращается в звезду, а её лучи срезают блюдо —
+        первой страдает пицца, она занимает почти весь квадрат.
+      </p>
+      <div class="vosem">
+        {VOSEM.map((id, i) => (
+          <figure class="vosem__karta">
+            <FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} />
+            <figcaption class="melkiy priglushenno">Форма {(i % 4) + 1}</figcaption>
           </figure>
         ))}
       </div>
 
       <h3 class="podzagolovok">Блоб на четырёх типах фона исходников</h3>
       <p class="melkiy priglushenno">
-        85 снимков сняты на бежевом кресле, дереве или фирменной подложке. Два — на чёрном
-        сланце, один — на чисто-белом фоне. Ниже видно, как каждый ведёт себя под маской
-        на карточке <code>--cream</code> и на фоне секции <code>--milk</code>.
+        72 снимка из 88 сняты на бежевом кресле, дереве или фирменной подложке —
+        под маской они держат молочную гамму. Остальные 16 выпадают, разбор ниже.
+        Здесь по одному представителю каждого типа на карточке <code>--cream</code>
+        и на фоне секции <code>--milk</code>.
       </p>
       <div class="fony">
         {FONY.map(([id, podpis], i) => (
@@ -196,38 +232,59 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
         ))}
       </div>
 
-      <h3 class="podzagolovok">Три выпадающих снимка — два способа поправить</h3>
+      <h3 class="podzagolovok">Выпадающие фоны — {vypadayushchie.length} снимков из 88</h3>
       <p class="melkiy priglushenno">
-        Слева как сейчас, в середине — мягкая кайма <code>--beige</code> по краю блоба
-        (фотографии не трогаем), справа — правка самого снимка на сборке:
-        белый фон заменяется на <code>--milk-rose</code>, чёрный сланец поднимается
-        по тёмной точке и уводится в тёплый тон.
+        Тип фона определяется автоматически по краевой рамке готового кадра
+        (<code>scripts/opredelit-fon.mjs</code>), поэтому новые снимки разбираются
+        без правки кода. Порядок шагов важен и обратный не работает: сначала
+        плотный кроп ближе к блюду, и только потом правка остатка фона.
       </p>
-      <div class="varianty">
-        {VYPADAYUSCHIE.map(([id, podpis], i) => (
-          <Fragment>
-            <p class="varianty__podpis melkiy"><strong>{podpis}</strong><br /><code>{id}</code></p>
-            <figure class="variant">
-              <div class="variant__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
-              <figcaption class="melkiy priglushenno">Как сейчас</figcaption>
-            </figure>
-            <figure class="variant">
-              <div class="variant__karta">
-                <div class="kayma" style={`--forma: url(#blob-${(i % 4) + 1})`}>
-                  <FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} klass="kayma__foto" />
-                </div>
-              </div>
-              <figcaption class="melkiy priglushenno">С каймой</figcaption>
-            </figure>
-            <figure class="variant">
-              <div class="variant__karta">
-                <img class="pravlenoe" src={put(`/images/proba/${id}-ispravleno.webp`)} width="540" height="540" alt={`${podpis} — фон приведён к молочной гамме`} style={`clip-path: url(#blob-${(i % 4) + 1})`} />
-              </div>
-              <figcaption class="melkiy priglushenno">Снимок поправлен</figcaption>
-            </figure>
-          </Fragment>
+      <ul class="tipy-fona melkiy">
+        {SVODKA.map(([tip, spisok]) => (
+          <li><strong>{tip}</strong> — {spisok.length}: {spisok.map((v) => v.id).join(', ')}</li>
+        ))}
+      </ul>
+
+      <p class="ryad-podpis metka-tekst priglushenno">Было</p>
+      <div class="ryad-sravneniya">
+        {VYPADAYUSCHIE_POKAZ.map((v, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta">
+              <img class="sravnenie__foto" src={put(`/images/proba/${v.id}-kak-est.webp`)} width="540" height="540" alt="" style={`clip-path: url(#blob-${(i % 4) + 1})`} />
+            </div>
+            <figcaption class="melkiy priglushenno">{v.tip}</figcaption>
+          </figure>
+        ))}
+        {SOSEDI.map((id, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
+            <figcaption class="melkiy priglushenno">тёплый</figcaption>
+          </figure>
         ))}
       </div>
+
+      <p class="ryad-podpis metka-tekst priglushenno">Стало</p>
+      <div class="ryad-sravneniya">
+        {VYPADAYUSCHIE_POKAZ.map((v, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(v.id)!} nomer={i} /></div>
+            <figcaption class="melkiy priglushenno"><code>{v.id}</code></figcaption>
+          </figure>
+        ))}
+        {SOSEDI.map((id, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
+            <figcaption class="melkiy priglushenno"><code>{id}</code></figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <p class="melkiy priglushenno">
+        Белый фон заменяется молочным — это работает. Тёмный и холодный серый
+        только плотнее кадрируются и слегка согреваются: подъём теней делает
+        снимок мутно-серым, и он выпадает из ряда не меньше прежнего.
+        Восемь тёмных кадров обработкой не спасти, это кандидаты на пересъёмку.
+      </p>
     </section>
 
     <!-- ---------------- Дудлы ---------------- -->
@@ -356,7 +413,13 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
   .pole:focus-visible { border-color: var(--orange); outline: 3px solid var(--coffee); outline-offset: 2px; }
 
   /* Блоб */
-  .bloby { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--otstup-4); max-width: 640px; }
+  .bloby { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--otstup-4); max-width: 800px; }
+  .blob-obrazec--etalon svg { outline: 1px dashed var(--beige); outline-offset: 4px; }
+  .vosem { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--otstup-3); margin-top: var(--otstup-4); }
+  .vosem__karta { margin: 0; padding: var(--otstup-2); background: var(--cream); border-radius: var(--skruglenie-metka); }
+  .vosem figcaption { margin-top: var(--otstup-1); text-align: center; }
+  .tipy-fona { display: grid; gap: var(--otstup-2); margin: var(--otstup-4) 0; }
+  .tipy-fona li { overflow-wrap: anywhere; }
   .blob-obrazec { margin: 0; }
   .blob-obrazec svg { width: 100%; height: auto; aspect-ratio: 1; }
   .blob-obrazec figcaption { text-align: center; }
@@ -367,28 +430,21 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
   .fon__na-fone { padding: var(--otstup-4); }
   .fon figcaption { margin-top: var(--otstup-2); }
 
-  .varianty {
+  .ryad-podpis { margin: var(--otstup-5) 0 var(--otstup-3); }
+  /* Семь карточек в ряд не помещаются на узких экранах, поэтому ряд
+     прокручивается внутри себя — страница вбок при этом не едет. */
+  .ryad-sravneniya {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr));
-    align-items: start;
-    gap: var(--otstup-4) var(--otstup-5);
-    margin-top: var(--otstup-5);
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(150px, 1fr);
+    gap: var(--otstup-4);
+    overflow-x: auto;
+    padding-bottom: var(--otstup-2);
   }
-  .varianty__podpis { align-self: center; margin: 0; }
-  .variant { margin: 0; }
-  .variant__karta { padding: var(--otstup-3); background: var(--cream); border-radius: var(--skruglenie-karta); }
-  .variant figcaption { margin-top: var(--otstup-2); text-align: center; }
-
-  /* Кайма: подложка той же формы просвечивает по краю уменьшенного снимка. */
-  .kayma { clip-path: var(--forma); background: var(--beige); }
-  .kayma :global(.kayma__foto) { transform: scale(0.94); }
-
-  .pravlenoe { width: 100%; height: auto; }
-
-  @media (max-width: 767px) {
-    .varianty { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .varianty__podpis { grid-column: 1 / -1; }
-  }
+  .sravnenie { margin: 0; min-width: 0; }
+  .sravnenie__karta { padding: var(--otstup-3); background: var(--cream); border-radius: var(--skruglenie-karta); }
+  .sravnenie__foto { width: 100%; height: auto; }
+  .sravnenie figcaption { margin-top: var(--otstup-2); text-align: center; overflow-wrap: anywhere; }
 
   /* Дудлы */
   .dudly { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--otstup-5); }
@@ -408,7 +464,7 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
   .setka { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--otstup-5); }
   .setka--tri { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   @media (max-width: 1023px) { .setka, .setka--tri { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 767px) { .setka, .setka--tri { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bloby { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 767px) { .setka, .setka--tri { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bloby { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vosem { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   /* Форма и отступы */
   .forma { display: flex; flex-wrap: wrap; gap: var(--otstup-4); }

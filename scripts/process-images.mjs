@@ -6,6 +6,7 @@ import { mkdirSync, existsSync } from 'node:fs';
 import sharp from 'sharp';
 import { sopostavit } from './sopostavit.mjs';
 import { polosaBezTeksta } from './obrezka.mjs';
+import { pravitFon } from './pravka-fona.mjs';
 import {
   ISHODNIKI_BLYUDA, ISHODNIKI_FOTO, VYVOD, KACHESTVO_WEBP, KACHESTVO_JPEG,
 } from './lib-images.mjs';
@@ -50,6 +51,7 @@ async function blyuda() {
   const papka = dir(`${VYVOD}/menu`);
   const razmery = {};
   let srezano = 0;
+  const pravleno = [];
 
   for (const item of menu.items) {
     const file = rezultat.get(item.id);
@@ -58,18 +60,24 @@ async function blyuda() {
     const { kvadrat, polosa, otchet } = await polosaBezTeksta(put, item.id, item.crop);
     if (otchet?.includes('срезана')) srezano++;
 
+    // Стоковые снимки на белом, чёрном и холодном сером фоне выпадают из
+    // молочной гаммы. Тип фона определяется сам, правка — по типу.
+    const { kadr, tip, chto } = await pravitFon(kvadrat);
+    if (chto) pravleno.push(`${item.id} (${tip}): ${chto}`);
+
     for (const w of SHIRINY_BLYUDA) {
-      await sohranit(sharp(kvadrat), `${papka}/${item.id}-kv-${w}`, w);
+      await sohranit(sharp(kadr), `${papka}/${item.id}-kv-${w}`, w);
     }
     // Кадр для страницы блюда — с исходными пропорциями, не шире 480 px.
     const bolshoe = await sohranit(sharp(polosa), `${papka}/${item.id}-480`, 480);
-    const kv = await sharp(kvadrat).metadata();
+    const kv = await sharp(kadr).metadata();
     razmery[item.id] = {
       kvadrat: { width: Math.min(kv.width, 540), height: Math.min(kv.width, 540) },
       bolshoe: { width: bolshoe.width, height: bolshoe.height },
     };
   }
-  console.log(`  Блюда: ${Object.keys(razmery).length} снимков, у ${srezano} срезана вшитая подпись.`);
+  console.log(`  Блюда: ${Object.keys(razmery).length} снимков, у ${srezano} срезана вшитая подпись, у ${pravleno.length} поправлен фон:`);
+  for (const p of pravleno) console.log(`    • ${p}`);
   if (lishnie.length) console.log(`  Не использованы: ${lishnie.join(', ')}`);
   return razmery;
 }

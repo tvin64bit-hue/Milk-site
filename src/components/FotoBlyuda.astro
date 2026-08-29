@@ -64,8 +64,13 @@ const dudl = DUDL_KATEGORII[blyudo.category] ?? 'butylka';
 )}
 
 {!kadr && (
-  <div class:list={['foto', 'foto--zaglushka', klass]} style={`--forma: url(#blob-${forma})`} role="img" aria-label={`${blyudo.name} — фотографии пока нет`}>
-    <Dudl imya={dudl} razmer={96} cvet="var(--coffee-deep)" />
+  <div
+    class:list={['foto', 'foto--zaglushka', klass]}
+    style={`--forma: url(#blob-${forma}); --naklon: ${[-8, 6, -4, 9][nomer % 4]}deg`}
+    role="img"
+    aria-label={`${blyudo.name} — фотографии пока нет`}
+  >
+    <Dudl imya={dudl} razmer={128} cvet="var(--coffee-deep)" />
   </div>
 )}
 
@@ -96,6 +101,9 @@ const dudl = DUDL_KATEGORII[blyudo.category] ?? 'butylka';
     place-items: center;
     color: var(--coffee-deep);
   }
+  /* Несколько заглушек подряд сливаются в бежевую стену, поэтому дудл
+     не только меняется по категории, но и стоит под разным наклоном. */
+  .foto--zaglushka :global(.dudl) { transform: rotate(var(--naklon)); }
 
   @media (prefers-reduced-motion: reduce) {
     .foto :global(img) { transition: none; }

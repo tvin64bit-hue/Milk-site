@@ -30,7 +30,7 @@ const dobavka = estDobavka(blyudo);
     <p class="kartochka__sostav melkiy priglushenno">{blyudo.description}</p>
 
     <div class="kartochka__niz">
-      {blyudo.weight && <span class="kartochka__ves melkiy priglushenno">{blyudo.weight}</span>}
+      <span class="kartochka__ves melkiy priglushenno">{blyudo.weight}</span>
       <p class="kartochka__ceny">
         {blyudo.oldPrice && (
           <span class="kartochka__staraya melkiy priglushenno">
@@ -91,23 +91,28 @@ const dobavka = estDobavka(blyudo);
 
   .kartochka__sostav {
     margin: 0;
-    /* Состав — строго одна строка с обрезкой многоточием. */
+    /* Две строки: одной хватало на четыре слова, состав обрывался слишком рано. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
+  /* Схема одна для всех карточек: вес отдельной строкой, под ним цена.
+     Когда вес и цены делили строку, длинный вес сета переносился и ряд
+     переставал выравниваться по нижнему краю. */
   .kartochka__niz {
     display: flex;
-    /* На узких экранах вес и пара цен в одну строку не помещаются —
-       переносим, иначе карточка выталкивает страницу вбок. */
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--otstup-1) var(--otstup-3);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--otstup-1);
     margin-top: auto;
     padding-top: var(--otstup-2);
   }
+  /* Строка веса выводится всегда, даже пустая: иначе у позиций без веса
+     нижний край карточки уезжает вверх. */
+  .kartochka__ves { min-height: 1.5em; }
   .kartochka__ceny { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--otstup-2); margin: 0; }
   .kartochka__staraya { text-decoration: line-through; }
   .kartochka__cena {
