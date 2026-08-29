@@ -2,6 +2,7 @@
 import dannye from '../../menu.json';
 import razmery from './razmery.json';
 import { put } from './put';
+import fony from './fony-otchet.json';
 
 export type Metka = 'hit' | 'detskoe' | 'ostroe' | 'dobavka';
 
@@ -119,19 +120,21 @@ export function foto(imya: keyof Razmery['foto'] | string) {
   };
 }
 
-// Позиции, которые не показываются в подборках на главной.
-// Снимок есть, но он слабый и в общей сетке выглядит чужеродно.
-// Убрать отсюда, когда владелец пришлёт пересъёмку.
-const NE_V_PODBORKI = new Set([
-  'filadelfiya-ugor-layt', // снят на почти чёрном сланце, кандидат на пересъёмку
-]);
+// Снимки чужой съёмки: чёрный сланец, чисто-белый и серый предметный фон.
+// Обработкой они не спасаются и в подборках на главной выглядят чужеродно,
+// поэтому идут только в каталог. Список считает scripts/opredelit-fon.mjs
+// на сборке, руками его вести не нужно — после пересъёмки позиция уйдёт сама.
+const CHUZHAYA_SYEMKA = new Set(fony.chuzhaya.map((f) => f.id));
 
 /**
- * Позиции для подборок на главной: без снимка и со слабым снимком
- * туда не идут, в каталоге остаются все.
+ * Позиции для подборок на главной: без снимка и с чужой съёмкой туда
+ * не идут, в каталоге остаются все.
  */
 export const dlyaPodborki = (spisok: Blyudo[]) =>
-  spisok.filter((b) => b.image !== null && !NE_V_PODBORKI.has(b.id));
+  spisok.filter((b) => b.image !== null && !CHUZHAYA_SYEMKA.has(b.id));
+
+/** Список на пересъёмку — для отчётов и служебной страницы. */
+export const NA_PERESYEMKU = fony.chuzhaya;
 
 /** Позиции без снимка. Оставлено для мест, где важно только наличие фотографии. */
 export const sFotografiey = (spisok: Blyudo[]) => spisok.filter((b) => b.image !== null);

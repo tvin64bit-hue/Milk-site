@@ -6,7 +6,8 @@ import { mkdirSync, existsSync } from 'node:fs';
 import sharp from 'sharp';
 import { sopostavit } from './sopostavit.mjs';
 import { polosaBezTeksta } from './obrezka.mjs';
-import { pravitFon } from './pravka-fona.mjs';
+import { pravitFon, celevoyFon } from './pravka-fona.mjs';
+import { tipFona } from './opredelit-fon.mjs';
 import {
   ISHODNIKI_BLYUDA, ISHODNIKI_FOTO, VYVOD, KACHESTVO_WEBP, KACHESTVO_JPEG,
 } from './lib-images.mjs';
@@ -53,6 +54,13 @@ async function blyuda() {
   let srezano = 0;
   const pravleno = [];
 
+  // Цель нормализации меряем по эталонному кадру: так shakshuka остаётся
+  // сама собой, а остальные подтягиваются к тому, как она выглядит на выходе.
+  const etalonFile = rezultat.get('shakshuka');
+  const { kvadrat: etalonKadr } = await polosaBezTeksta(`${ISHODNIKI_BLYUDA}/${etalonFile}`, 'shakshuka', 'center');
+  const cel = celevoyFon((await tipFona(etalonKadr, 'shakshuka')).yarkost);
+  console.log(`  Целевой фон: rgb(${cel.join(', ')}) — цветность эталона при яркости эталонного кадра.`);
+
   for (const item of menu.items) {
     const file = rezultat.get(item.id);
     if (!file) continue;
@@ -62,8 +70,8 @@ async function blyuda() {
 
     // Стоковые снимки на белом, чёрном и холодном сером фоне выпадают из
     // молочной гаммы. Тип фона определяется сам, правка — по типу.
-    const { kadr, tip, chto } = await pravitFon(kvadrat);
-    if (chto) pravleno.push(`${item.id} (${tip}): ${chto}`);
+    const { kadr, tip, chto } = await pravitFon(kvadrat, item.id, cel);
+    if (chto) pravleno.push({ id: item.id, tip, chto });
 
     for (const w of SHIRINY_BLYUDA) {
       await sohranit(sharp(kadr), `${papka}/${item.id}-kv-${w}`, w);
@@ -76,8 +84,13 @@ async function blyuda() {
       bolshoe: { width: bolshoe.width, height: bolshoe.height },
     };
   }
-  console.log(`  Блюда: ${Object.keys(razmery).length} снимков, у ${srezano} срезана вшитая подпись, у ${pravleno.length} поправлен фон:`);
-  for (const p of pravleno) console.log(`    • ${p}`);
+  const chuzhie = pravleno.filter((p) => p.chto.startsWith('плотный кроп'));
+  const svoi = pravleno.filter((p) => !p.chto.startsWith('плотный кроп'));
+  console.log(`  Блюда: ${Object.keys(razmery).length} снимков, у ${srezano} срезана вшитая подпись.`);
+  console.log(`  Чужая съёмка, поправлена и идёт на пересъёмку (${chuzhie.length}):`);
+  for (const p of chuzhie) console.log(`    • ${p.id} — ${p.tip}`);
+  console.log(`  Свой фон, баланс приведён к эталону (${svoi.length}):`);
+  console.log(`    ${svoi.map((p) => p.id).join(', ')}`);
   if (lishnie.length) console.log(`  Не использованы: ${lishnie.join(', ')}`);
   return razmery;
 }

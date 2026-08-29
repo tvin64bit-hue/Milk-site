@@ -13,7 +13,7 @@ import { BLYUDA, blyudoPoId, blyudaKategorii } from '../lib/menu';
 import { put } from '../lib/put';
 import { FORMY_BLOBA } from '../../scripts/blob.mjs';
 import siluet from '../lib/siluet-logotipa.json';
-import vypadayushchie from '../lib/vypadayushchie-fony.json';
+import fonyOtchet from '../lib/fony-otchet.json';
 
 const CVETA = [
   ['--milk', '#F8EEE4', 'Основной фон страницы'],
@@ -64,22 +64,16 @@ const FONY = [
   ['kaliforniya-klassik', 'Чисто-белый, после правки'],
 ] as const;
 
-// Снимки, чей фон выпадает из молочной гаммы, и сводка по типам.
-type Vypadayuschiy = { id: string; kategoriya: string; tip: string };
-const VYPADAYUSCHIE = vypadayushchie as Vypadayuschiy[];
-const SVODKA = Object.entries(
-  VYPADAYUSCHIE.reduce<Record<string, Vypadayuschiy[]>>((acc, v) => {
-    (acc[v.tip] ??= []).push(v);
-    return acc;
-  }, {}),
+// Разбор фонов: чужая съёмка и кадры со своего кресла, у которых уехал баланс.
+type Fon = { id: string; kategoriya: string; tip: string; yarkost: number; teplo: number; hex: string };
+const CHUZHAYA = fonyOtchet.chuzhaya as Fon[];
+const NORMALIZOVANO = fonyOtchet.normalizovano as (Fon & { otstup: number })[];
+const CHUZHAYA_PO_TIPU = Object.entries(
+  CHUZHAYA.reduce<Record<string, Fon[]>>((acc, v) => { (acc[v.tip] ??= []).push(v); return acc; }, {}),
 ).sort((a, b) => b[1].length - a[1].length);
 
-// В ряд сравнения берём по одному представителю каждого типа.
-const VYPADAYUSCHIE_POKAZ = ['kaliforniya-klassik', 'mini-s-lososem', 'vafli-s-bekonom', 'skovoroda-s-rvanoy-govyadinoy']
-  .map((id) => VYPADAYUSCHIE.find((v) => v.id === id)!);
-
-// Соседи по каталогу для сравнения в одном ряду.
-const SOSEDI = ['filadelfiya-lyuks', 'ebi-tempura', 'tori'] as const;
+// Сетка завтраков из ТЗ: именно она должна встать в один ряд после нормализации.
+const ZAVTRAKI = ['shakshuka', 'vafli-s-bekonom', 'syrniki-s-kokosovoy-sguschenkoy', 'bliny-s-lososem'] as const;
 
 // Восемь карточек подряд — проверка, читается ли чередование форм.
 const VOSEM = ['picca-4-syra', 'shakshuka', 'picca-pepperoni', 'set-hit-n1',
@@ -232,46 +226,58 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
         ))}
       </div>
 
-      <h3 class="podzagolovok">Выпадающие фоны — {vypadayushchie.length} снимков из 88</h3>
+      <h3 class="podzagolovok">Фон исходников: {CHUZHAYA.length} чужих кадров и {NORMALIZOVANO.length} со сбитым балансом</h3>
       <p class="melkiy priglushenno">
-        Тип фона определяется автоматически по краевой рамке готового кадра
-        (<code>scripts/opredelit-fon.mjs</code>), поэтому новые снимки разбираются
-        без правки кода. Порядок шагов важен и обратный не работает: сначала
-        плотный кроп ближе к блюду, и только потом правка остатка фона.
+        Яркость и цветность разбираются отдельно (<code>scripts/opredelit-fon.mjs</code>).
+        Если их смешать, кадры со своего кресла, снятые темнее, уезжают в брак вместе
+        со стоковыми. Цветность — разница красного и синего каналов углового фона:
+        у кресла она держится в диапазоне от +6 до +32, у предметной съёмки около нуля.
       </p>
+
+      <p class="ryad-podpis metka-tekst priglushenno">Чужая съёмка — на пересъёмку</p>
       <ul class="tipy-fona melkiy">
-        {SVODKA.map(([tip, spisok]) => (
+        {CHUZHAYA_PO_TIPU.map(([tip, spisok]) => (
           <li><strong>{tip}</strong> — {spisok.length}: {spisok.map((v) => v.id).join(', ')}</li>
         ))}
       </ul>
+      <div class="tablica-obertka">
+      <table class="fon-tablica melkiy">
+        <thead><tr><th>Позиция</th><th>Фон</th><th>Яркость</th><th>Цветность</th></tr></thead>
+        <tbody>
+          {CHUZHAYA.map((v) => (
+            <tr>
+              <td><code>{v.id}</code></td>
+              <td><span class="fon-obrazec" style={`background:${v.hex}`}></span> {v.hex}</td>
+              <td>{v.yarkost}</td>
+              <td>{v.teplo >= 0 ? `+${v.teplo}` : v.teplo}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      </div>
 
-      <p class="ryad-podpis metka-tekst priglushenno">Было</p>
-      <div class="ryad-sravneniya">
-        {VYPADAYUSCHIE_POKAZ.map((v, i) => (
+      <p class="ryad-podpis metka-tekst priglushenno">Свой фон, баланс приведён к эталону</p>
+      <p class="melkiy priglushenno">
+        Целевой оттенок — угловой фон снимка <code>shakshuka</code>. Правка идёт
+        множителем по каналам, а не сдвигом: это не подъём теней, который мутил
+        тёмный сланец. {NORMALIZOVANO.length} кадров: {NORMALIZOVANO.map((v) => v.id).join(', ')}.
+      </p>
+
+      <p class="ryad-podpis metka-tekst priglushenno">Сетка завтраков из ТЗ: было</p>
+      <div class="ryad-sravneniya ryad-sravneniya--chetyre">
+        {ZAVTRAKI.map((id, i) => (
           <figure class="sravnenie">
             <div class="sravnenie__karta">
-              <img class="sravnenie__foto" src={put(`/images/proba/${v.id}-kak-est.webp`)} width="540" height="540" alt="" style={`clip-path: url(#blob-${(i % 4) + 1})`} />
+              <img class="sravnenie__foto" src={put(`/images/proba/${id}-kak-est.webp`)} width="540" height="540" alt="" style={`clip-path: url(#blob-${(i % 4) + 1})`} />
             </div>
-            <figcaption class="melkiy priglushenno">{v.tip}</figcaption>
-          </figure>
-        ))}
-        {SOSEDI.map((id, i) => (
-          <figure class="sravnenie">
-            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
-            <figcaption class="melkiy priglushenno">тёплый</figcaption>
+            <figcaption class="melkiy priglushenno"><code>{id}</code></figcaption>
           </figure>
         ))}
       </div>
 
       <p class="ryad-podpis metka-tekst priglushenno">Стало</p>
-      <div class="ryad-sravneniya">
-        {VYPADAYUSCHIE_POKAZ.map((v, i) => (
-          <figure class="sravnenie">
-            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(v.id)!} nomer={i} /></div>
-            <figcaption class="melkiy priglushenno"><code>{v.id}</code></figcaption>
-          </figure>
-        ))}
-        {SOSEDI.map((id, i) => (
+      <div class="ryad-sravneniya ryad-sravneniya--chetyre">
+        {ZAVTRAKI.map((id, i) => (
           <figure class="sravnenie">
             <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
             <figcaption class="melkiy priglushenno"><code>{id}</code></figcaption>
@@ -279,11 +285,29 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
         ))}
       </div>
 
+      <p class="ryad-podpis metka-tekst priglushenno">Чужая съёмка: было и стало</p>
+      <div class="ryad-sravneniya">
+        {CHUZHAYA.slice(0, 5).map((v, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta">
+              <img class="sravnenie__foto" src={put(`/images/proba/${v.id}-kak-est.webp`)} width="540" height="540" alt="" style={`clip-path: url(#blob-${(i % 4) + 1})`} />
+            </div>
+            <figcaption class="melkiy priglushenno">{v.tip}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <div class="ryad-sravneniya">
+        {CHUZHAYA.slice(0, 5).map((v, i) => (
+          <figure class="sravnenie">
+            <div class="sravnenie__karta"><FotoBlyuda blyudo={blyudoPoId(v.id)!} nomer={i} /></div>
+            <figcaption class="melkiy priglushenno"><code>{v.id}</code></figcaption>
+          </figure>
+        ))}
+      </div>
       <p class="melkiy priglushenno">
-        Белый фон заменяется молочным — это работает. Тёмный и холодный серый
-        только плотнее кадрируются и слегка согреваются: подъём теней делает
-        снимок мутно-серым, и он выпадает из ряда не меньше прежнего.
-        Восемь тёмных кадров обработкой не спасти, это кандидаты на пересъёмку.
+        Плотный кроп уменьшает пятно, белый фон заменяется молочным. Тёмные кадры
+        обработкой не спасти: фон остаётся тёмным, это кандидаты на пересъёмку.
+        Из подборок на главной исключён только <code>filadelfiya-ugor-layt</code>.
       </p>
     </section>
 
@@ -419,6 +443,13 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
   .vosem__karta { margin: 0; padding: var(--otstup-2); background: var(--cream); border-radius: var(--skruglenie-metka); }
   .vosem figcaption { margin-top: var(--otstup-1); text-align: center; }
   .tipy-fona { display: grid; gap: var(--otstup-2); margin: var(--otstup-4) 0; }
+  /* Широкая таблица прокручивается внутри себя, страница вбок не едет. */
+  .tablica-obertka { overflow-x: auto; margin-bottom: var(--otstup-5); }
+  .fon-tablica { width: 100%; min-width: 420px; border-collapse: collapse; }
+  .fon-tablica th { text-align: left; padding: var(--otstup-2) var(--otstup-3); border-bottom: 1px solid var(--beige); }
+  .fon-tablica td { padding: var(--otstup-2) var(--otstup-3); border-bottom: 1px solid var(--milk-rose); }
+  .fon-obrazec { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; box-shadow: inset 0 0 0 1px rgba(61,43,28,0.12); }
+  .ryad-sravneniya--chetyre { grid-auto-columns: minmax(160px, 1fr); }
   .tipy-fona li { overflow-wrap: anywhere; }
   .blob-obrazec { margin: 0; }
   .blob-obrazec svg { width: 100%; height: auto; aspect-ratio: 1; }

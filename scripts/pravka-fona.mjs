@@ -9,7 +9,7 @@
 // плотнее к блюду и только потом правится остаток фона. Если тонировать
 // сразу, работы больше, а на границе блюда появляется ореол.
 import sharp from 'sharp';
-import { tipFona, VYPADAET } from './opredelit-fon.mjs';
+import { tipFona, CHUZHAYA_SYEMKA, ETALON_FONA } from './opredelit-fon.mjs';
 
 const MOLOCHNYY = [248, 238, 228];
 
@@ -90,21 +90,52 @@ export async function sogret(vhod) {
 }
 
 /**
- * Правит кадр по типу фона. Возвращает кадр и что с ним сделали.
- * Для тёмного и серого фона тонировки нет: спасает плотный кроп,
- * а подъём теней только мутит снимок.
+ * Приводит фон кадра к эталонному оттенку покадровым множителем по каналам.
+ *
+ * Это не подъём теней, который делал тёмный сланец мутным: там вытягивался
+ * чужой фон, здесь свой нейтрально-серый приводится к своему же целевому
+ * оттенку. Операция предсказуемая — множитель, а не сдвиг.
  */
-export async function pravitFon(kvadrat) {
-  const { tip, rgb } = await tipFona(kvadrat);
-  if (!VYPADAET.has(tip)) return { kadr: kvadrat, tip, chto: null };
+export async function normalizovatFon(vhod, fon, cel) {
+  const k = cel.map((c, i) => Math.min(1.45, Math.max(0.75, c / Math.max(1, fon[i]))));
+  return sharp(vhod).linear(k, [0, 0, 0]).png().toBuffer();
+}
 
-  // Чем темнее и холоднее фон, тем плотнее кадрируем: пятна должно остаться
-  // как можно меньше, потому что править его нечем.
-  const pole = tip === 'чисто-белый' ? 0.07 : 0.03;
-  const obrezano = await plotnyyKadr(kvadrat, rgb, pole);
+/**
+ * Целевой фон: цветность берётся из эталона, яркость — из эталонного кадра.
+ *
+ * Замер владельца #A29A8C сделан по углу исходника, а конвейер меряет рамку
+ * готового кадра, где яркость выше. Если целиться в абсолютные 155, сама
+ * shakshuka потемнеет и перестанет быть эталоном, поэтому цветность
+ * оставляем её, а яркость подтягиваем к тому, как эталон выглядит на выходе.
+ */
+export function celevoyFon(yarkostEtalonnogoKadra) {
+  const yarkostEtalona = 0.299 * ETALON_FONA[0] + 0.587 * ETALON_FONA[1] + 0.114 * ETALON_FONA[2];
+  const mnozhitel = yarkostEtalonnogoKadra / yarkostEtalona;
+  return ETALON_FONA.map((c) => Math.round(c * mnozhitel));
+}
 
-  if (tip === 'чисто-белый') {
-    return { kadr: await zamenitBelyy(obrezano), tip, chto: 'плотный кроп, белый фон заменён молочным' };
+/**
+ * Правит кадр по типу фона. Возвращает кадр и что с ним сделали.
+ *
+ * Чужая съёмка: плотный кроп, чтобы пятна осталось меньше, и правка остатка.
+ * Свой фон со сбитым балансом: нормализация к эталону, кроп не нужен.
+ * Для тёмного фона тонировки нет — подъём теней только мутит снимок.
+ */
+export async function pravitFon(kvadrat, slug, cel) {
+  const { tip, rgb, chuzhaya } = await tipFona(kvadrat, slug);
+
+  if (chuzhaya) {
+    const pole = tip === 'чисто-белый' ? 0.07 : 0.03;
+    const obrezano = await plotnyyKadr(kvadrat, rgb, pole);
+    if (tip === 'чисто-белый') {
+      return { kadr: await zamenitBelyy(obrezano), tip, chto: 'плотный кроп, белый фон заменён молочным' };
+    }
+    return { kadr: await sogret(obrezano), tip, chto: 'плотный кроп, кадр согрет без подъёма теней' };
   }
-  return { kadr: await sogret(obrezano), tip, chto: 'плотный кроп, кадр согрет без подъёма теней' };
+
+  if (tip === 'свой фон, сбит баланс' && cel) {
+    return { kadr: await normalizovatFon(kvadrat, rgb, cel), tip, chto: 'фон приведён к эталону' };
+  }
+  return { kadr: kvadrat, tip, chto: null };
 }
