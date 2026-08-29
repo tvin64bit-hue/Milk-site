@@ -67,15 +67,15 @@ const { imya, podpis, vid = 'panel' } = Astro.props;
   .vydvizhnaya__korpus {
     position: relative;
     background: var(--cream);
-    border-bottom-left-radius: var(--skruglenie-karta);
-    border-bottom-right-radius: var(--skruglenie-karta);
     padding: var(--otstup-6) var(--pole) var(--otstup-4);
   }
   .vydvizhnaya--panel .vydvizhnaya__korpus { max-height: 480px; overflow-y: auto; }
   .vydvizhnaya--menyu .vydvizhnaya__korpus { max-height: 100dvh; overflow-y: auto; }
 
-  /* Волна повторяет кривую разделителей секций. */
-  .vydvizhnaya__volna { margin-top: calc(-1 * var(--vysota-volny)); pointer-events: none; }
+  /* Нижний край — та же кривая, что у разделителей секций, отражённая
+     по вертикали: заливка сверху, волнистый край снизу.
+     Отрицательный отступ раньше прятал её целиком за корпусом. */
+  .vydvizhnaya__volna { margin-top: -1px; pointer-events: none; }
   .vydvizhnaya :global(.vydvizhnaya__volna svg) { transform: scaleY(-1); }
 
   .vydvizhnaya__krest {
@@ -92,7 +92,10 @@ const { imya, podpis, vid = 'panel' } = Astro.props;
   }
   .vydvizhnaya__krest:hover { background: var(--milk); }
 
-  .vydvizhnaya__soderzhimoe { max-width: 640px; }
+  /* Мобильное меню держит узкую колонку, панель раскладывается сама.
+     Отступ справа оставляет место крестику, чтобы содержимое под него не лезло. */
+  .vydvizhnaya__soderzhimoe { padding-right: 56px; }
+  .vydvizhnaya--menyu .vydvizhnaya__soderzhimoe { max-width: 640px; }
 
   @media (max-width: 1023px) {
     .vydvizhnaya--panel .vydvizhnaya__sloy { max-width: 90%; }

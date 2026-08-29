@@ -10,11 +10,16 @@
 // сразу, работы больше, а на границе блюда появляется ореол.
 import sharp from 'sharp';
 import { tipFona, CHUZHAYA_SYEMKA, ETALON_FONA } from './opredelit-fon.mjs';
+import { oblastEdy, metrikiPoOblasti, ocenit } from './zamer-edy.mjs';
 
 const MOLOCHNYY = [248, 238, 228];
 
-// Выше этого уровня яркость при нормализации поджимается, а не растёт линейно.
-const POROG_SVETOV = 185;
+// Насколько вообще разрешено поднимать яркость кадра.
+const PREDEL_PODYEMA = 1.12;
+
+// Силы правки, которые пробуются по очереди: если полная портит еду,
+// берётся ослабленная, а если и она портит — кадр остаётся как есть.
+const SILY = [1, 0.6, 0.3];
 
 /**
  * Обрезает кадр ближе к блюду. «Не фон» считается по расстоянию от цвета
@@ -93,35 +98,57 @@ export async function sogret(vhod) {
 }
 
 /**
- * Приводит фон кадра к эталонному оттенку покадровым множителем по каналам.
+ * Баланс белого: множители по каналам, нормированные так, чтобы средняя
+ * яркость кадра не менялась. Меняется только соотношение каналов.
  *
- * Это не подъём теней, который делал тёмный сланец мутным: там вытягивался
- * чужой фон, здесь свой нейтрально-серый приводится к своему же целевому
- * оттенку. Операция предсказуемая — множитель, а не сдвиг.
+ * Прежняя правка делала это одним множителем вместе с подъёмом яркости —
+ * линейное умножение поджимает насыщенность к белому, и лосось желтел.
  */
-export async function normalizovatFon(vhod, fon, cel) {
+function mnozhiteliBalansa(fon, cel) {
   const k = cel.map((c, i) => Math.min(1.45, Math.max(0.75, c / Math.max(1, fon[i]))));
+  const yarkostK = 0.299 * k[0] + 0.587 * k[1] + 0.114 * k[2];
+  return k.map((v) => v / yarkostK);
+}
 
-  // Чистый множитель выбивает света: на филадельфии красный канал уходил
-  // в 255 у 59 % пикселей рыбы, и лосось терял фактуру. Поэтому выше порога
-  // яркость поджимается плавно и 255 достигается только в пределе.
-  const tablica = k.map((kc) => {
-    const lut = Buffer.alloc(256);
-    for (let x = 0; x < 256; x++) {
-      const y = x * kc;
-      lut[x] = Math.round(Math.min(255, y <= POROG_SVETOV
-        ? y
-        : POROG_SVETOV + (255 - POROG_SVETOV) * (1 - Math.exp(-(y - POROG_SVETOV) / (255 - POROG_SVETOV)))));
-    }
-    return lut;
-  });
+/**
+ * Экспозиция: гамма-кривая вместо умножения. Она поднимает средние тона,
+ * почти не трогая света, и не сжимает насыщенность.
+ * Общий подъём ограничен PREDEL_PODYEMA — кадр, оставшийся чуть темнее
+ * эталона, приемлем, пожелтевшая еда нет.
+ */
+function gammaEkspozicii(yarkostKadra, yarkostCeli) {
+  const nuzhno = Math.min(PREDEL_PODYEMA, Math.max(1, yarkostCeli / Math.max(1, yarkostKadra)));
+  if (nuzhno <= 1.001) return 1;
+  const otnositelnaya = Math.min(0.95, Math.max(0.05, yarkostKadra / 255));
+  const cel = Math.min(0.98, otnositelnaya * nuzhno);
+  return Math.log(cel) / Math.log(otnositelnaya);
+}
+
+/** Собирает таблицу преобразования канала: баланс белого, затем гамма. */
+function tablicaKanala(mnozhitel, gamma, sila) {
+  const k = 1 + (mnozhitel - 1) * sila;
+  const g = 1 + (gamma - 1) * sila;
+  const lut = Buffer.alloc(256);
+  for (let x = 0; x < 256; x++) {
+    const posleBalansa = Math.min(255, x * k);
+    lut[x] = Math.round(Math.min(255, 255 * (posleBalansa / 255) ** g));
+  }
+  return lut;
+}
+
+/** Применяет к кадру баланс белого и экспозицию заданной силы. */
+export async function primenitPravku(vhod, fon, cel, yarkostKadra, sila = 1) {
+  const balans = mnozhiteliBalansa(fon, cel);
+  const yarkostCeli = 0.299 * cel[0] + 0.587 * cel[1] + 0.114 * cel[2];
+  const gamma = gammaEkspozicii(yarkostKadra, yarkostCeli);
+  const tablicy = balans.map((m) => tablicaKanala(m, gamma, sila));
 
   const { data, info } = await sharp(vhod).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const out = Buffer.alloc(data.length);
   for (let i = 0; i < data.length; i += info.channels) {
-    out[i] = tablica[0][data[i]];
-    out[i + 1] = tablica[1][data[i + 1]];
-    out[i + 2] = tablica[2][data[i + 2]];
+    out[i] = tablicy[0][data[i]];
+    out[i + 1] = tablicy[1][data[i + 1]];
+    out[i + 2] = tablicy[2][data[i + 2]];
     for (let c = 3; c < info.channels; c++) out[i + c] = data[i + c];
   }
   return sharp(out, { raw: { width: info.width, height: info.height, channels: info.channels } })
@@ -150,7 +177,7 @@ export function celevoyFon(yarkostEtalonnogoKadra) {
  * Для тёмного фона тонировки нет — подъём теней только мутит снимок.
  */
 export async function pravitFon(kvadrat, slug, cel) {
-  const { tip, rgb, chuzhaya } = await tipFona(kvadrat, slug);
+  const { tip, rgb, chuzhaya, yarkost } = await tipFona(kvadrat, slug);
 
   if (chuzhaya) {
     const pole = tip === 'чисто-белый' ? 0.07 : 0.03;
@@ -161,8 +188,31 @@ export async function pravitFon(kvadrat, slug, cel) {
     return { kadr: await sogret(obrezano), tip, chto: 'плотный кроп, кадр согрет без подъёма теней' };
   }
 
-  if (tip === 'свой фон, сбит баланс' && cel) {
-    return { kadr: await normalizovatFon(kvadrat, rgb, cel), tip, chto: 'фон приведён к эталону' };
+  if (tip !== 'свой фон, сбит баланс' || !cel) return { kadr: kvadrat, tip, chto: null };
+
+  // Проверять фон недостаточно: портится еда, а не он. Область блюда меряется
+  // до правки и дальше не пересчитывается — иначе сравниваются разные пиксели.
+  const oblast = await oblastEdy(kvadrat);
+  const doPravki = oblast ? await metrikiPoOblasti(kvadrat, oblast) : null;
+
+  for (const sila of SILY) {
+    const kadr = await primenitPravku(kvadrat, rgb, cel, yarkost, sila);
+    if (!oblast) {
+      return { kadr, tip, sila, chto: 'баланс и экспозиция (еду измерить не удалось)' };
+    }
+    const ocenka = ocenit(doPravki, await metrikiPoOblasti(kadr, oblast));
+    if (ocenka.proshel) {
+      return {
+        kadr, tip, sila, ocenka, dolyaEdy: oblast.dolya,
+        chto: sila === 1 ? 'баланс и экспозиция' : `баланс и экспозиция, сила ${sila}`,
+      };
+    }
+    if (sila === SILY[SILY.length - 1]) {
+      return {
+        kadr: kvadrat, tip, sila: 0, ocenka, dolyaEdy: oblast.dolya,
+        chto: 'отброшено: правка портила еду на всех силах',
+      };
+    }
   }
   return { kadr: kvadrat, tip, chto: null };
 }
