@@ -1,0 +1,103 @@
+---
+// Фотография блюда внутри блоб-маски. Если снимка нет — фирменная заглушка.
+//
+// Форма маски чередуется по кругу: 1-я карточка первая форма, 2-я вторая,
+// 5-я снова первая, чтобы ряд не выглядел штампованным.
+import type { Blyudo } from '../lib/menu';
+import { kartinka, altBlyuda } from '../lib/menu';
+import Dudl from './Dudl.astro';
+import type { ImyaDudla } from './Dudl.astro';
+
+interface Props {
+  blyudo: Blyudo;
+  /** Порядковый номер в ряду — от него зависит форма маски. */
+  nomer?: number;
+  /** kvadrat — для сетки каталога, bolshoe — для страницы блюда. */
+  vid?: 'kvadrat' | 'bolshoe';
+  /** Первый экран грузится в приоритете, остальное — отложенно. */
+  prioritet?: boolean;
+  klass?: string;
+}
+
+const { blyudo, nomer = 0, vid = 'kvadrat', prioritet = false, klass = '' } = Astro.props;
+
+const forma = (nomer % 4) + 1;
+const kadr = kartinka(blyudo);
+const alt = altBlyuda(blyudo);
+
+// Заглушка получает дудл по категории — чтобы пустые карточки не были одинаковыми.
+const DUDL_KATEGORII: Record<string, ImyaDudla> = {
+  zavtraki: 'vaflya', sety: 'roll', 'rolly-holodnye': 'roll', 'rolly-tempura': 'roll',
+  'rolly-zapechennye': 'roll', 'detskie-rolly': 'roll', picca: 'pirog', pasta: 'pirog',
+  'supy-salaty': 'chashka', 'goryachee-zakuski': 'pirog', deserty: 'pechene',
+  'kofe-napitki': 'chashka',
+};
+const dudl = DUDL_KATEGORII[blyudo.category] ?? 'butylka';
+---
+{kadr && vid === 'kvadrat' && (
+  <picture class:list={['foto', klass]} style={`--forma: url(#blob-${forma})`}>
+    <source type="image/webp" srcset={`${kadr.kvadrat.webp320} 320w, ${kadr.kvadrat.webp540} 540w`} sizes="(min-width: 1024px) 296px, (min-width: 768px) 33vw, 44vw" />
+    <img
+      src={kadr.kvadrat.jpg}
+      alt={alt}
+      width={kadr.kvadrat.width}
+      height={kadr.kvadrat.height}
+      loading={prioritet ? 'eager' : 'lazy'}
+      decoding={prioritet ? 'sync' : 'async'}
+      fetchpriority={prioritet ? 'high' : undefined}
+    />
+  </picture>
+)}
+
+{kadr && vid === 'bolshoe' && (
+  <picture class:list={['foto', 'foto--bolshoe', klass]} style={`--forma: url(#blob-${forma})`}>
+    <source type="image/webp" srcset={kadr.bolshoe.webp} />
+    <img
+      src={kadr.bolshoe.jpg}
+      alt={alt}
+      width={kadr.bolshoe.width}
+      height={kadr.bolshoe.height}
+      loading={prioritet ? 'eager' : 'lazy'}
+      fetchpriority={prioritet ? 'high' : undefined}
+    />
+  </picture>
+)}
+
+{!kadr && (
+  <div class:list={['foto', 'foto--zaglushka', klass]} style={`--forma: url(#blob-${forma})`} role="img" aria-label={`${blyudo.name} — фотографии пока нет`}>
+    <Dudl imya={dudl} razmer={96} cvet="var(--coffee-deep)" />
+  </div>
+)}
+
+<style>
+  .foto {
+    display: block;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    clip-path: var(--forma);
+    background: var(--beige);
+    overflow: hidden;
+  }
+  .foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--plavno-karta) ease-out;
+  }
+  /* На странице блюда кадр сохраняет свои пропорции и не шире 480 px. */
+  .foto--bolshoe {
+    aspect-ratio: auto;
+    max-width: var(--maks-shirina-foto-blyuda);
+  }
+  .foto--bolshoe :global(img) { height: auto; }
+
+  .foto--zaglushka {
+    display: grid;
+    place-items: center;
+    color: var(--coffee-deep);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .foto :global(img) { transition: none; }
+  }
+</style>

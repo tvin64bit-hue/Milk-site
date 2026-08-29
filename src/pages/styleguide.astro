@@ -1,0 +1,428 @@
+---
+// Служебная страница: весь визуальный язык сайта на одном экране.
+// В поиск не отдаётся, из карты сайта исключена.
+import Bazovyy from '../layouts/Bazovyy.astro';
+import Dudl from '../components/Dudl.astro';
+import type { ImyaDudla } from '../components/Dudl.astro';
+import Volna from '../components/Volna.astro';
+import Knopka from '../components/Knopka.astro';
+import Metka from '../components/Metka.astro';
+import KartochkaBlyuda from '../components/KartochkaBlyuda.astro';
+import FotoBlyuda from '../components/FotoBlyuda.astro';
+import { BLYUDA, blyudoPoId, blyudaKategorii } from '../lib/menu';
+import { put } from '../lib/put';
+import { FORMY_BLOBA } from '../../scripts/blob.mjs';
+
+const CVETA = [
+  ['--milk', '#F8EEE4', 'Основной фон страницы'],
+  ['--milk-rose', '#F9E4DA', 'Фон чередующихся секций'],
+  ['--cream', '#FFFBF5', 'Карточки, шапка, панель'],
+  ['--ink', '#3D2B1C', 'Основной текст и заголовки'],
+  ['--ink-muted', '#78644E', 'Состав, вес, зачёркнутая цена'],
+  ['--coffee', '#A18152', 'Только декоративные заливки'],
+  ['--coffee-deep', '#8A6F47', 'Заливки под светлым текстом'],
+  ['--coffee-dark', '#5F3515', 'Тёмные секции и футер'],
+  ['--beige', '#E3CFAC', 'Дудлы, разделители, рамки'],
+  ['--orange', '#C85111', 'Кнопки, цены, метка «Хит»'],
+  ['--orange-dark', '#B04409', 'Наведение на кнопках'],
+  ['--error', '#C4432B', 'Ошибки, метка «Острое»'],
+] as const;
+
+// Контраст считается прямо здесь, чтобы цифры не расходились с палитрой.
+const svetlota = (hex: string) => {
+  const k = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2];
+};
+const kontrast = (a: string, b: string) => {
+  const [x, y] = [svetlota(a), svetlota(b)].sort((p, q) => q - p);
+  return (x + 0.05) / (y + 0.05);
+};
+
+const PARY = [
+  ['#3D2B1C', '#F8EEE4', '--ink на --milk', 4.5],
+  ['#78644E', '#F9E4DA', '--ink-muted на --milk-rose', 4.5],
+  ['#78644E', '#FFFBF5', '--ink-muted на --cream', 4.5],
+  ['#FFFFFF', '#C85111', 'белый на --orange (кнопка)', 4.5],
+  ['#FFFFFF', '#B04409', 'белый на --orange-dark', 4.5],
+  ['#FFFBF5', '#8A6F47', '--cream на --coffee-deep', 4.5],
+  ['#FFFFFF', '#C4432B', 'белый на --error', 4.5],
+  ['#F8EEE4', '#5F3515', '--milk на --coffee-dark', 4.5],
+  ['#C85111', '#FFFBF5', '--orange на --cream (цена 22px Rubik 700)', 3],
+] as const;
+
+const DUDLY: ImyaDudla[] = ['butylka', 'kruassan', 'chashka', 'vaflya', 'pirog', 'pechene', 'ponchik', 'roll'];
+const PODPISI_DUDLOV = ['Бутылка молока', 'Круассан', 'Чашка кофе', 'Вафля', 'Пирог', 'Печенье', 'Пончик', 'Ролл'];
+
+// Четыре типа фона, на которых сняты исходники: под маской они ведут себя по-разному.
+const FONY = [
+  ['shakshuka', 'Бежевое кресло — 85 снимков'],
+  ['salat-cezar', 'Светлое дерево'],
+  ['filadelfiya-layt', 'Чёрный сланец — 2 снимка'],
+  ['kaliforniya-klassik', 'Чисто-белый фон — 1 снимок'],
+] as const;
+
+// Три снимка, чей фон выпадает из молочной гаммы.
+const VYPADAYUSCHIE = [
+  ['kaliforniya-klassik', 'Чисто-белый фон'],
+  ['filadelfiya-layt', 'Чёрный сланец'],
+  ['filadelfiya-ugor-layt', 'Чёрный сланец'],
+] as const;
+
+const piccy = blyudaKategorii('picca');
+const primery = ['shakshuka', 'set-hit-n1', 'mini-s-ogurcom', 'siropy'].map((id) => blyudoPoId(id)!);
+const bezFoto = BLYUDA.filter((b) => b.image === null);
+---
+<Bazovyy
+  zagolovok="Визуальный язык — служебная страница | Кафе «Милк»"
+  opisanie="Палитра, типографика, состояния элементов, блоб-маски, дудлы и волна."
+  kanon="/styleguide"
+>
+  <meta slot="golova" name="robots" content="noindex, nofollow" />
+
+  <div class="konteyner">
+    <header class="shapka-sg">
+      <p class="metka-tekst priglushenno">Служебная страница</p>
+      <h1>Визуальный язык</h1>
+      <p>Всё, из чего собирается сайт. Утверждается здесь, до вёрстки страниц.</p>
+    </header>
+
+    <!-- ---------------- Палитра ---------------- -->
+    <section class="blok">
+      <h2>Палитра</h2>
+      <div class="cveta">
+        {CVETA.map(([token, hex, gde]) => (
+          <div class="cvet">
+            <div class="cvet__obrazec" style={`background: ${hex}`}></div>
+            <p class="cvet__token melkiy"><code>{token}</code></p>
+            <p class="cvet__hex melkiy priglushenno">{hex}</p>
+            <p class="cvet__gde melkiy priglushenno">{gde}</p>
+          </div>
+        ))}
+      </div>
+
+      <h3 class="podzagolovok">Контраст</h3>
+      <p class="melkiy priglushenno">Порог 4.5:1 для обычного текста, 3:1 для крупного (от 18.66 px полужирного).</p>
+      <ul class="kontrasty">
+        {PARY.map(([a, b, podpis, porog]) => {
+          const k = kontrast(a, b);
+          return (
+            <li class="kontrast">
+              <span class="kontrast__obrazec" style={`background:${b};color:${a}`}>Текст</span>
+              <span class="melkiy">{podpis}</span>
+              <span class:list={['kontrast__cifra', 'metka-tekst', k >= porog ? 'horosho' : 'ploho']}>
+                {k.toFixed(2)}:1 {k >= porog ? '✓' : '✗'}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <!-- ---------------- Типографика ---------------- -->
+    <section class="blok">
+      <h2>Типографика</h2>
+      <p class="melkiy priglushenno">Заголовки — Rubik, текст — Onest. Размеры плавают между 480 и 1280 px ширины окна.</p>
+      <div class="tipografika">
+        <div><span class="tip-podpis">H1 · Rubik 700 · 40→72</span><h1>Место, где хорошо</h1></div>
+        <div><span class="tip-podpis">H2 · Rubik 700 · 32→48</span><h2>Завтраки, ради которых возвращаются</h2></div>
+        <div><span class="tip-podpis">H3 · Rubik 600 · 24→28</span><h3>Заказать в «Милке»</h3></div>
+        <div><span class="tip-podpis">H4 · Rubik 600 · 18→20</span><h4>Сет «Хит №1»</h4></div>
+        <div><span class="tip-podpis">Текст · Onest 400 · 16→17 · максимум 68 знаков</span>
+          <p>Мы придумали «Милк» как место, куда можно прийти в любом настроении. Утром — сесть с ноутбуком и чашкой кофе за столик у окна.</p></div>
+        <div><span class="tip-podpis">Мелкий · Onest 400 · 14→15</span>
+          <p class="melkiy priglushenno">Шакшука как у мамы: яйца 3 шт, спелые томаты, болгарский перец и кинза</p></div>
+        <div><span class="tip-podpis">Метка · Onest 600 · 12→13 · прописные</span>
+          <p class="metka-tekst">Ежедневно с 10:00 до 21:00</p></div>
+        <div><span class="tip-podpis">Цена · Rubik 700 · 20→22</span><p class="obrazec-ceny">1 250 ₽</p></div>
+      </div>
+    </section>
+
+    <!-- ---------------- Кнопки ---------------- -->
+    <section class="blok">
+      <h2>Кнопки и состояния</h2>
+      <p class="melkiy priglushenno">Наведите и пройдите табом — заливка главной кнопки наплывает снизу, контур фокуса виден на всех.</p>
+      <div class="knopki">
+        <div class="knopki__ryad">
+          <Knopka vid="glavnaya">Смотреть меню</Knopka>
+          <Knopka vid="vtoraya">Все завтраки</Knopka>
+          <Knopka vid="ssylka">Назад в меню</Knopka>
+        </div>
+        <div class="knopki__ryad">
+          <Knopka vid="glavnaya" otklyuchena>Недоступна</Knopka>
+          <Knopka vid="vtoraya" otklyuchena>Недоступна</Knopka>
+        </div>
+      </div>
+
+      <h3 class="podzagolovok">Метки</h3>
+      <div class="metki-ryad">
+        <Metka vid="hit" /><Metka vid="detskoe" /><Metka vid="ostroe" />
+        <Metka vid="dobavka" /><Metka vid="net-v-nalichii" />
+      </div>
+
+      <h3 class="podzagolovok">Поле ввода</h3>
+      <div class="polya">
+        <input class="pole" type="search" placeholder="Найти блюдо или ингредиент" aria-label="Поиск по меню" />
+        <p class="melkiy priglushenno">Единственное поле ввода на сайте. Форм отправки данных нет.</p>
+      </div>
+    </section>
+
+    <!-- ---------------- Блоб ---------------- -->
+    <section class="blok">
+      <h2>Блоб — четыре формы</h2>
+      <p class="melkiy priglushenno">В сетке каталога назначаются по кругу: 1-я карточка первая форма, 5-я снова первая.</p>
+      <div class="bloby">
+        {FORMY_BLOBA.map((d, i) => (
+          <figure class="blob-obrazec">
+            <svg viewBox="0 0 1 1" aria-hidden="true"><path d={d} fill="var(--coffee)" /></svg>
+            <figcaption class="melkiy priglushenno">Форма {i + 1}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <h3 class="podzagolovok">Блоб на четырёх типах фона исходников</h3>
+      <p class="melkiy priglushenno">
+        85 снимков сняты на бежевом кресле, дереве или фирменной подложке. Два — на чёрном
+        сланце, один — на чисто-белом фоне. Ниже видно, как каждый ведёт себя под маской
+        на карточке <code>--cream</code> и на фоне секции <code>--milk</code>.
+      </p>
+      <div class="fony">
+        {FONY.map(([id, podpis], i) => (
+          <figure class="fon">
+            <div class="fon__na-karte"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
+            <div class="fon__na-fone"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
+            <figcaption class="melkiy priglushenno">{podpis}<br /><code>{id}</code></figcaption>
+          </figure>
+        ))}
+      </div>
+
+      <h3 class="podzagolovok">Три выпадающих снимка — два способа поправить</h3>
+      <p class="melkiy priglushenno">
+        Слева как сейчас, в середине — мягкая кайма <code>--beige</code> по краю блоба
+        (фотографии не трогаем), справа — правка самого снимка на сборке:
+        белый фон заменяется на <code>--milk-rose</code>, чёрный сланец поднимается
+        по тёмной точке и уводится в тёплый тон.
+      </p>
+      <div class="varianty">
+        {VYPADAYUSCHIE.map(([id, podpis], i) => (
+          <Fragment>
+            <p class="varianty__podpis melkiy"><strong>{podpis}</strong><br /><code>{id}</code></p>
+            <figure class="variant">
+              <div class="variant__karta"><FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} /></div>
+              <figcaption class="melkiy priglushenno">Как сейчас</figcaption>
+            </figure>
+            <figure class="variant">
+              <div class="variant__karta">
+                <div class="kayma" style={`--forma: url(#blob-${(i % 4) + 1})`}>
+                  <FotoBlyuda blyudo={blyudoPoId(id)!} nomer={i} klass="kayma__foto" />
+                </div>
+              </div>
+              <figcaption class="melkiy priglushenno">С каймой</figcaption>
+            </figure>
+            <figure class="variant">
+              <div class="variant__karta">
+                <img class="pravlenoe" src={put(`/images/proba/${id}-ispravleno.webp`)} width="540" height="540" alt={`${podpis} — фон приведён к молочной гамме`} style={`clip-path: url(#blob-${(i % 4) + 1})`} />
+              </div>
+              <figcaption class="melkiy priglushenno">Снимок поправлен</figcaption>
+            </figure>
+          </Fragment>
+        ))}
+      </div>
+    </section>
+
+    <!-- ---------------- Дудлы ---------------- -->
+    <section class="blok">
+      <h2>Дудлы</h2>
+      <p class="melkiy priglushenno">Восемь иконок, обводка 1.5 px, скруглённые концы, без заливки. Слой параллакса — в блоке 7.</p>
+      <div class="dudly">
+        {DUDLY.map((imya, i) => (
+          <figure class="dudl-obrazec">
+            <Dudl imya={imya} razmer={72} />
+            <figcaption class="melkiy priglushenno">{PODPISI_DUDLOV[i]}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <div class="dudly-na-fone">
+        <p class="melkiy">Так они выглядят на фоне секции — прозрачность 25–40 %, размер 40–90 px:</p>
+        <div class="dudly-fon">
+          {DUDLY.map((imya, i) => (
+            <Dudl imya={imya} razmer={40 + (i % 4) * 16} klass="dudl-fonovyy" />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- Волна ---------------- -->
+    <section class="blok">
+      <h2>Волна между секциями</h2>
+      <p class="melkiy priglushenno">Одна и та же кривая по всему сайту, включая нижний край панели «Заказать». 80 px на десктопе, 40 на мобильном.</p>
+    </section>
+  </div>
+
+  <div class="volna-demo">
+    <div class="volna-demo__verh"><p class="konteyner melkiy">Секция на <code>--milk</code></p></div>
+    <Volna cvet="var(--milk-rose)" />
+    <div class="volna-demo__seredina"><p class="konteyner melkiy">Секция на <code>--milk-rose</code></p></div>
+    <Volna cvet="var(--coffee-dark)" />
+    <div class="volna-demo__niz"><p class="konteyner melkiy">Тёмная секция на <code>--coffee-dark</code></p></div>
+    <Volna cvet="var(--milk)" />
+  </div>
+
+  <div class="konteyner">
+    <!-- ---------------- Карточки ---------------- -->
+    <section class="blok">
+      <h2>Карточка блюда</h2>
+      <p class="melkiy priglushenno">Формы масок чередуются. Наведите — карточка поднимается, фото увеличивается до 1.05.</p>
+      <div class="setka">
+        {primery.map((b, i) => <KartochkaBlyuda blyudo={b} nomer={i} />)}
+      </div>
+
+      <h3 class="podzagolovok">Позиции без фотографии — заглушка</h3>
+      <p class="melkiy priglushenno">Блоб цвета <code>--beige</code> с дудлом по центру. В подборки на главной такие позиции не идут, только в каталог.</p>
+      <div class="setka setka--tri">
+        {bezFoto.map((b, i) => <KartochkaBlyuda blyudo={b} nomer={i} />)}
+      </div>
+
+      <h3 class="podzagolovok">Контрольный лист: семь пицц с долей среза 69 %</h3>
+      <p class="melkiy priglushenno">У пицц фотография вплотную касается вшитого заголовка, поэтому доля среза задана вручную в <code>scripts/lib-images.mjs</code>.</p>
+      <div class="setka">
+        {piccy.map((b, i) => <KartochkaBlyuda blyudo={b} nomer={i} />)}
+      </div>
+    </section>
+
+    <!-- ---------------- Форма и отступы ---------------- -->
+    <section class="blok">
+      <h2>Форма и отступы</h2>
+      <div class="forma">
+        <div class="forma__obrazec forma__knopka">Капсула 999 px</div>
+        <div class="forma__obrazec forma__karta">Карточка 24 px</div>
+        <div class="forma__obrazec forma__metka">Метка 12 px</div>
+      </div>
+      <h3 class="podzagolovok">Тень</h3>
+      <div class="teni">
+        <div class="ten-obrazec ten-obrazec--myagkaya">Мягкая</div>
+        <div class="ten-obrazec ten-obrazec--osnovnaya">Основная, максимум по ТЗ</div>
+      </div>
+      <h3 class="podzagolovok">Шкала отступов</h3>
+      <div class="shkala">
+        {[4, 8, 12, 16, 24, 32, 48, 64, 96, 128].map((v) => (
+          <div class="shkala__punkt">
+            <div class="shkala__polosa" style={`width:${v}px`}></div>
+            <span class="melkiy priglushenno">{v}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</Bazovyy>
+
+<style>
+  .shapka-sg { padding-block: var(--otstup-8) var(--otstup-6); }
+  .blok { padding-block: var(--otstup-8); border-top: 1px solid var(--beige); }
+  .blok > h2 { margin-bottom: var(--otstup-5); }
+  .podzagolovok { margin-top: var(--otstup-8); margin-bottom: var(--otstup-3); }
+
+  /* Палитра */
+  .cveta { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--otstup-4); }
+  .cvet__obrazec { height: 88px; border-radius: var(--skruglenie-metka); box-shadow: inset 0 0 0 1px rgba(61,43,28,0.08); }
+  .cvet p { margin: var(--otstup-1) 0 0; max-width: none; }
+  .cvet__token code { font-weight: 600; }
+
+  .kontrasty { display: grid; gap: var(--otstup-2); margin-top: var(--otstup-4); }
+  .kontrast { display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; align-items: center; gap: var(--otstup-4); }
+  .kontrast__obrazec { display: grid; place-items: center; padding: var(--otstup-2); border-radius: var(--skruglenie-metka); font-weight: 600; }
+  .kontrast__cifra.horosho { color: #2F6B3A; }
+  .kontrast__cifra.ploho { color: var(--error); }
+
+  /* Типографика */
+  .tipografika { display: grid; gap: var(--otstup-6); }
+  .tip-podpis { display: block; margin-bottom: var(--otstup-2); font-size: var(--razmer-metka); font-weight: 600; letter-spacing: var(--trekking-metka); text-transform: uppercase; color: var(--ink-muted); }
+  .obrazec-ceny { font-family: var(--shrift-zagolovok); font-size: var(--razmer-cena); font-weight: 700; line-height: 1; color: var(--orange); }
+
+  /* Кнопки */
+  .knopki { display: grid; gap: var(--otstup-4); }
+  .knopki__ryad { display: flex; flex-wrap: wrap; align-items: center; gap: var(--otstup-4); }
+  .metki-ryad { display: flex; flex-wrap: wrap; gap: var(--otstup-3); }
+  .polya { display: grid; gap: var(--otstup-2); max-width: 420px; }
+  .pole {
+    padding: var(--otstup-3) var(--otstup-4);
+    background: var(--cream);
+    border: var(--tolschina-obvodki) solid var(--beige);
+    border-radius: var(--skruglenie-metka);
+    color: var(--ink);
+    transition: border-color var(--plavno-navedenie);
+  }
+  .pole:hover { border-color: var(--coffee); }
+  .pole:focus-visible { border-color: var(--orange); outline: 3px solid var(--coffee); outline-offset: 2px; }
+
+  /* Блоб */
+  .bloby { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--otstup-4); max-width: 640px; }
+  .blob-obrazec { margin: 0; }
+  .blob-obrazec svg { width: 100%; height: auto; aspect-ratio: 1; }
+  .blob-obrazec figcaption { text-align: center; }
+
+  .fony { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--otstup-5); margin-top: var(--otstup-5); }
+  .fon { margin: 0; }
+  .fon__na-karte { padding: var(--otstup-4); background: var(--cream); border-radius: var(--skruglenie-karta); }
+  .fon__na-fone { padding: var(--otstup-4); }
+  .fon figcaption { margin-top: var(--otstup-2); }
+
+  .varianty {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--otstup-4) var(--otstup-5);
+    margin-top: var(--otstup-5);
+  }
+  .varianty__podpis { align-self: center; margin: 0; }
+  .variant { margin: 0; }
+  .variant__karta { padding: var(--otstup-3); background: var(--cream); border-radius: var(--skruglenie-karta); }
+  .variant figcaption { margin-top: var(--otstup-2); text-align: center; }
+
+  /* Кайма: подложка той же формы просвечивает по краю уменьшенного снимка. */
+  .kayma { clip-path: var(--forma); background: var(--beige); }
+  .kayma :global(.kayma__foto) { transform: scale(0.94); }
+
+  .pravlenoe { width: 100%; height: auto; }
+
+  @media (max-width: 767px) {
+    .varianty { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .varianty__podpis { grid-column: 1 / -1; }
+  }
+
+  /* Дудлы */
+  .dudly { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--otstup-5); }
+  .dudl-obrazec { display: grid; justify-items: center; gap: var(--otstup-2); margin: 0; color: var(--coffee); }
+  .dudly-na-fone { margin-top: var(--otstup-7); }
+  .dudly-fon { display: flex; flex-wrap: wrap; align-items: center; gap: var(--otstup-6); padding: var(--otstup-6); background: var(--milk-rose); border-radius: var(--skruglenie-karta); }
+  .dudly-fon :global(.dudl-fonovyy) { color: var(--beige); opacity: 0.4; }
+
+  /* Волна */
+  .volna-demo { margin-block: var(--otstup-6); }
+  .volna-demo p { padding-block: var(--otstup-5); margin: 0; }
+  .volna-demo__verh { background: var(--milk); }
+  .volna-demo__seredina { background: var(--milk-rose); }
+  .volna-demo__niz { background: var(--coffee-dark); color: var(--milk); }
+
+  /* Карточки */
+  .setka { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--otstup-5); }
+  .setka--tri { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 1023px) { .setka, .setka--tri { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 767px) { .setka, .setka--tri { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bloby { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* Форма и отступы */
+  .forma { display: flex; flex-wrap: wrap; gap: var(--otstup-4); }
+  .forma__obrazec { display: grid; place-items: center; padding: var(--otstup-4) var(--otstup-6); background: var(--cream); box-shadow: var(--ten-myagkaya); }
+  .forma__knopka { border-radius: var(--skruglenie-knopka); }
+  .forma__karta { border-radius: var(--skruglenie-karta); }
+  .forma__metka { border-radius: var(--skruglenie-metka); }
+
+  .teni { display: flex; flex-wrap: wrap; gap: var(--otstup-5); }
+  .ten-obrazec { display: grid; place-items: center; padding: var(--otstup-6); background: var(--cream); border-radius: var(--skruglenie-karta); }
+  .ten-obrazec--myagkaya { box-shadow: var(--ten-myagkaya); }
+  .ten-obrazec--osnovnaya { box-shadow: var(--ten); }
+
+  .shkala { display: grid; gap: var(--otstup-2); }
+  .shkala__punkt { display: flex; align-items: center; gap: var(--otstup-3); }
+  .shkala__polosa { height: 16px; background: var(--coffee); border-radius: var(--otstup-1); }
+</style>

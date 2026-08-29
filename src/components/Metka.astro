@@ -1,0 +1,30 @@
+---
+// Метка на карточке блюда: «Хит», «Детское», «Острое», «Добавка».
+import type { Metka } from '../lib/menu';
+import { NAZVANIYA_METOK } from '../lib/menu';
+
+interface Props { vid: Metka | 'net-v-nalichii'; }
+const { vid } = Astro.props;
+const podpis = vid === 'net-v-nalichii' ? 'Нет в наличии' : NAZVANIYA_METOK[vid];
+---
+<span class:list={['metka', `metka--${vid}`, 'metka-tekst']}>{podpis}</span>
+
+<style>
+  .metka {
+    display: inline-block;
+    padding: var(--otstup-1) var(--otstup-3);
+    border-radius: var(--skruglenie-metka);
+    white-space: nowrap;
+  }
+  .metka--hit { background: var(--orange); color: var(--white); }
+  /* Заливка под белым текстом — --coffee-deep: декоративный --coffee
+     не проходит контраст 4.5:1. */
+  .metka--detskoe { background: var(--coffee-deep); color: var(--white); }
+  .metka--ostroe { background: var(--error); color: var(--white); }
+  .metka--dobavka {
+    background: var(--cream);
+    color: var(--ink-muted);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige);
+  }
+  .metka--net-v-nalichii { background: var(--ink-muted); color: var(--white); }
+</style>

@@ -3,6 +3,7 @@
 // Шапка, футер и панель «Заказать» добавляются в блоке 2.
 import '../styles/base.css';
 import { put } from '../lib/put';
+import Blob from '../components/Blob.astro';
 
 interface Props {
   zagolovok: string;
@@ -45,6 +46,7 @@ const ogPolnaya = ogKartinka ? new URL(ogKartinka, Astro.site).href : undefined;
     <slot name="golova" />
   </head>
   <body>
+    <Blob />
     <a class="propustit" href="#glavnoe">Перейти к содержимому</a>
     <main id="glavnoe">
       <slot />

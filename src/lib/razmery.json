@@ -1,891 +1,931 @@
 {
   "blyuda": {
-    "shakshuka": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "ovsyanka": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "syrniki-s-kokosovoy-sguschenkoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "omlet-s-lososem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 566
-      }
-    },
-    "omlet-s-moreproduktami": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 600
-      }
-    },
-    "omlet-s-rvanoy-govyadinoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "bliny-s-kokosovoy-sguschenkoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 652
-      }
-    },
-    "bliny-s-kuricey-i-veshenkami": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 554
-      }
-    },
-    "bliny-s-lososem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 556
-      }
-    },
-    "blin-s-lososem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 556
-      }
-    },
-    "vafli-s-bekonom": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 600
-      }
-    },
-    "vafli-s-shokoladnoy-pastoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "vaflya-s-bananom": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "sendvich-vaflya-s-lososem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "hachapuri": {
-      "kvadrat": {
-        "width": 340,
-        "height": 340
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 302
-      }
-    },
-    "set-hit-n1": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-semeynyy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-bolshaya-kompaniya": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-klassika": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-miks": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-premium": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-tempura-mix": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "set-zapechennyy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 360
-      }
-    },
-    "set-maksi": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "filadelfiya-lyuks": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "filadelfiya-s-ugrem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 320
-      }
-    },
-    "filadelfiya-layt": {
-      "kvadrat": {
-        "width": 520,
-        "height": 520
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 480
-      }
-    },
-    "filadelfiya-ugor-layt": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 480
-      }
-    },
-    "dabl-roll": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "tori": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "ostraya-krevetka": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "krevetka-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "kaliforniya-klassik": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 480
-      }
-    },
-    "kaliforniya-s-forelyu": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 320
-      }
-    },
-    "kaliforniya-hot-s-krabom-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "kaliforniya-hot-s-krevetkoy-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 360
-      }
-    },
-    "kaliforniya-hot-s-forelyu-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "tempurnaya-kurochka": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 360
-      }
-    },
-    "ebi-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "asahi": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "bankog": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "boston": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "pekin": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "mistik": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "zapechennyy-krab": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "hori": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "segun": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "mini-s-ogurcom": {
-      "kvadrat": {
-        "width": 400,
-        "height": 400
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 320
-      }
-    },
-    "mini-s-lososem": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 338
-      }
-    },
-    "mini-s-krevetkoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 360
-      }
-    },
-    "mini-s-krabom": {
-      "kvadrat": {
-        "width": 463,
-        "height": 463
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 317
-      }
-    },
-    "picca-4-syra": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-pepperoni": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-karbonara": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-italyanskaya": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-gavayskaya": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-chiken-fresh": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "picca-korrida": {
-      "kvadrat": {
-        "width": 373,
-        "height": 373
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 332
-      }
-    },
-    "spagetti-karbonara": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "penne": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 607
-      }
-    },
-    "rigatoni": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 600
-      }
-    },
-    "borsch": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "kurinyy-sup": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 600
-      }
-    },
-    "salat-cezar": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "salat-s-rvanoy-govyadinoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 623
-      }
-    },
-    "skovoroda-s-rvanoy-govyadinoy": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "skovorodka-s-moreproduktami": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "krevetki-tempura": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "burger-s-hrustyaschey-kuricey": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 665
-      }
-    },
-    "naggetsy-i-kartofel-fri-s-sousom": {
-      "kvadrat": {
-        "width": 343,
-        "height": 343
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 305
-      }
-    },
-    "chizkeyk-v-assortimente": {
-      "kvadrat": {
-        "width": 370,
-        "height": 370
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 329
-      }
-    },
-    "espresso-50-ml": {
-      "kvadrat": {
-        "width": 414,
-        "height": 414
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 368
-      }
-    },
-    "amerikano-250-ml": {
-      "kvadrat": {
-        "width": 414,
-        "height": 414
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 368
-      }
-    },
-    "kapuchino-250-ml": {
-      "kvadrat": {
-        "width": 414,
-        "height": 414
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 368
-      }
-    },
-    "kapuchino-350-ml": {
-      "kvadrat": {
-        "width": 414,
-        "height": 414
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 368
-      }
-    },
-    "flet-uayt-250-ml": {
-      "kvadrat": {
-        "width": 404,
-        "height": 404
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 359
-      }
-    },
-    "flet-uayt-350-ml": {
-      "kvadrat": {
-        "width": 404,
-        "height": 404
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 359
-      }
-    },
-    "latte-350-ml": {
-      "kvadrat": {
-        "width": 414,
-        "height": 414
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 368
-      }
-    },
-    "raf-350-ml": {
-      "kvadrat": {
-        "width": 412,
-        "height": 412
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 366
-      }
-    },
-    "latte-s-syrnoy-penkoy-lavanda": {
-      "kvadrat": {
-        "width": 384,
-        "height": 384
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 341
-      }
-    },
-    "latte-s-syrnoy-penkoy-malina": {
-      "kvadrat": {
-        "width": 384,
-        "height": 384
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 341
-      }
-    },
-    "latte-s-syrnoy-penkoy-popkorn": {
-      "kvadrat": {
-        "width": 384,
-        "height": 384
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 341
-      }
-    },
-    "goryachiy-shokolad-250-ml": {
-      "kvadrat": {
-        "width": 364,
-        "height": 364
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 324
-      }
-    },
-    "goryachiy-shokolad-350-ml": {
-      "kvadrat": {
-        "width": 364,
-        "height": 364
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 324
-      }
-    },
-    "limonad": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
-    "molochnyy-kokteyl": {
-      "kvadrat": {
-        "width": 540,
-        "height": 540
-      },
-      "bolshoe": {
-        "width": 480,
-        "height": 640
-      }
-    },
     "alternativnoe-moloko": {
+      "bolshoe": {
+        "width": 480,
+        "height": 364
+      },
       "kvadrat": {
         "width": 409,
         "height": 409
-      },
+      }
+    },
+    "amerikano-250-ml": {
       "bolshoe": {
         "width": 480,
+        "height": 368
+      },
+      "kvadrat": {
+        "width": 414,
+        "height": 414
+      }
+    },
+    "asahi": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "bankog": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "blin-s-lososem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 556
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "bliny-s-kokosovoy-sguschenkoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 652
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "bliny-s-kuricey-i-veshenkami": {
+      "bolshoe": {
+        "width": 480,
+        "height": 554
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "bliny-s-lososem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 556
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "borsch": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "boston": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "burger-s-hrustyaschey-kuricey": {
+      "bolshoe": {
+        "width": 480,
+        "height": 665
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "chizkeyk-v-assortimente": {
+      "bolshoe": {
+        "width": 480,
+        "height": 329
+      },
+      "kvadrat": {
+        "width": 370,
+        "height": 370
+      }
+    },
+    "dabl-roll": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "ebi-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "espresso-50-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 368
+      },
+      "kvadrat": {
+        "width": 414,
+        "height": 414
+      }
+    },
+    "filadelfiya-layt": {
+      "bolshoe": {
+        "width": 480,
+        "height": 480
+      },
+      "kvadrat": {
+        "width": 520,
+        "height": 520
+      }
+    },
+    "filadelfiya-lyuks": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "filadelfiya-s-ugrem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 320
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "filadelfiya-ugor-layt": {
+      "bolshoe": {
+        "width": 480,
+        "height": 480
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "flet-uayt-250-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 359
+      },
+      "kvadrat": {
+        "width": 404,
+        "height": 404
+      }
+    },
+    "flet-uayt-350-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 359
+      },
+      "kvadrat": {
+        "width": 404,
+        "height": 404
+      }
+    },
+    "goryachiy-shokolad-250-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 324
+      },
+      "kvadrat": {
+        "width": 364,
         "height": 364
       }
     },
-    "siropy": {
-      "kvadrat": {
-        "width": 449,
-        "height": 449
+    "goryachiy-shokolad-350-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 324
       },
+      "kvadrat": {
+        "width": 364,
+        "height": 364
+      }
+    },
+    "hachapuri": {
+      "bolshoe": {
+        "width": 480,
+        "height": 302
+      },
+      "kvadrat": {
+        "width": 340,
+        "height": 340
+      }
+    },
+    "hori": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kaliforniya-hot-s-forelyu-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kaliforniya-hot-s-krabom-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kaliforniya-hot-s-krevetkoy-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 360
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kaliforniya-klassik": {
+      "bolshoe": {
+        "width": 480,
+        "height": 480
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kaliforniya-s-forelyu": {
+      "bolshoe": {
+        "width": 480,
+        "height": 320
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kapuchino-250-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 368
+      },
+      "kvadrat": {
+        "width": 414,
+        "height": 414
+      }
+    },
+    "kapuchino-350-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 368
+      },
+      "kvadrat": {
+        "width": 414,
+        "height": 414
+      }
+    },
+    "krevetka-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "krevetki-tempura": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "kurinyy-sup": {
+      "bolshoe": {
+        "width": 480,
+        "height": 600
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "latte-350-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 368
+      },
+      "kvadrat": {
+        "width": 414,
+        "height": 414
+      }
+    },
+    "latte-s-syrnoy-penkoy-lavanda": {
+      "bolshoe": {
+        "width": 480,
+        "height": 341
+      },
+      "kvadrat": {
+        "width": 384,
+        "height": 384
+      }
+    },
+    "latte-s-syrnoy-penkoy-malina": {
+      "bolshoe": {
+        "width": 480,
+        "height": 341
+      },
+      "kvadrat": {
+        "width": 384,
+        "height": 384
+      }
+    },
+    "latte-s-syrnoy-penkoy-popkorn": {
+      "bolshoe": {
+        "width": 480,
+        "height": 341
+      },
+      "kvadrat": {
+        "width": 384,
+        "height": 384
+      }
+    },
+    "limonad": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "mini-s-krabom": {
+      "bolshoe": {
+        "width": 480,
+        "height": 317
+      },
+      "kvadrat": {
+        "width": 463,
+        "height": 463
+      }
+    },
+    "mini-s-krevetkoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 360
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "mini-s-lososem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 338
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "mini-s-ogurcom": {
+      "bolshoe": {
+        "width": 480,
+        "height": 320
+      },
+      "kvadrat": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    "mistik": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "molochnyy-kokteyl": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "naggetsy-i-kartofel-fri-s-sousom": {
+      "bolshoe": {
+        "width": 480,
+        "height": 305
+      },
+      "kvadrat": {
+        "width": 343,
+        "height": 343
+      }
+    },
+    "omlet-s-lososem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 566
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "omlet-s-moreproduktami": {
+      "bolshoe": {
+        "width": 480,
+        "height": 600
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "omlet-s-rvanoy-govyadinoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "ostraya-krevetka": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "ovsyanka": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "pekin": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "penne": {
+      "bolshoe": {
+        "width": 480,
+        "height": 607
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "picca-4-syra": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-chiken-fresh": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-gavayskaya": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-italyanskaya": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-karbonara": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-korrida": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "picca-pepperoni": {
+      "bolshoe": {
+        "width": 480,
+        "height": 332
+      },
+      "kvadrat": {
+        "width": 373,
+        "height": 373
+      }
+    },
+    "raf-350-ml": {
+      "bolshoe": {
+        "width": 480,
+        "height": 366
+      },
+      "kvadrat": {
+        "width": 412,
+        "height": 412
+      }
+    },
+    "rigatoni": {
+      "bolshoe": {
+        "width": 480,
+        "height": 600
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "salat-cezar": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "salat-s-rvanoy-govyadinoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 623
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "segun": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "sendvich-vaflya-s-lososem": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-bolshaya-kompaniya": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-hit-n1": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-klassika": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-maksi": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-miks": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-premium": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-semeynyy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-tempura-mix": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "set-zapechennyy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 360
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "shakshuka": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "siropy": {
       "bolshoe": {
         "width": 480,
         "height": 399
+      },
+      "kvadrat": {
+        "width": 449,
+        "height": 449
+      }
+    },
+    "skovoroda-s-rvanoy-govyadinoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "skovorodka-s-moreproduktami": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "spagetti-karbonara": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "syrniki-s-kokosovoy-sguschenkoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "tempurnaya-kurochka": {
+      "bolshoe": {
+        "width": 480,
+        "height": 360
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "tori": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "vafli-s-bekonom": {
+      "bolshoe": {
+        "width": 480,
+        "height": 600
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "vafli-s-shokoladnoy-pastoy": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "vaflya-s-bananom": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    "zapechennyy-krab": {
+      "bolshoe": {
+        "width": 480,
+        "height": 640
+      },
+      "kvadrat": {
+        "width": 540,
+        "height": 540
       }
     }
   },
   "foto": {
+    "banket-novogodniy": {
+      "width": 1280,
+      "height": 1751,
+      "alt": "Новогодний банкетный стол с ёлкой и закусками"
+    },
+    "banket-zhemchug": {
+      "width": 1280,
+      "height": 1707,
+      "alt": "Накрытый банкетный стол в зале с жемчужным декором"
+    },
+    "bar-vitrina": {
+      "width": 1280,
+      "height": 1707,
+      "alt": "Барная стойка кафе «Милк» с витриной десертов и сиропами"
+    },
+    "desert-yolka": {
+      "width": 1280,
+      "height": 1707,
+      "alt": "Новогодний десерт в форме ёлки с ягодами"
+    },
+    "fotozona-lyustry": {
+      "width": 1280,
+      "height": 1707,
+      "alt": "Фотозона с хрустальными люстрами и цветами"
+    },
     "hero-sup-latte": {
       "width": 1280,
       "height": 1707,
       "alt": "Горячее блюдо с яйцом и капучино на столе кафе «Милк»"
+    },
+    "kofe-2026": {
+      "width": 1280,
+      "height": 1651,
+      "alt": "Кофе с сырной пенкой и новогодним декором"
+    },
+    "kofe-love": {
+      "width": 736,
+      "height": 834,
+      "alt": "Два стакана кофе с надписью LOVE на сырной пенке"
+    },
+    "krevetki-ris": {
+      "width": 1280,
+      "height": 1707,
+      "alt": "Креветки с рисом и сливочным соусом"
     },
     "neon-mesto-gde-horosho": {
       "width": 1280,
@@ -897,36 +937,6 @@
       "height": 1707,
       "alt": "Неоновая надпись «Счастье пахнет кофе и тобой» в зале кафе"
     },
-    "kofe-love": {
-      "width": 736,
-      "height": 834,
-      "alt": "Два стакана кофе с надписью LOVE на сырной пенке"
-    },
-    "bar-vitrina": {
-      "width": 1280,
-      "height": 1707,
-      "alt": "Барная стойка кафе «Милк» с витриной десертов и сиропами"
-    },
-    "banket-zhemchug": {
-      "width": 1280,
-      "height": 1707,
-      "alt": "Накрытый банкетный стол в зале с жемчужным декором"
-    },
-    "banket-novogodniy": {
-      "width": 1280,
-      "height": 1751,
-      "alt": "Новогодний банкетный стол с ёлкой и закусками"
-    },
-    "fotozona-lyustry": {
-      "width": 1280,
-      "height": 1707,
-      "alt": "Фотозона с хрустальными люстрами и цветами"
-    },
-    "pavlova-rulet": {
-      "width": 736,
-      "height": 736,
-      "alt": "Меренговый рулет с клубникой и мятой"
-    },
     "pavlova-dva": {
       "width": 1280,
       "height": 1707,
@@ -937,20 +947,10 @@
       "height": 1707,
       "alt": "Десерт «Павлова» с клубникой рядом с ромашками"
     },
-    "desert-yolka": {
-      "width": 1280,
-      "height": 1707,
-      "alt": "Новогодний десерт в форме ёлки с ягодами"
-    },
-    "kofe-2026": {
-      "width": 1280,
-      "height": 1651,
-      "alt": "Кофе с сырной пенкой и новогодним декором"
-    },
-    "stol-rolly-limonad": {
-      "width": 1280,
-      "height": 1707,
-      "alt": "Стол с роллами, лимонадом и ромашками"
+    "pavlova-rulet": {
+      "width": 736,
+      "height": 736,
+      "alt": "Меренговый рулет с клубникой и мятой"
     },
     "rolly-boksy": {
       "width": 1280,
@@ -962,10 +962,10 @@
       "height": 1707,
       "alt": "Тарелка запечённых роллов с васаби и имбирём"
     },
-    "krevetki-ris": {
+    "stol-rolly-limonad": {
       "width": 1280,
       "height": 1707,
-      "alt": "Креветки с рисом и сливочным соусом"
+      "alt": "Стол с роллами, лимонадом и ромашками"
     }
   },
   "logo": {
