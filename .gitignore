@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+npm-debug.log*
+
+# Обработанные изображения пересобираются командой «npm run images»
+# из Referens, поэтому в репозитории не хранятся.
+public/images/

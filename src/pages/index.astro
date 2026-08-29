@@ -1,0 +1,18 @@
+---
+// Главная страница собирается в блоках 5 и 6. Пока — заглушка каркаса.
+import Bazovyy from '../layouts/Bazovyy.astro';
+import { KATEGORII, BLYUDA, kolichestvoVKategorii, MENU } from '../lib/menu';
+---
+<Bazovyy
+  zagolovok="Кафе «Милк» в Благовещенске — завтраки, кофе, роллы и пицца"
+  opisanie="Городское кафе в Благовещенске: завтраки, кофе от своих бариста, роллы, пицца и паста. Каждый день с 10:00 до 21:00."
+  kanon="/"
+>
+  <div class="konteyner sekciya">
+    <h1>Каркас проекта готов</h1>
+    <p>Данные прочитаны из <code>menu.json</code>: {BLYUDA.length} позиций в {KATEGORII.length} категориях. Цены актуальны на {MENU.updated}.</p>
+    <ul>
+      {KATEGORII.map((k) => <li>{k.name} — {kolichestvoVKategorii(k.id)}</li>)}
+    </ul>
+  </div>
+</Bazovyy>

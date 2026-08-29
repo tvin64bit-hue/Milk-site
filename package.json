@@ -1,0 +1,19 @@
+{
+  "name": "milk-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "images": "node scripts/process-images.mjs",
+    "check:menu": "node scripts/validate-menu.mjs",
+    "dev": "npm run check:menu && astro dev",
+    "build": "npm run check:menu && astro build",
+    "preview": "astro preview",
+    "check": "npm run check:menu && astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.9",
+    "sharp": "^0.35.4"
+  }
+}
