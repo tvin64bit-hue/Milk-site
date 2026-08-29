@@ -13,6 +13,9 @@ import { tipFona, CHUZHAYA_SYEMKA, ETALON_FONA } from './opredelit-fon.mjs';
 
 const MOLOCHNYY = [248, 238, 228];
 
+// Выше этого уровня яркость при нормализации поджимается, а не растёт линейно.
+const POROG_SVETOV = 185;
+
 /**
  * Обрезает кадр ближе к блюду. «Не фон» считается по расстоянию от цвета
  * рамки, поэтому работает и на белом, и на чёрном, и на сером.
@@ -98,7 +101,31 @@ export async function sogret(vhod) {
  */
 export async function normalizovatFon(vhod, fon, cel) {
   const k = cel.map((c, i) => Math.min(1.45, Math.max(0.75, c / Math.max(1, fon[i]))));
-  return sharp(vhod).linear(k, [0, 0, 0]).png().toBuffer();
+
+  // Чистый множитель выбивает света: на филадельфии красный канал уходил
+  // в 255 у 59 % пикселей рыбы, и лосось терял фактуру. Поэтому выше порога
+  // яркость поджимается плавно и 255 достигается только в пределе.
+  const tablica = k.map((kc) => {
+    const lut = Buffer.alloc(256);
+    for (let x = 0; x < 256; x++) {
+      const y = x * kc;
+      lut[x] = Math.round(Math.min(255, y <= POROG_SVETOV
+        ? y
+        : POROG_SVETOV + (255 - POROG_SVETOV) * (1 - Math.exp(-(y - POROG_SVETOV) / (255 - POROG_SVETOV)))));
+    }
+    return lut;
+  });
+
+  const { data, info } = await sharp(vhod).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const out = Buffer.alloc(data.length);
+  for (let i = 0; i < data.length; i += info.channels) {
+    out[i] = tablica[0][data[i]];
+    out[i + 1] = tablica[1][data[i + 1]];
+    out[i + 2] = tablica[2][data[i + 2]];
+    for (let c = 3; c < info.channels; c++) out[i + c] = data[i + c];
+  }
+  return sharp(out, { raw: { width: info.width, height: info.height, channels: info.channels } })
+    .png().toBuffer();
 }
 
 /**

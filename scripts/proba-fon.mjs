@@ -14,7 +14,7 @@ const { menu, rezultat } = sopostavit();
 
 // Кадры, которые страница /styleguide показывает в сравнении, даже если
 // правка их не коснулась: сетка завтраков должна быть видна целиком.
-const NUZHNY_STRANICE = new Set(['shakshuka', 'vafli-s-bekonom', 'syrniki-s-kokosovoy-sguschenkoy', 'bliny-s-lososem']);
+const NUZHNY_STRANICE = new Set(['shakshuka', 'vafli-s-bekonom', 'syrniki-s-kokosovoy-sguschenkoy', 'bliny-s-lososem', 'filadelfiya-lyuks']);
 
 const chuzhaya = [];
 const normalizovano = [];

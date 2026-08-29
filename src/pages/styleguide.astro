@@ -285,6 +285,26 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
         ))}
       </div>
 
+      <p class="ryad-podpis metka-tekst priglushenno">Проверка на еде: цвет рыбы и икры</p>
+      <p class="melkiy priglushenno">
+        Нормализация двигает не только фон, но и еду, поэтому важно, что именно
+        сбито. Если освещение — сойдётся всё; если отражение серой тарелки —
+        лосось уехал бы в оранжевый. Замер по пикселям рыбы: оттенок сдвинулся
+        на 3°, насыщенность с 74 % до 71 %. Чистый множитель выбивал красный
+        канал в белое у 59 % пикселей рыбы, поэтому света поджимаются плавно —
+        стало 0 %.
+      </p>
+      <div class="polnyy-razmer">
+        <figure>
+          <img src={put('/images/proba/filadelfiya-lyuks-kak-est.webp')} width="540" height="540" alt="Филадельфия люкс до нормализации фона" />
+          <figcaption class="melkiy priglushenno">До: фон #8C8878, яркость 135</figcaption>
+        </figure>
+        <figure>
+          <img src={put('/images/menu/filadelfiya-lyuks-kv-540.webp')} width="540" height="540" alt="Филадельфия люкс после нормализации фона" />
+          <figcaption class="melkiy priglushenno">После: фон приведён к эталону</figcaption>
+        </figure>
+      </div>
+
       <p class="ryad-podpis metka-tekst priglushenno">Чужая съёмка: было и стало</p>
       <div class="ryad-sravneniya">
         {CHUZHAYA.slice(0, 5).map((v, i) => (
@@ -371,6 +391,53 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
       </div>
     </section>
 
+    <!-- ---------------- Логотип в футере ---------------- -->
+    <section class="blok">
+      <h2>Логотип в футере</h2>
+      <p class="melkiy priglushenno">
+        По ТЗ в футере стоит <code>logo-1</code>, но фон футера — <code>--coffee-dark</code>.
+        Акварельная подложка на тёмно-коричневом читается как наклейка неправильной
+        формы. Справа — вырезанная надпись цветом <code>--milk</code> с дескриптором
+        текстом. Сейчас в футере стоит второй вариант.
+      </p>
+      <div class="logo-varianty">
+        <figure class="logo-variant">
+          <div class="logo-variant__fon">
+            <img src={put('/images/logo/logo-polnyy.webp')} alt="" width="220" height="152" />
+          </div>
+          <figcaption class="melkiy priglushenno">Как в ТЗ: <code>logo-1</code> целиком</figcaption>
+        </figure>
+        <figure class="logo-variant">
+          <div class="logo-variant__fon">
+            <img src={put('/images/logo/logo-milk-svetlyy.png')} alt="" width="212" height="52" />
+            <p class="logo-variant__deskriptor melkiy">вкусная еда и кофе</p>
+          </div>
+          <figcaption class="melkiy priglushenno">Надпись <code>--milk</code> с дескриптором текстом</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ---------------- Сквозные компоненты ---------------- -->
+    <section class="blok">
+      <h2>Сквозные компоненты</h2>
+      <p class="melkiy priglushenno">
+        Панель «Заказать» и мобильное меню выезжают сверху одной кривой из общей
+        основы. Кнопки ниже открывают панель с разным содержимым — проверьте
+        возврат фокуса: после закрытия он вернётся именно на нажатую кнопку.
+      </p>
+      <div class="knopki__ryad">
+        <Knopka vid="glavnaya" data-otkryt="zakaz">Заказать</Knopka>
+        <Knopka
+          vid="vtoraya"
+          data-otkryt="zakaz"
+          data-zagolovok="Забронировать зал"
+          data-tekst="Позвоните — обсудим дату, количество гостей и меню под ваш повод."
+        >Забронировать зал</Knopka>
+        <Knopka vid="vtoraya" data-otkryt="zakaz" data-kontekst="Сет «Хит №1»">Заказать из карточки блюда</Knopka>
+        <Knopka vid="ssylka" data-otkryt="menyu">Открыть мобильное меню</Knopka>
+      </div>
+    </section>
+
     <!-- ---------------- Форма и отступы ---------------- -->
     <section class="blok">
       <h2>Форма и отступы</h2>
@@ -450,6 +517,27 @@ const bezFoto = BLYUDA.filter((b) => b.image === null);
   .fon-tablica td { padding: var(--otstup-2) var(--otstup-3); border-bottom: 1px solid var(--milk-rose); }
   .fon-obrazec { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; box-shadow: inset 0 0 0 1px rgba(61,43,28,0.12); }
   .ryad-sravneniya--chetyre { grid-auto-columns: minmax(160px, 1fr); }
+  .polnyy-razmer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-5); max-width: 720px; margin-bottom: var(--otstup-6); }
+  .polnyy-razmer figure { margin: 0; }
+  .polnyy-razmer img { width: 100%; height: auto; border-radius: var(--skruglenie-karta); }
+  .polnyy-razmer figcaption { margin-top: var(--otstup-2); }
+
+  .logo-varianty { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-5); max-width: 720px; }
+  .logo-variant { margin: 0; }
+  .logo-variant__fon {
+    display: grid;
+    place-items: center;
+    gap: var(--otstup-2);
+    min-height: 220px;
+    padding: var(--otstup-6);
+    background: var(--coffee-dark);
+    border-radius: var(--skruglenie-karta);
+  }
+  .logo-variant__fon img { width: auto; }
+  .logo-variant__deskriptor { margin: 0; color: var(--milk); opacity: 0.75; }
+  .logo-variant figcaption { margin-top: var(--otstup-2); }
+
+  @media (max-width: 767px) { .logo-varianty { grid-template-columns: minmax(0, 1fr); } }
   .tipy-fona li { overflow-wrap: anywhere; }
   .blob-obrazec { margin: 0; }
   .blob-obrazec svg { width: 100%; height: auto; aspect-ratio: 1; }

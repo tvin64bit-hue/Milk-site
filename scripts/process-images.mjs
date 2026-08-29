@@ -113,7 +113,7 @@ async function lajfstajl() {
 // Вырезает надпись «Милк» из логотипа по самим буквам: тёмные пиксели
 // становятся непрозрачными, акварельная подложка — прозрачной.
 // Прямоугольным кадром обойтись нельзя — в шапке был бы виден кусок подложки.
-async function nadpisMilk(ishodnik, kuda) {
+async function nadpisMilk(ishodnik, kuda, cvet = '#3D2B1C') {
   const { data, info } = await sharp(ishodnik)
     // Кадр охватывает только слово «Милк»: дескриптор в шапку не идёт.
     .extract({ left: 150, top: 190, width: 760, height: 170 })
@@ -128,7 +128,7 @@ async function nadpisMilk(ishodnik, kuda) {
     // Плавный переход сохраняет сглаживание краёв букв.
     alpha[i] = Math.round(255 * Math.min(1, Math.max(0, (165 - luma) / 55)));
   }
-  const bukvy = await sharp({ create: { width: w, height: h, channels: 3, background: '#3D2B1C' } })
+  const bukvy = await sharp({ create: { width: w, height: h, channels: 3, background: cvet } })
     .joinChannel(alpha, { raw: { width: w, height: h, channels: 1 } })
     .png().toBuffer();
   // Обрезаем прозрачные поля, чтобы высота логотипа в шапке задавалась точно.
@@ -141,6 +141,9 @@ async function logotipy() {
   const papka = dir(`${VYVOD}/logo`);
   // Для шапки нужно только слово «Милк» без дескриптора и без акварельной подложки.
   const milk = await nadpisMilk(`${ISHODNIKI_FOTO}/logo-1.png`, `${papka}/logo-milk`);
+  // Светлая версия для тёмного футера: акварельная подложка на --coffee-dark
+  // читалась бы как наклейка неправильной формы.
+  await nadpisMilk(`${ISHODNIKI_FOTO}/logo-1.png`, `${papka}/logo-milk-svetlyy`, '#F8EEE4');
   // Полный логотип с дескриптором — для футера.
   await sohranit(sharp(`${ISHODNIKI_FOTO}/logo-1.png`), `${papka}/logo-polnyy`, 512);
   // Декоративное кофейное кольцо — блок «О кафе» и страница 404.

@@ -12,6 +12,9 @@ html {
 
 body {
   margin: 0;
+  /* Шапка зафиксирована поверх страницы, поэтому содержимое начинается ниже.
+     На главной первый экран лежит под шапкой сам и отступ снимает. */
+  padding-top: var(--vysota-shapki);
   background: var(--milk);
   color: var(--ink);
   font-family: var(--shrift-tekst);
