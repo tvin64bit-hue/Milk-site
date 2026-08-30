@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /styleguide
+
+Sitemap: https://tvin64bit-hue.github.io/Milk-site/sitemap-index.xml

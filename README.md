@@ -161,7 +161,12 @@ npm run dev          # локальный сервер разработки
 npm run build        # сборка статики в dist/
 npm run preview      # просмотр собранной статики
 npm run check:menu   # проверка menu.json без сборки
+npm run check:verstka # прокрутка и выход элементов за границы на всех ширинах
+npm run check:seo    # заголовки, описания, alt, микроразметка
+npm run check        # все три проверки подряд
 ```
+
+Проверки вёрстки и SEO работают по запущенному `npm run preview`.
 
 Стек: Astro в режиме статической генерации, sharp для изображений, обычный CSS
 с переменными в `src/styles/tokens.css`. Серверной части нет.

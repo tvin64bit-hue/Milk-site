@@ -23,8 +23,10 @@ export const TOP_OSTAVIT_ISKLYUCHENIYA = {
   'picca-korrida': 0.69,
 };
 
-export const KACHESTVO_WEBP = 82;
-export const KACHESTVO_JPEG = 84;
+// Качество подобрано так, чтобы сборка укладывалась в разумный вес:
+// исходники и так 540 px, разница выше этих значений на глаз не видна.
+export const KACHESTVO_WEBP = 76;
+export const KACHESTVO_JPEG = 78;
 
 export function chitatMenu() {
   return JSON.parse(readFileSync('menu.json', 'utf8'));

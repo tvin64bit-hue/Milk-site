@@ -5,6 +5,8 @@ import Knopka from '../components/Knopka.astro';
 import Dudl from '../components/Dudl.astro';
 import type { ImyaDudla } from '../components/Dudl.astro';
 import { put } from '../lib/put';
+import { foto } from '../lib/menu';
+import { POLNYY_ADRES } from '../../sayt.config.mjs';
 
 const DUDLY: { imya: ImyaDudla; verh: string; levo: string; razmer: number }[] = [
   { imya: 'kruassan', verh: '12%', levo: '8%', razmer: 72 },
@@ -18,6 +20,7 @@ const DUDLY: { imya: ImyaDudla; verh: string; levo: string; razmer: number }[] =
   zagolovok="Страница не найдена | Кафе «Милк», Благовещенск"
   opisanie="Такой страницы у нас нет. Зато есть 91 позиция в меню и кофе, который сварят прямо сейчас."
   kanon="/404"
+  ogKartinka={new URL(foto('neon-mesto-gde-horosho').jpg(1280), POLNYY_ADRES).href}
   shapkaSFonom
 >
   <meta slot="golova" name="robots" content="noindex" />

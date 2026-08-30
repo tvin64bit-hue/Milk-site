@@ -8,10 +8,11 @@ import Knopka from '../../components/Knopka.astro';
 import Dudl from '../../components/Dudl.astro';
 import type { ImyaDudla } from '../../components/Dudl.astro';
 import {
-  KATEGORII, BLYUDA, MENU, blyudaKategorii, kolichestvoVKategorii, strokaPoiska,
+  KATEGORII, BLYUDA, MENU, blyudaKategorii, kolichestvoVKategorii, strokaPoiska, foto,
 } from '../../lib/menu';
 import { KAFE } from '../../lib/kafe';
 import { put } from '../../lib/put';
+import { POLNYY_ADRES } from '../../../sayt.config.mjs';
 
 const PODZAGOLOVOK = `91 позиция: завтраки, роллы и сеты, пицца, паста, горячее, десерты и кофе. `
   + `Заказ по телефону ${KAFE.telefon}.`;
@@ -44,6 +45,7 @@ const schema = {
   zagolovok="Меню кафе «Милк» — 91 позиция с ценами | Благовещенск"
   opisanie={PODZAGOLOVOK}
   kanon="/menu"
+  ogKartinka={new URL(foto('neon-mesto-gde-horosho').jpg(1280), POLNYY_ADRES).href}
   shapkaSFonom
 >
   <script slot="golova" type="application/ld+json" set:html={JSON.stringify(schema)} />

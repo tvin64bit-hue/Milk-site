@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { ADRES, PODKATALOG } from './sayt.config.mjs';
+import { ADRES, PODKATALOG, POLNYY_ADRES } from './sayt.config.mjs';
 
 // Адрес сайта задаётся в sayt.config.mjs, здесь только подставляется.
 export default defineConfig({

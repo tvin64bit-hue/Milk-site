@@ -79,6 +79,8 @@ Astro в режиме статической генерации, sharp для и
 - Просмотр сборки: `npm run preview`
 - Проверка данных: `npm run check:menu`
 - Контрольный лист обрезки брендированных карточек: `node scripts/probe-crop.mjs`
+- Проверки: `npm run check` — данные, вёрстка на девяти ширинах, SEO и доступность. Вёрстка и SEO требуют запущенного `npm run preview`
+- Отчёты по фотографиям: `node scripts/otchet-fon.mjs` (типы фона), `node scripts/otchet-pravki.mjs` (нормализация и защита еды)
 
 ## Где что лежит
 
