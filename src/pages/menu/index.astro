@@ -1,0 +1,237 @@
+---
+// Каталог: 91 позиция, фильтр по 12 категориям, поиск по названию и составу.
+// Все карточки выводятся при сборке, фильтр только показывает и прячет —
+// поисковики видят полный каталог.
+import Bazovyy from '../../layouts/Bazovyy.astro';
+import KartochkaBlyuda from '../../components/KartochkaBlyuda.astro';
+import Knopka from '../../components/Knopka.astro';
+import Dudl from '../../components/Dudl.astro';
+import type { ImyaDudla } from '../../components/Dudl.astro';
+import {
+  KATEGORII, BLYUDA, MENU, blyudaKategorii, kolichestvoVKategorii, strokaPoiska,
+} from '../../lib/menu';
+import { KAFE } from '../../lib/kafe';
+import { put } from '../../lib/put';
+
+const PODZAGOLOVOK = `91 позиция: завтраки, роллы и сеты, пицца, паста, горячее, десерты и кофе. `
+  + `Заказ по телефону ${KAFE.telefon}.`;
+
+const DUDLY_SHAPKI: { imya: ImyaDudla; verh: string; levo: string; razmer: number }[] = [
+  { imya: 'kruassan', verh: '18%', levo: '6%', razmer: 64 },
+  { imya: 'chashka', verh: '58%', levo: '14%', razmer: 44 },
+  { imya: 'roll', verh: '24%', levo: '88%', razmer: 56 },
+  { imya: 'pechene', verh: '66%', levo: '80%', razmer: 40 },
+];
+
+// Разметка Schema.org: меню целиком и позиции в нём.
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Menu',
+  name: 'Меню кафе «Милк»',
+  hasMenuSection: KATEGORII.map((k) => ({
+    '@type': 'MenuSection',
+    name: k.name,
+    hasMenuItem: blyudaKategorii(k.id).map((b) => ({
+      '@type': 'MenuItem',
+      name: b.name,
+      description: b.description,
+      offers: { '@type': 'Offer', price: b.price, priceCurrency: 'RUB' },
+    })),
+  })),
+};
+---
+<Bazovyy
+  zagolovok="Меню кафе «Милк» — 91 позиция с ценами | Благовещенск"
+  opisanie={PODZAGOLOVOK}
+  kanon="/menu"
+  shapkaSFonom
+>
+  <script slot="golova" type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <div data-katalog>
+    <section class="shapka-menyu">
+      <div class="shapka-menyu__dudly" aria-hidden="true">
+        {DUDLY_SHAPKI.map((d) => (
+          <span class="shapka-menyu__dudl" style={`top:${d.verh}; left:${d.levo}`}>
+            <Dudl imya={d.imya} razmer={d.razmer} />
+          </span>
+        ))}
+      </div>
+      <div class="konteyner shapka-menyu__vnutri">
+        <h1>Меню</h1>
+        <p class="shapka-menyu__podzagolovok">{PODZAGOLOVOK}</p>
+      </div>
+    </section>
+
+    <div class="kategorii">
+      <div class="konteyner">
+        <div class="kategorii__lenta" data-lenta role="group" aria-label="Категории меню">
+          <button class="kategorii__knopka kategorii__knopka--aktivna" type="button" data-vse aria-pressed="true">
+            Все <span class="kategorii__chislo">{BLYUDA.length}</span>
+          </button>
+          {KATEGORII.map((k) => (
+            <button class="kategorii__knopka" type="button" data-kategoriya={k.id} aria-pressed="false">
+              {k.name} <span class="kategorii__chislo">{kolichestvoVKategorii(k.id)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="konteyner katalog">
+      <div class="katalog__poisk">
+        <label class="tolko-dlya-chteniya" for="poisk">Поиск по меню</label>
+        <input
+          class="pole-poiska"
+          id="poisk"
+          type="search"
+          placeholder="Найти блюдо или ингредиент"
+          autocomplete="off"
+          data-poisk
+        />
+        <p class="katalog__schetchik melkiy priglushenno" data-schetchik aria-live="polite"></p>
+      </div>
+
+      {KATEGORII.map((kategoriya) => (
+        <section class="gruppa" data-gruppa={kategoriya.id}>
+          <h2 class="gruppa__zagolovok" data-zagolovok-gruppy>{kategoriya.name}</h2>
+          <ul class="setka">
+            {blyudaKategorii(kategoriya.id).map((blyudo, i) => (
+              <li
+                class="setka__yacheyka"
+                data-blyudo
+                data-kategoriya={blyudo.category}
+                data-poisk={strokaPoiska(blyudo)}
+              >
+                <KartochkaBlyuda blyudo={blyudo} nomer={i} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      <div class="pusto" data-pusto hidden>
+        <h2>Ничего не нашлось</h2>
+        <p>Попробуйте другое слово или посмотрите всё меню целиком.</p>
+        <Knopka vid="glavnaya" data-sbros>Показать всё меню</Knopka>
+      </div>
+
+      <p class="katalog__snoska melkiy priglushenno">
+        Фотографии используются в качестве рекламных материалов и могут не соответствовать
+        действительности. Цены актуальны на {MENU.updated}.
+      </p>
+    </div>
+  </div>
+</Bazovyy>
+
+<style>
+  /* ---- Шапка страницы ---- */
+  .shapka-menyu {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: 40dvh;
+    padding-block: var(--otstup-8);
+    background: var(--milk-rose);
+    overflow: hidden;
+  }
+  .shapka-menyu__dudly { position: absolute; inset: 0; pointer-events: none; }
+  .shapka-menyu__dudl { position: absolute; color: var(--beige); opacity: 0.35; }
+  .shapka-menyu__vnutri { position: relative; }
+  .shapka-menyu__podzagolovok { margin-top: var(--otstup-4); }
+
+  /* ---- Панель категорий ---- */
+  .kategorii {
+    position: sticky;
+    top: var(--vysota-shapki);
+    z-index: 40;
+    padding-block: var(--otstup-3);
+    background: var(--milk);
+    box-shadow: var(--ten-myagkaya);
+  }
+  .kategorii__lenta {
+    display: flex;
+    gap: var(--otstup-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Лента прокручивается пальцем, полосу не показываем. */
+    padding-bottom: var(--otstup-1);
+  }
+  .kategorii__lenta::-webkit-scrollbar { display: none; }
+
+  .kategorii__knopka {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--otstup-2);
+    flex: none;
+    min-height: 44px;
+    padding: var(--otstup-2) var(--otstup-4);
+    border-radius: var(--skruglenie-knopka);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige);
+    font-size: var(--razmer-melkiy);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color var(--plavno-navedenie), color var(--plavno-navedenie),
+      box-shadow var(--plavno-navedenie);
+  }
+  .kategorii__knopka:hover { box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--coffee); }
+  .kategorii__knopka--aktivna {
+    background: var(--orange);
+    color: var(--white);
+    box-shadow: none;
+  }
+  .kategorii__knopka--aktivna:hover { background: var(--orange-dark); box-shadow: none; }
+  .kategorii__chislo { opacity: 0.65; font-variant-numeric: tabular-nums; }
+
+  /* ---- Каталог ---- */
+  .katalog { padding-block: var(--otstup-7) var(--mezhdu-sekciyami); }
+  .katalog__poisk { max-width: 420px; margin-bottom: var(--otstup-7); }
+  .pole-poiska {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--otstup-3) var(--otstup-4);
+    background: var(--cream);
+    border: var(--tolschina-obvodki) solid var(--beige);
+    border-radius: var(--skruglenie-metka);
+    color: var(--ink);
+    transition: border-color var(--plavno-navedenie);
+  }
+  .pole-poiska:hover { border-color: var(--coffee); }
+  .pole-poiska:focus-visible { border-color: var(--orange); }
+  .katalog__schetchik { margin: var(--otstup-2) 0 0; }
+
+  .gruppa { margin-bottom: var(--otstup-8); }
+  .gruppa[hidden] { display: none; }
+  .gruppa__zagolovok { margin-bottom: var(--otstup-5); }
+
+  .setka {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--otstup-5);
+  }
+  .setka__yacheyka { display: flex; min-width: 0; }
+  .setka__yacheyka[hidden] { display: none; }
+  .setka__yacheyka > :global(*) { width: 100%; }
+
+  .pusto { padding-block: var(--otstup-8); text-align: center; }
+  .pusto p { margin: var(--otstup-4) auto var(--otstup-6); max-width: 40ch; }
+
+  .katalog__snoska { max-width: 68ch; margin-top: var(--otstup-8); }
+
+  @media (max-width: 1023px) { .setka { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 767px) {
+    .setka { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); }
+    .kategorii__knopka { min-height: 40px; }
+  }
+
+  /* Ниже 360 px карточка в двух колонках сжимается до 136 px, и состав
+     обрывается на втором слове. Одна колонка читается. */
+  @media (max-width: 359px) {
+    .setka { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<script>
+  import { nastroitKatalog } from '../../scripts/katalog';
+  nastroitKatalog();
+</script>

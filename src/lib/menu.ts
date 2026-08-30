@@ -136,5 +136,16 @@ export const dlyaPodborki = (spisok: Blyudo[]) =>
 /** Список на пересъёмку — для отчётов и служебной страницы. */
 export const NA_PERESYEMKU = fony.chuzhaya;
 
+/** Приводит строку к виду для поиска: без регистра и без буквы ё. */
+export const dlyaPoiska = (stroka: string) => stroka.toLowerCase().replace(/ё/g, 'е');
+
+/**
+ * Строка, по которой ищет каталог: название, состав и — у сетов — входящие
+ * роллы. Запрос «креветка» должен находить и роллы, и сковородку, и сеты,
+ * где креветка упомянута только в составе.
+ */
+export const strokaPoiska = (b: Blyudo) =>
+  dlyaPoiska([b.name, b.description, ...(b.setItems ?? [])].join(' '));
+
 /** Позиции без снимка. Оставлено для мест, где важно только наличие фотографии. */
 export const sFotografiey = (spisok: Blyudo[]) => spisok.filter((b) => b.image !== null);
