@@ -1,0 +1,255 @@
+---
+// Страница блюда. Все 91 генерируются при сборке из menu.json.
+import Bazovyy from '../../layouts/Bazovyy.astro';
+import FotoBlyuda from '../../components/FotoBlyuda.astro';
+import KartochkaBlyuda from '../../components/KartochkaBlyuda.astro';
+import Knopka from '../../components/Knopka.astro';
+import Metka from '../../components/Metka.astro';
+import Dudl from '../../components/Dudl.astro';
+import {
+  BLYUDA, cena, estDobavka, zagolovokBlyuda, opisanieBlyuda, kartinka,
+  kategoriyaPoIdent, izEtoyZheKategorii,
+} from '../../lib/menu';
+import type { Blyudo } from '../../lib/menu';
+import { KAFE } from '../../lib/kafe';
+import { put } from '../../lib/put';
+import { POLNYY_ADRES } from '../../../sayt.config.mjs';
+
+export function getStaticPaths() {
+  return BLYUDA.map((blyudo) => ({ params: { id: blyudo.id }, props: { blyudo } }));
+}
+
+interface Props { blyudo: Blyudo }
+const { blyudo } = Astro.props;
+
+const kategoriya = kategoriyaPoIdent(blyudo.category)!;
+const kadr = kartinka(blyudo);
+const dobavka = estDobavka(blyudo);
+const napitok = blyudo.category === 'kofe-napitki';
+const sety = blyudo.setItems && blyudo.setItems.length > 0;
+
+// Блок похожих скрывается, если в категории меньше двух других позиций.
+const pohozhie = izEtoyZheKategorii(blyudo);
+const pokazatPohozhie = pohozhie.length >= 2;
+
+// У сетов вес приходит строкой вида «24 кусочка / ~630 г».
+const [kusochki, obschiyVes] = sety && blyudo.weight
+  ? blyudo.weight.split('/').map((s) => s.trim())
+  : [null, null];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'MenuItem',
+  name: blyudo.name,
+  description: blyudo.description,
+  offers: { '@type': 'Offer', price: blyudo.price, priceCurrency: 'RUB' },
+  ...(kadr ? { image: `${POLNYY_ADRES}${kadr.kvadrat.webp540.replace(put('/'), '/')}` } : {}),
+};
+---
+<Bazovyy
+  zagolovok={zagolovokBlyuda(blyudo)}
+  opisanie={opisanieBlyuda(blyudo)}
+  kanon={`/menu/${blyudo.id}`}
+  ogKartinka={kadr ? new URL(kadr.kvadrat.webp540, POLNYY_ADRES).href : undefined}
+  ogTip="article"
+  shapkaSFonom
+>
+  <script slot="golova" type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <div class="konteyner blyudo">
+    <nav class="kroshki melkiy" aria-label="Хлебные крошки">
+      <ol>
+        <li><a class="tekst-ssylka" href={put('/')}>Главная</a></li>
+        <li><a class="tekst-ssylka" href={put('/menu')}>Меню</a></li>
+        <li><a class="tekst-ssylka" href={put(`/menu?cat=${kategoriya.id}`)}>{kategoriya.name}</a></li>
+        <li aria-current="page">{blyudo.name}</li>
+      </ol>
+    </nav>
+
+    <div class="blyudo__osnovnoy">
+      <div class="blyudo__foto">
+        <FotoBlyuda blyudo={blyudo} vid="bolshoe" prioritet />
+      </div>
+
+      <div class="blyudo__svedeniya">
+        <p class="blyudo__kategoriya metka-tekst priglushenno">{kategoriya.name}</p>
+        <h1 class="blyudo__nazvanie">{blyudo.name}</h1>
+
+        {blyudo.badges.length > 0 && (
+          <div class="blyudo__metki">
+            {blyudo.badges.map((b) => <Metka vid={b} />)}
+          </div>
+        )}
+
+        {sety ? (
+          <div class="blyudo__sostav-seta">
+            <h2 class="blyudo__podzagolovok">Что входит в сет</h2>
+            <ul class="sostav-seta">
+              {blyudo.setItems!.map((roll) => (
+                <li>
+                  <Dudl imya="roll" razmer={22} cvet="var(--coffee-deep)" klass="sostav-seta__dudl" />
+                  <span>{roll}</span>
+                </li>
+              ))}
+            </ul>
+            {(kusochki || obschiyVes) && (
+              <p class="blyudo__ves melkiy priglushenno">
+                {[kusochki, obschiyVes].filter(Boolean).join(' · ')}
+              </p>
+            )}
+          </div>
+        ) : (
+          <>
+            <p class="blyudo__sostav">{blyudo.description}</p>
+            {blyudo.weight && <p class="blyudo__ves melkiy priglushenno">{blyudo.weight}</p>}
+          </>
+        )}
+
+        <p class="blyudo__ceny">
+          {blyudo.oldPrice && (
+            <span class="blyudo__staraya priglushenno">
+              <span class="tolko-dlya-chteniya">Старая цена</span>{cena(blyudo.oldPrice)}
+            </span>
+          )}
+          <span class="blyudo__cena">{cena(blyudo.price, dobavka)}</span>
+        </p>
+
+        {napitok && !dobavka && (
+          <p class="blyudo__dobavki melkiy priglushenno">Альтернативное молоко +70 ₽ · Сироп +20 ₽</p>
+        )}
+
+        {!blyudo.available && (
+          <p class="blyudo__net melkiy">Сейчас этой позиции нет в наличии — уточните по телефону.</p>
+        )}
+
+        <div class="blyudo__zakaz">
+          <Knopka vid="glavnaya" naVsyuShirinu data-otkryt="zakaz" data-kontekst={blyudo.name}>
+            Заказать
+          </Knopka>
+          <p class="blyudo__telefon melkiy">
+            Заказ по телефону: <a class="tekst-ssylka" href={KAFE.telefonSsylka}>{KAFE.telefon}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {pokazatPohozhie && (
+      <section class="pohozhie">
+        <h2>Из этой же категории</h2>
+        <ul class="pohozhie__setka">
+          {pohozhie.map((b, i) => <li><KartochkaBlyuda blyudo={b} nomer={i} /></li>)}
+        </ul>
+      </section>
+    )}
+
+    <p class="blyudo__nazad">
+      <Knopka vid="vtoraya" adres={put(`/menu?cat=${kategoriya.id}`)} klass="nazad-v-menyu" data-nazad>
+        Назад в меню
+      </Knopka>
+    </p>
+  </div>
+</Bazovyy>
+
+<style>
+  .blyudo { padding-block: var(--otstup-5) var(--mezhdu-sekciyami); }
+
+  .kroshki ol { display: flex; flex-wrap: wrap; gap: var(--otstup-2); color: var(--ink-muted); }
+  .kroshki li + li::before { content: '→'; margin-right: var(--otstup-2); }
+
+  .blyudo__osnovnoy {
+    display: grid;
+    /* Ширину колонки задаём явно: при auto она считалась по содержимому,
+       и заглушка схлопывалась до размера дудла вместо кадра 480 px. */
+    grid-template-columns: minmax(0, var(--maks-shirina-foto-blyuda)) minmax(0, 1fr);
+    gap: var(--otstup-7);
+    align-items: start;
+    margin-top: var(--otstup-6);
+  }
+
+  /* Жёсткий предел: исходники низкого разрешения, шире 480 px они рассыпаются. */
+  .blyudo__foto { width: 100%; max-width: var(--maks-shirina-foto-blyuda); }
+  .blyudo__foto :global(.foto--zaglushka) { max-width: var(--maks-shirina-foto-blyuda); }
+
+  .blyudo__svedeniya { max-width: 62ch; }
+  .blyudo__kategoriya { margin: 0 0 var(--otstup-2); }
+  .blyudo__nazvanie { margin-bottom: var(--otstup-4); }
+  .blyudo__metki { display: flex; flex-wrap: wrap; gap: var(--otstup-2); margin-bottom: var(--otstup-4); }
+  .blyudo__sostav { margin-bottom: var(--otstup-2); }
+  .blyudo__podzagolovok { font-size: var(--razmer-h4); margin-bottom: var(--otstup-3); }
+
+  .sostav-seta { display: grid; gap: var(--otstup-2); margin-bottom: var(--otstup-3); }
+  .sostav-seta li { display: flex; align-items: center; gap: var(--otstup-3); }
+  .sostav-seta :global(.sostav-seta__dudl) { flex: none; }
+
+  .blyudo__ves { margin-bottom: var(--otstup-5); }
+
+  .blyudo__ceny { display: flex; align-items: baseline; gap: var(--otstup-3); margin-bottom: var(--otstup-3); }
+  .blyudo__staraya { font-size: var(--razmer-tekst); text-decoration: line-through; }
+  .blyudo__cena {
+    font-family: var(--shrift-zagolovok);
+    font-size: clamp(2rem, 1.7rem + 1.2vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--orange);
+  }
+  .blyudo__dobavki { margin-bottom: var(--otstup-4); }
+  .blyudo__net {
+    margin-bottom: var(--otstup-4);
+    padding: var(--otstup-3) var(--otstup-4);
+    background: var(--milk-rose);
+    border-radius: var(--skruglenie-metka);
+  }
+
+  .blyudo__zakaz { margin-top: var(--otstup-5); max-width: 360px; }
+  .blyudo__telefon { margin-top: var(--otstup-3); }
+
+  .pohozhie { margin-top: var(--mezhdu-sekciyami); }
+  .pohozhie h2 { margin-bottom: var(--otstup-5); }
+  .pohozhie__setka {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--otstup-5);
+  }
+  .pohozhie__setka li { display: flex; min-width: 0; }
+  .pohozhie__setka li > :global(*) { width: 100%; }
+
+  .blyudo__nazad { margin-top: var(--otstup-8); }
+
+  @media (max-width: 1023px) {
+    .blyudo__osnovnoy { grid-template-columns: minmax(0, 1fr); gap: var(--otstup-6); }
+    .blyudo__foto { margin-inline: auto; }
+    .pohozhie__setka { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 767px) {
+    .pohozhie__setka { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); }
+    .blyudo__zakaz { max-width: none; }
+    /* Кнопка заказа прилипает к низу экрана при прокрутке. */
+    .blyudo__zakaz {
+      position: sticky;
+      bottom: var(--otstup-4);
+      z-index: 30;
+      padding: var(--otstup-3);
+      margin-inline: calc(-1 * var(--otstup-3));
+      background: var(--milk);
+      border-radius: var(--skruglenie-karta);
+      box-shadow: var(--ten);
+    }
+  }
+
+  @media (max-width: 359px) {
+    .pohozhie__setka { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<script>
+  // «Назад в меню» возвращает в каталог с той выборкой, из которой пришли,
+  // включая мультивыбор. Без скрипта ссылка ведёт в категорию блюда.
+  const nazad = document.querySelector<HTMLAnchorElement>('[data-nazad]');
+  const sohranyonnyy = sessionStorage.getItem('katalog-vybor');
+  if (nazad && sohranyonnyy) {
+    const adres = new URL(nazad.href, location.origin);
+    adres.search = sohranyonnyy;
+    nazad.href = adres.toString();
+  }
+</script>

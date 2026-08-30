@@ -147,5 +147,23 @@ export const dlyaPoiska = (stroka: string) => stroka.toLowerCase().replace(/ё/g
 export const strokaPoiska = (b: Blyudo) =>
   dlyaPoiska([b.name, b.description, ...(b.setItems ?? [])].join(' '));
 
+/**
+ * Похожие позиции: до четырёх из той же категории, кроме текущей.
+ * Порядок псевдослучайный, но детерминированный — иначе каждая сборка
+ * давала бы другой набор и различалась бы сама с собой.
+ */
+export function izEtoyZheKategorii(blyudo: Blyudo, skolko = 4): Blyudo[] {
+  const sosedi = blyudaKategorii(blyudo.category).filter((b) => b.id !== blyudo.id);
+  // Простое перемешивание с зерном от слага позиции.
+  let zerno = [...blyudo.id].reduce((s, c) => (s * 31 + c.charCodeAt(0)) % 2147483647, 7);
+  const sluchay = () => (zerno = (zerno * 48271) % 2147483647) / 2147483647;
+  const kopiya = [...sosedi];
+  for (let i = kopiya.length - 1; i > 0; i--) {
+    const j = Math.floor(sluchay() * (i + 1));
+    [kopiya[i], kopiya[j]] = [kopiya[j], kopiya[i]];
+  }
+  return kopiya.slice(0, skolko);
+}
+
 /** Позиции без снимка. Оставлено для мест, где важно только наличие фотографии. */
 export const sFotografiey = (spisok: Blyudo[]) => spisok.filter((b) => b.image !== null);

@@ -17,11 +17,22 @@ const OSNOVA = 4;
 
 const slova = (stroka: string) => normalizovat(stroka).split(/[^a-zа-я0-9]+/).filter(Boolean);
 
+// Ложные совпадения, которые основа даёт неизбежно. Список короткий и
+// ведётся вручную: усложнять алгоритм ради двух слов не стоит.
+const NE_SOVPADENIYA: Record<string, string[]> = {
+  сыр: ['сырники', 'сырниками'], // сырники из творога, сыра в них нет
+  масл: ['маслины', 'маслинами'], // маслины — не масло
+};
+
 function odnoSlovo(izTeksta: string, izZaprosa: string): boolean {
-  const nuzhno = Math.min(izZaprosa.length, OSNOVA);
-  if (izTeksta.length < nuzhno) return false;
-  for (let i = 0; i < nuzhno; i++) if (izTeksta[i] !== izZaprosa[i]) return false;
-  return true;
+  const osnova = izZaprosa.slice(0, OSNOVA);
+  if (NE_SOVPADENIYA[osnova]?.includes(izTeksta)) return false;
+
+  // Запрос короче основы сравнивается вхождением: у трёх букв слишком мало
+  // признаков, чтобы отсекать по началу слова.
+  if (izZaprosa.length < OSNOVA) return izTeksta.includes(izZaprosa);
+
+  return izTeksta.startsWith(osnova);
 }
 
 /** Каждое слово запроса должно найтись в тексте — иначе это не совпадение. */
@@ -69,7 +80,7 @@ function primenit() {
   let vsego = 0;
 
   for (const kartochka of u.kartochki) {
-    const poKategorii = !vybor.size || vybor.has(kartochka.dataset.kategoriya!);
+    const poKategorii = !vybor.size || vybor.has(kartochka.dataset.blyudoKategoriya!);
     const poPoisku = podhodit(kartochka.__slova!, u.pole.value);
     const vidna = poKategorii && poPoisku;
     kartochka.hidden = !vidna;
@@ -134,9 +145,6 @@ export function nastroitKatalog() {
 
   u = {
     koren,
-    // Атрибут data-kategoriya есть и у ячеек сетки, поэтому кнопки
-    // выбираются только внутри ленты — иначе класс активности попадал
-    // и на карточки блюд.
     knopki: [...koren.querySelectorAll<HTMLElement>('[data-lenta] [data-kategoriya]')],
     lenta: koren.querySelector<HTMLElement>('[data-lenta]')!,
     gruppy: [...koren.querySelectorAll<HTMLElement>('[data-gruppa]')],
@@ -156,7 +164,10 @@ export function nastroitKatalog() {
   vAdres(true);
 
   koren.addEventListener('click', (sobytie) => {
-    const knopka = (sobytie.target as HTMLElement).closest<HTMLElement>('[data-kategoriya], [data-vse], [data-sbros]');
+    // Кнопки ищем только внутри ленты: у ячеек сетки свой атрибут категории,
+    // и раньше клик по карточке считался выбором категории и затирал набор.
+    const knopka = (sobytie.target as HTMLElement)
+      .closest<HTMLElement>('[data-lenta] [data-kategoriya], [data-vse], [data-sbros]');
     if (!knopka) return;
     if (knopka.hasAttribute('data-kategoriya')) {
       // Одна кнопка — одна категория: наборы приходят только по ссылке с главной.
@@ -171,6 +182,19 @@ export function nastroitKatalog() {
   });
 
   u.pole.addEventListener('input', primenit);
+
+  // Запоминаем выборку, чтобы «Назад в меню» со страницы блюда вернул
+  // ту же категорию или тот же набор, а не только категорию самого блюда.
+  koren.addEventListener('click', (sobytie) => {
+    if ((sobytie.target as HTMLElement).closest('[data-blyudo] a')) {
+      try {
+        sessionStorage.setItem('katalog-vybor', location.search);
+      } catch {
+        // Приватный режим может запрещать хранилище — ссылка просто
+        // останется вести в категорию блюда.
+      }
+    }
+  });
 
   // Кнопки «назад» и «вперёд» возвращают предыдущий выбор категорий.
   window.addEventListener('popstate', () => {

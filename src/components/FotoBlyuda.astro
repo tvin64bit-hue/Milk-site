@@ -78,8 +78,14 @@ const dudl = DUDL_KATEGORII[blyudo.category] ?? 'butylka';
   .foto {
     display: block;
     position: relative;
+    /* Без явной ширины заглушка сжималась по размеру дудла: на странице
+       блюда вместо кадра 480 px получался значок 128 px. */
+    width: 100%;
     aspect-ratio: 1 / 1;
-    clip-path: var(--forma);
+    /* Форма кадра переключается токенами в tokens.css. Запасные значения —
+       текущий вариант с блобом; переопределение токенов даёт прямоугольник. */
+    clip-path: var(--kadr-maska, var(--forma));
+    border-radius: var(--kadr-skruglenie, 0);
     background: var(--beige);
     overflow: hidden;
   }
