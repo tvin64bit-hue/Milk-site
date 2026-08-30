@@ -1,0 +1,31 @@
+---
+// Слой дудлов, плывущих при прокрутке. Размещаются ближе к краям,
+// вне зон текста. На ширине меньше 768 px параллакс отключается
+// скриптом, дудлы остаются статичным фоном.
+import Dudl from './Dudl.astro';
+import type { ImyaDudla } from './Dudl.astro';
+
+interface Props {
+  znaki?: { imya: ImyaDudla; verh: string; levo: string; razmer: number; skorost?: number }[];
+}
+const PO_UMOLCHANIYU: Props['znaki'] = [
+  { imya: 'kruassan', verh: '14%', levo: '4%', razmer: 76, skorost: 0.22 },
+  { imya: 'chashka', verh: '62%', levo: '9%', razmer: 52, skorost: 0.3 },
+  { imya: 'butylka', verh: '34%', levo: '2%', razmer: 44, skorost: 0.16 },
+  { imya: 'ponchik', verh: '18%', levo: '92%', razmer: 64, skorost: 0.28 },
+  { imya: 'vaflya', verh: '70%', levo: '95%', razmer: 48, skorost: 0.18 },
+  { imya: 'pechene', verh: '46%', levo: '89%', razmer: 40, skorost: 0.35 },
+];
+const { znaki = PO_UMOLCHANIYU } = Astro.props;
+---
+<div class="dudly-sloy" aria-hidden="true">
+  {znaki!.map((z) => (
+    <span
+      class="dudly-sloy__znak"
+      style={`top:${z.verh}; left:${z.levo}`}
+      data-parallaks={z.skorost ?? 0.2}
+    >
+      <Dudl imya={z.imya} razmer={z.razmer} />
+    </span>
+  ))}
+</div>

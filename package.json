@@ -10,7 +10,8 @@
     "build": "npm run check:menu && npm run razmery && astro build",
     "preview": "astro preview",
     "check": "npm run check:menu && astro check",
-    "razmery": "node scripts/sverit-razmery.mjs"
+    "razmery": "node scripts/sverit-razmery.mjs",
+    "check:verstka": "node scripts/proverka-vyorstki.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
