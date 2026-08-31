@@ -426,7 +426,7 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   .o-kafe__logotip { width: 240px; height: auto; margin-top: var(--otstup-6); opacity: 0.4; }
 
   /* ---- Блок 5. Направления кухни ---- */
-  .napravleniya__podzagolovok { margin: var(--otstup-4) 0 var(--otstup-7); }
+  .napravleniya__podzagolovok { margin: 0 0 var(--otstup-7); }
   .plitki {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -474,7 +474,7 @@ const ogFoto = foto('neon-mesto-gde-horosho');
 
   /* ---- Блок 6. Сеты ---- */
   .sety { background: var(--milk-rose); }
-  .sety__podzagolovok { margin: var(--otstup-4) 0 var(--otstup-7); max-width: 68ch; }
+  .sety__podzagolovok { margin: 0 0 var(--otstup-7); max-width: 68ch; }
   /* Лента прокручивается внутри контейнера. Контейнер внутри прокручиваемой
      области ограничивал ширину, и карточки выходили за экран вместо прокрутки. */
   .sety__lenta { overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
@@ -513,8 +513,8 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   /* ---- Блок 9. Банкеты ---- */
   .bankety__setka { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--otstup-7); align-items: center; }
   .bankety__tekst :global(.knopka) { margin-top: var(--otstup-5); }
-  .bankety__foto { position: relative; padding-bottom: 18%; }
-  .bankety :global(.bankety__kadr) { width: 74%; }
+  .bankety__foto { position: relative; padding-bottom: 26%; }
+  .bankety :global(.bankety__kadr) { width: 64%; }
   .bankety :global(.bankety__kadr--vtoroy) { position: absolute; right: 0; bottom: 0; }
 
   /* ---- Блок 10. Галерея ---- */
@@ -565,7 +565,8 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   .karta { display: grid; gap: var(--otstup-4); justify-items: start; }
   .karta__polotno {
     display: grid;
-    place-items: center;
+    justify-items: center;
+    align-content: center;
     gap: var(--otstup-3);
     width: 100%;
     min-height: 320px;
