@@ -158,6 +158,9 @@ const schema = {
   }
   .kategorii__obolochka { position: relative; }
   .kategorii__lenta {
+    /* Позиционирование обязательно: иначе абсолютные потомки считаются от
+       обёртки со стрелками и прокрутка их не обрезает. */
+    position: relative;
     display: flex;
     gap: var(--otstup-2);
     overflow-x: auto;
