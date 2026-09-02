@@ -7,13 +7,20 @@
 //
 // Между точками — кубические кривые Безье с касательными по Catmull-Rom,
 // поэтому стыков не видно.
-export function konturBloba(tochkiVhod, { povorot = 0, tochnost = 4, szhatieY = 0.94, szhatieX = 1 } = {}) {
+export function konturBloba(tochkiVhod, { povorot = 0, tochnost = 4, szhatieY = 0.94, szhatieX = 1, myagkost = 0 } = {}) {
   const n = tochkiVhod.length;
   const summaVesov = tochkiVhod.reduce((s, [, v]) => s + v, 0);
 
+  // Мягкость подтягивает впадины к краю кадра, а сплющивание — к единице.
+  // Единица даёт почти круг: волны остаются, но перестают срезать еду.
+  const k = Math.min(1, Math.max(0, myagkost));
+  const sy = szhatieY + (1 - szhatieY) * k;
+  const sx = szhatieX + (1 - szhatieX) * k;
+
   let ugol = povorot;
   const tochki = tochkiVhod.map(([r, ves]) => {
-    const t = [0.5 + Math.cos(ugol) * r * szhatieX, 0.5 + Math.sin(ugol) * r * szhatieY];
+    const rr = 0.5 - (0.5 - r) * (1 - k);
+    const t = [0.5 + Math.cos(ugol) * rr * sx, 0.5 + Math.sin(ugol) * rr * sy];
     ugol += (ves / summaVesov) * Math.PI * 2;
     return t;
   });
@@ -42,29 +49,37 @@ export function konturBloba(tochkiVhod, { povorot = 0, tochnost = 4, szhatieY = 
 // Оси различия: частота (3 / 5 / 7 / 4 волны), пропорция и поворот.
 // Ориентир — силуэт акварельной подложки логотипа: широкий, горизонтальный,
 // с мягкими волнами. Его обводит scripts/siluet-logotipa.mjs.
+// Насколько формы смягчены. Ноль — исходные блобы, единица — почти круг.
+// Смягчение вводилось, чтобы впадины не срезали края круглой посуды, но
+// фотографии блюд переведены в прямоугольник, и резать больше нечего:
+// у лайфстайл-кадров блоб срезает только фон. Поэтому здесь ноль —
+// формы те, что утверждены в блоке 1. Посмотреть другой вариант, не
+// трогая файл: BLOB_MYAGKOST=0.55 npm run build
+export const MYAGKOST = Number(process.env.BLOB_MYAGKOST ?? 0);
+
 export const FORMY_BLOBA = [
   // Три крупные пологие волны, широкая — ближе всего к логотипу.
   konturBloba(
     [[0.50, 1.35], [0.40, 1.0], [0.49, 1.25], [0.41, 0.95], [0.50, 1.3], [0.40, 1.0]],
-    { povorot: -0.22, szhatieY: 0.80 },
+    { povorot: -0.22, szhatieY: 0.80, myagkost: MYAGKOST },
   ),
   // Пять волн, почти квадратная.
   konturBloba(
     [[0.50, 1.25], [0.43, 0.9], [0.49, 1.15], [0.44, 0.85], [0.50, 1.2],
      [0.43, 0.95], [0.48, 1.1], [0.44, 0.9], [0.50, 1.15], [0.43, 0.9]],
-    { povorot: 0.72, szhatieY: 0.98 },
+    { povorot: 0.72, szhatieY: 0.98, myagkost: MYAGKOST },
   ),
   // Семь мелких волн — почти рябь, вытянутая по вертикали.
   konturBloba(
     [[0.50, 1.1], [0.46, 0.9], [0.49, 1.05], [0.46, 0.9], [0.50, 1.1], [0.47, 0.85],
      [0.49, 1.05], [0.46, 0.9], [0.50, 1.1], [0.46, 0.9], [0.49, 1.05], [0.47, 0.9],
      [0.50, 1.05], [0.46, 0.9]],
-    { povorot: 1.3, szhatieY: 1, szhatieX: 0.80 },
+    { povorot: 1.3, szhatieY: 1, szhatieX: 0.80, myagkost: MYAGKOST },
   ),
   // Четыре волны, широкая наклонная.
   konturBloba(
     [[0.50, 1.3], [0.415, 0.95], [0.49, 1.2], [0.425, 0.9],
      [0.50, 1.25], [0.415, 1.0], [0.48, 1.15], [0.43, 0.95]],
-    { povorot: -1.1, szhatieY: 0.88 },
+    { povorot: -1.1, szhatieY: 0.88, myagkost: MYAGKOST },
   ),
 ];
