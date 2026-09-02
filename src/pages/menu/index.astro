@@ -12,6 +12,7 @@ import {
 } from '../../lib/menu';
 import { KAFE } from '../../lib/kafe';
 import { put } from '../../lib/put';
+import StrelkaLenty from '../../components/StrelkaLenty.astro';
 import { POLNYY_ADRES } from '../../../sayt.config.mjs';
 
 const PODZAGOLOVOK = `91 позиция: завтраки, роллы и сеты, пицца, паста, горячее, десерты и кофе. `
@@ -67,7 +68,9 @@ const schema = {
 
     <div class="kategorii">
       <div class="konteyner">
-        <div class="kategorii__lenta" data-lenta role="group" aria-label="Категории меню">
+        <div class="kategorii__obolochka" data-lenta-obolochka>
+          <StrelkaLenty storona="nazad" />
+          <div class="kategorii__lenta" data-lenta data-prokrutka tabindex="0" role="group" aria-label="Категории меню">
           <button class="kategorii__knopka kategorii__knopka--aktivna" type="button" data-vse aria-pressed="true">
             Все <span class="kategorii__chislo">{BLYUDA.length}</span>
           </button>
@@ -76,6 +79,8 @@ const schema = {
               {k.name} <span class="kategorii__chislo">{kolichestvoVKategorii(k.id)}</span>
             </button>
           ))}
+          </div>
+          <StrelkaLenty storona="vpered" />
         </div>
       </div>
     </div>
@@ -151,6 +156,7 @@ const schema = {
     background: var(--milk);
     box-shadow: var(--ten-myagkaya);
   }
+  .kategorii__obolochka { position: relative; }
   .kategorii__lenta {
     display: flex;
     gap: var(--otstup-2);
@@ -158,8 +164,24 @@ const schema = {
     scrollbar-width: none;
     /* Лента прокручивается пальцем, полосу не показываем. */
     padding-bottom: var(--otstup-1);
+    /* Затухание с той стороны, где лента продолжается: обрыв кнопки на
+       ровном месте читался как сломанная вёрстка, а не как прокрутка.
+       Маска ставится классами, поэтому у неподвижной ленты краёв не режет. */
+    --maska-nachalo: transparent;
+    --maska-konec: transparent;
+    --maska: linear-gradient(to right, var(--maska-nachalo) 0, #000 52px,
+      #000 calc(100% - 52px), var(--maska-konec) 100%);
+    -webkit-mask-image: var(--maska);
+    mask-image: var(--maska);
   }
   .kategorii__lenta::-webkit-scrollbar { display: none; }
+  .lenta--est-nazad .kategorii__lenta { --maska-nachalo: transparent; }
+  .lenta--est-vpered .kategorii__lenta { --maska-konec: transparent; }
+  .kategorii__obolochka:not(.lenta--est-nazad) .kategorii__lenta { --maska-nachalo: #000; }
+  .kategorii__obolochka:not(.lenta--est-vpered) .kategorii__lenta { --maska-konec: #000; }
+  /* Отступов под стрелки нет намеренно: они меняли бы ширину ленты в тот
+     момент, когда стрелка появляется, и кнопки прыгали бы под курсором.
+     Стрелка стоит поверх затухания, и перекрытие читается как край. */
 
   .kategorii__knopka {
     display: inline-flex;
@@ -235,5 +257,7 @@ const schema = {
 
 <script>
   import { nastroitKatalog } from '../../scripts/katalog';
+  import { lentyProkrutki } from '../../scripts/lenta';
   nastroitKatalog();
+  lentyProkrutki();
 </script>

@@ -8,6 +8,7 @@ import Knopka from '../components/Knopka.astro';
 import Dudl from '../components/Dudl.astro';
 import FotoLayf from '../components/FotoLayf.astro';
 import FonEkrana from '../components/FonEkrana.astro';
+import StrelkaLenty from '../components/StrelkaLenty.astro';
 import FotoBlyuda from '../components/FotoBlyuda.astro';
 import KartochkaBlyuda from '../components/KartochkaBlyuda.astro';
 import { KATEGORII, blyudaKategorii, blyudoPoId, dlyaPodborki, cena, foto } from '../lib/menu';
@@ -17,6 +18,12 @@ import { POLNYY_ADRES } from '../../sayt.config.mjs';
 import '../styles/glavnaya.css';
 
 const BEGUSHCHAYA = ['Завтраки', 'Роллы', 'Сеты', 'Пицца', 'Паста', 'Кофе', 'Десерты', 'Детское меню'];
+// Сколько раз повторяется набор слов. Двух групп не хватало: одна группа
+// шириной 1025 px, а сдвиг на половину ленты открывал справа пустоту в
+// 415 px на экране 1440 — строка обрывалась на «Детском меню» и
+// перескакивала. Лента должна быть шире экрана даже после сдвига на
+// группу, поэтому их четыре: 3075 px остатка хватает вплоть до 3000 px.
+const GRUPP = 4;
 
 const NAPRAVLENIYA = [
   { nazvanie: 'Завтраки', kolichestvo: '15 позиций', podpis: 'Шакшука, вафли с яйцом пашот, сырники, блины', cat: 'zavtraki', foto: 'shakshuka' },
@@ -99,12 +106,12 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   <!-- Блок 3. Бегущая строка -->
   <div class="begushchaya" aria-hidden="true">
     <div class="begushchaya__lenta">
-      {[0, 1].map(() => (
+      {Array.from({ length: GRUPP }, () => (
         <div class="begushchaya__gruppa">
           {BEGUSHCHAYA.map((slovo) => (
             <span class="begushchaya__punkt">
               {slovo}
-              <Dudl imya="roll" razmer={22} cvet="rgba(255,255,255,0.55)" />
+              <Dudl imya="roll" razmer={30} cvet="rgba(255,255,255,0.75)" klass="begushchaya__dudl" />
             </span>
           ))}
         </div>
@@ -179,12 +186,16 @@ const ogFoto = foto('neon-mesto-gde-horosho');
       </p>
     </div>
     <div class="konteyner">
-      <div class="sety__lenta" tabindex="0" role="group" aria-label="Сеты">
-        <div class="sety__ryad">
-          {sety.map((s, i) => (
-            <div class="sety__yacheyka"><KartochkaBlyuda blyudo={s} nomer={i} /></div>
-          ))}
+      <div class="sety__obolochka" data-lenta-obolochka>
+        <StrelkaLenty storona="nazad" />
+        <div class="sety__lenta" data-prokrutka tabindex="0" role="group" aria-label="Сеты">
+          <div class="sety__ryad">
+            {sety.map((s, i) => (
+              <div class="sety__yacheyka"><KartochkaBlyuda blyudo={s} nomer={i} /></div>
+            ))}
+          </div>
         </div>
+        <StrelkaLenty storona="vpered" />
       </div>
     </div>
   </section>
@@ -400,9 +411,17 @@ const ogFoto = foto('neon-mesto-gde-horosho');
     color: var(--white);
     overflow: hidden;
   }
-  .begushchaya__lenta { display: flex; width: max-content; animation: begushchaya var(--begushchaya-cikl) linear infinite; }
+  .begushchaya__lenta {
+    display: flex;
+    width: max-content;
+    /* Сдвиг ровно на одну группу: при любом их числе стык приходится на
+       одинаковое содержимое и шва не видно. */
+    --grupp: 4;
+    animation: begushchaya var(--begushchaya-cikl) linear infinite;
+  }
   .begushchaya:hover .begushchaya__lenta { animation-play-state: paused; }
   .begushchaya__gruppa { display: flex; }
+  .begushchaya :global(.begushchaya__dudl) { flex: none; stroke-width: 2; }
   .begushchaya__punkt {
     display: inline-flex;
     align-items: center;
@@ -413,7 +432,7 @@ const ogFoto = foto('neon-mesto-gde-horosho');
     font-weight: 600;
     white-space: nowrap;
   }
-  @keyframes begushchaya { to { transform: translateX(-50%); } }
+  @keyframes begushchaya { to { transform: translateX(calc(-100% / var(--grupp))); } }
   @media (prefers-reduced-motion: reduce) {
     .begushchaya__lenta { animation: none; }
   }
@@ -475,6 +494,8 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   .sety__podzagolovok { margin: 0 0 var(--otstup-7); max-width: 68ch; }
   /* Лента прокручивается внутри контейнера. Контейнер внутри прокручиваемой
      области ограничивал ширину, и карточки выходили за экран вместо прокрутки. */
+  /* Стрелки стоят по краям обёртки, поэтому она и есть точка отсчёта. */
+  .sety__obolochka { position: relative; }
   .sety__lenta { overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
   .sety__ryad { display: flex; gap: var(--otstup-5); width: max-content; }
   .sety__yacheyka { flex: 0 0 280px; display: flex; }
@@ -620,5 +641,7 @@ const ogFoto = foto('neon-mesto-gde-horosho');
 
 <script>
   import { nastroitDvizhenie } from '../scripts/dvizhenie';
+  import { lentyProkrutki } from '../scripts/lenta';
   nastroitDvizhenie();
+  lentyProkrutki();
 </script>
