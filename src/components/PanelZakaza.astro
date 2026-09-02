@@ -17,8 +17,10 @@ const TEKST = 'Мы принимаем заказы по телефону — т
   <div class="panel__kolonki">
     <div class="panel__levaya">
       <h3 class="panel__zagolovok" data-pole="zagolovok" data-poumolchaniyu={ZAGOLOVOK}>{ZAGOLOVOK}</h3>
-      <p class="panel__tekst" data-pole="tekst" data-poumolchaniyu={TEKST}>{TEKST}</p>
+      <!-- Телефон стоит сразу под заголовком, до абзаца: звонок здесь главное
+           действие, а не третье по счёту. -->
       <a class="panel__telefon" href={KAFE.telefonSsylka}>{KAFE.telefon}</a>
+      <p class="panel__tekst" data-pole="tekst" data-poumolchaniyu={TEKST}>{TEKST}</p>
     </div>
 
     <div class="panel__pravaya">
@@ -53,12 +55,13 @@ const TEKST = 'Мы принимаем заказы по телефону — т
     gap: var(--otstup-5) var(--otstup-7);
     align-items: start;
   }
-  .panel__zagolovok { margin-bottom: var(--otstup-3); }
-  .panel__tekst { margin-bottom: var(--otstup-4); }
+  .panel__zagolovok { margin-bottom: var(--otstup-2); }
+  .panel__tekst { margin-bottom: 0; }
   .panel__pravaya { display: grid; align-content: start; }
 
   .panel__telefon {
     display: inline-block;
+    margin-bottom: var(--otstup-3);
     font-family: var(--shrift-zagolovok);
     /* На тесных экранах телефон уменьшается раньше, чем панель уйдёт в прокрутку. */
     font-size: clamp(1.75rem, 1.5rem + 1vw, 2rem);
