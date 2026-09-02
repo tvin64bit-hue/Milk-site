@@ -1,0 +1,62 @@
+---
+// Акварельный фон первого экрана. В картинку уже вшиты дудлы, поэтому
+// слой DudlyFona здесь не ставится — два слоя рисунков дают кашу.
+//
+// Пока Referens/hero-fon.png не положен, выводится запасная заливка
+// в той же гамме: блок не разъезжается и сборка не падает.
+import { fonEkrana, SHIRINY_FONA } from '../lib/menu';
+
+const f = fonEkrana();
+const srcset = (vid: 'webp' | 'jpg') =>
+  SHIRINY_FONA.map((w) => `${f![vid](w)} ${w}w`).join(', ');
+---
+{f ? (
+  <picture class="fon-ekrana" data-parallaks="0.2" data-parallaks-predel="80">
+    <source type="image/webp" srcset={srcset('webp')} sizes="100vw" />
+    <img
+      src={f.jpg(1152)}
+      srcset={srcset('jpg')}
+      sizes="100vw"
+      alt=""
+      width={f.width}
+      height={f.height}
+      loading="eager"
+      decoding="sync"
+      fetchpriority="high"
+    />
+  </picture>
+) : (
+  <div class="fon-ekrana fon-ekrana--zapas" aria-hidden="true"></div>
+)}
+
+<style>
+  .fon-ekrana {
+    position: absolute;
+    /* Запас сверху и снизу равен пределу параллакса: при сдвиге картинки
+       из-под неё не должен показаться край блока. */
+    inset: -80px 0;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .fon-ekrana :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Текст стоит в левой трети картинки — там ровный светлый участок.
+       Кадр прижат влево, чтобы эта треть всегда начиналась от края экрана:
+       при любом другом смещении на узком окне светлая зона уезжает
+       внутрь кадра и заголовок частью ложится на пятно. */
+    object-position: left center;
+  }
+  .fon-ekrana--zapas {
+    background:
+      radial-gradient(60% 80% at 78% 45%, var(--beige) 0%, rgba(227, 207, 172, 0) 70%),
+      var(--milk);
+  }
+
+  /* На телефоне кадр вертикальный: в нём остаётся та же светлая левая
+     часть, а акварельное пятно уходит за правый край — отдельного
+     правила не нужно, позиция та же. */
+</style>

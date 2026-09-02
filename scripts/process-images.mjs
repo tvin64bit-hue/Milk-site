@@ -8,12 +8,15 @@ import { sopostavit } from './sopostavit.mjs';
 import { polosaBezTeksta } from './obrezka.mjs';
 import { pravitFon, celevoyFon } from './pravka-fona.mjs';
 import { tipFona } from './opredelit-fon.mjs';
+import { pravitHeroFon, pechatZamerov } from './hero-fon.mjs';
 import {
   ISHODNIKI_BLYUDA, ISHODNIKI_FOTO, VYVOD, KACHESTVO_WEBP, KACHESTVO_JPEG,
 } from './lib-images.mjs';
 
 // Лайфстайл-кадры: исходное имя файла → осмысленное имя и подпись для alt.
 const LAJFSTAJL = {
+  // На первом экране больше не используется: там теперь акварельный фон.
+  // Кадр оставлен в конвейере — исходник хороший, может понадобиться.
   'Милк Кафе_65464 записи профиля.jpeg':      ['hero-sup-latte', 'Горячее блюдо с яйцом и капучино на столе кафе «Милк»'],
   'Милк К75675афе_ записи профиля.jpeg':      ['neon-mesto-gde-horosho', 'Зал кафе «Милк» с неоновой надписью «Место, где хорошо»'],
   'Милк Кафе_ записи профиля.jpeg':           ['neon-schastye-kofe', 'Неоновая надпись «Счастье пахнет кофе и тобой» в зале кафе'],
@@ -35,6 +38,9 @@ const LAJFSTAJL = {
 
 // Ширины, в которых готовим лайфстайл-кадры.
 const SHIRINY_FOTO = [480, 960, 1280];
+// Фон первого экрана. Верхняя ступень равна исходнику: увеличения нет,
+// растягивать 1536 px до 2560 бессмысленно — это то же мыло, только тяжелее.
+const SHIRINY_FONA = [768, 1152, 1536];
 // Ширины квадратов каталога и кадров страницы блюда.
 const SHIRINY_BLYUDA = [320, 540];
 
@@ -110,6 +116,23 @@ async function lajfstajl() {
   return razmery;
 }
 
+/**
+ * Фон первого экрана. Файл кладёт владелец; пока его нет, блок обходится
+ * запасной заливкой, и сборка не падает.
+ */
+async function fonEkrana() {
+  const put = `${ISHODNIKI_FOTO}/hero-fon.png`;
+  if (!existsSync(put)) {
+    console.warn('  Фон первого экрана: нет Referens/hero-fon.png, блок соберётся с запасной заливкой.');
+    return null;
+  }
+  const papka = dir(`${VYVOD}/fon`);
+  const { kadr, zamery } = await pravitHeroFon(put);
+  for (const w of SHIRINY_FONA) await sohranit(sharp(kadr), `${papka}/hero-fon-${w}`, w);
+  pechatZamerov(zamery);
+  return { width: zamery.razmer[0], height: zamery.razmer[1] };
+}
+
 // Вырезает надпись «Милк» из логотипа по самим буквам: тёмные пиксели
 // становятся непрозрачными, акварельная подложка — прозрачной.
 // Прямоугольным кадром обойтись нельзя — в шапке был бы виден кусок подложки.
@@ -156,8 +179,9 @@ console.log('Обработка изображений…');
 const razmeryBlyud = await blyuda();
 const razmeryFoto = await lajfstajl();
 const logo = await logotipy();
+const heroFon = await fonEkrana();
 
 // Размеры нужны разметке, чтобы задать width/height и не допустить скачков вёрстки.
 const { writeFileSync } = await import('node:fs');
-writeFileSync('src/lib/razmery.json', JSON.stringify({ blyuda: razmeryBlyud, foto: razmeryFoto, logo }, null, 2) + '\n');
+writeFileSync('src/lib/razmery.json', JSON.stringify({ blyuda: razmeryBlyud, foto: razmeryFoto, logo, heroFon }, null, 2) + '\n');
 console.log('Готово. Размеры записаны в src/lib/razmery.json');

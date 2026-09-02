@@ -103,6 +103,8 @@ interface Razmery {
   blyuda: Record<string, { kvadrat: { width: number; height: number }; bolshoe: { width: number; height: number } }>;
   foto: Record<string, { width: number; height: number; alt: string }>;
   logo: { milk: { width: number; height: number } };
+  // null, пока владелец не положил Referens/hero-fon.png.
+  heroFon: { width: number; height: number } | null;
 }
 
 export const RAZMERY = razmery as Razmery;
@@ -115,6 +117,22 @@ export function foto(imya: keyof Razmery['foto'] | string) {
     webp: (w: 480 | 960 | 1280) => put(`/images/photo/${imya}-${w}.webp`),
     jpg: (w: 480 | 960 | 1280) => put(`/images/photo/${imya}-${w}.jpg`),
     alt: r.alt,
+    width: r.width,
+    height: r.height,
+  };
+}
+
+// Ширины, в которых собран фон первого экрана. Держатся рядом с
+// SHIRINY_FONA из scripts/process-images.mjs.
+export const SHIRINY_FONA = [768, 1152, 1536] as const;
+
+/** Фон первого экрана: пути и размеры, либо null, если исходника ещё нет. */
+export function fonEkrana() {
+  const r = RAZMERY.heroFon;
+  if (!r) return null;
+  return {
+    webp: (w: number) => put(`/images/fon/hero-fon-${w}.webp`),
+    jpg: (w: number) => put(`/images/fon/hero-fon-${w}.jpg`),
     width: r.width,
     height: r.height,
   };

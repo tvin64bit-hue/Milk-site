@@ -6,8 +6,8 @@ import Bazovyy from '../layouts/Bazovyy.astro';
 import Volna from '../components/Volna.astro';
 import Knopka from '../components/Knopka.astro';
 import Dudl from '../components/Dudl.astro';
-import DudlyFona from '../components/DudlyFona.astro';
 import FotoLayf from '../components/FotoLayf.astro';
+import FonEkrana from '../components/FonEkrana.astro';
 import FotoBlyuda from '../components/FotoBlyuda.astro';
 import KartochkaBlyuda from '../components/KartochkaBlyuda.astro';
 import { KATEGORII, blyudaKategorii, blyudoPoId, dlyaPodborki, cena, foto } from '../lib/menu';
@@ -74,9 +74,13 @@ const ogFoto = foto('neon-mesto-gde-horosho');
 >
   <script slot="golova" type="application/ld+json" set:html={JSON.stringify(schema)} />
 
-  <!-- Блок 2. Первый экран -->
+  <!-- Блок 2. Первый экран.
+       Фон — акварельная текстура с вшитыми дудлами, снимка здесь нет.
+       Слой DudlyFona здесь снят: наши восемь SVG легли бы поверх
+       нарисованных бутылки, круассанов, чашки, вафли и печенья.
+       Сам компонент остался — он рассчитан на любую секцию. -->
   <section class="ekran">
-    <DudlyFona />
+    <FonEkrana />
     <div class="konteyner ekran__vnutri">
       <div class="ekran__tekst">
         <h1>Место, где хорошо</h1>
@@ -88,15 +92,6 @@ const ogFoto = foto('neon-mesto-gde-horosho');
           <Knopka vid="glavnaya" adres={put('/menu')}>Смотреть меню</Knopka>
           <Knopka vid="vtoraya" adres={KAFE.telefonSsylka}>Заказать по телефону</Knopka>
         </div>
-      </div>
-      <div class="ekran__foto" data-parallaks="0.25" data-parallaks-predel="60">
-        <FotoLayf
-          imya="hero-sup-latte"
-          vBlobe
-          prioritet
-          alt="Горячее блюдо с яйцом и капучино на столе кафе «Милк»"
-          sizes="(min-width: 1024px) 46vw, 90vw"
-        />
       </div>
     </div>
   </section>
@@ -384,14 +379,17 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   }
   .ekran__vnutri {
     position: relative;
+    /* Над фоном: иначе картинка перекрывает заголовок и кнопки. */
+    z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    /* Текст занимает левую треть — там ровный светлый участок фона.
+       Правая часть отдана акварельному пятну. */
+    grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
     align-items: center;
     gap: var(--otstup-7);
   }
   .ekran__podzagolovok { margin: var(--otstup-5) 0 var(--otstup-6); font-size: 1.125rem; }
   .ekran__knopki { display: flex; flex-wrap: wrap; gap: var(--otstup-4); }
-  .ekran__foto { will-change: transform; }
 
   /* ---- Блок 3. Бегущая строка ---- */
   .begushchaya {
@@ -576,15 +574,25 @@ const ogFoto = foto('neon-mesto-gde-horosho');
   .karta__adres { margin: 0; font-family: var(--shrift-zagolovok); font-weight: 600; }
 
   /* ---- Адаптивность ---- */
+  /* На планшете колонка шире: в 38 % заголовок ломался на три строки. */
+  @media (max-width: 1279px) {
+    .ekran__vnutri { grid-template-columns: minmax(0, 46%) minmax(0, 1fr); }
+  }
+
   @media (max-width: 1023px) {
-    .ekran { min-height: auto; padding-block: var(--otstup-8); }
+    /* padding-block перебивал бы padding-top с высотой шапки, и заголовок
+       уезжал под логотип. Считаем оба отступа явно. */
+    .ekran {
+      min-height: auto;
+      padding-top: calc(var(--vysota-shapki) + var(--otstup-7));
+      padding-bottom: var(--otstup-8);
+    }
     .ekran__vnutri,
     .o-kafe__setka,
     .zavtraki__setka,
     .kofe__setka,
     .bankety__setka,
     .kontakty__setka { grid-template-columns: minmax(0, 1fr); }
-    .ekran__foto { order: 2; max-width: 420px; }
     .plitki { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 200px; }
     .plitki__yacheyka:first-child { grid-column: span 2; grid-row: span 1; }
     .bankety__foto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); padding-bottom: 0; }
@@ -595,7 +603,6 @@ const ogFoto = foto('neon-mesto-gde-horosho');
 
   @media (max-width: 767px) {
     .ekran__knopki { flex-direction: column; align-items: stretch; }
-    .ekran__foto { max-width: 320px; margin-inline: auto; }
     .begushchaya__punkt { font-size: 0.875rem; }
     .plitki { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 180px; }
     .plitki__yacheyka:first-child { grid-column: span 1; }
