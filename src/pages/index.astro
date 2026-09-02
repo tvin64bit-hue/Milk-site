@@ -496,8 +496,18 @@ const ogFoto = foto('neon-mesto-gde-horosho');
      области ограничивал ширину, и карточки выходили за экран вместо прокрутки. */
   /* Стрелки стоят по краям обёртки, поэтому она и есть точка отсчёта. */
   .sety__obolochka { position: relative; }
-  .sety__lenta { overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
-  .sety__ryad { display: flex; gap: var(--otstup-5); width: max-content; }
+  /* position: relative обязателен. Внутри карточек есть подписи для
+     скринридеров с position: absolute; без позиционированной ленты их
+     точкой отсчёта становилась обёртка со стрелками, и прокрутка их не
+     обрезала: самая правая подпись оказывалась на 2304 px и растягивала
+     документ на телефоне вчетверо шире экрана. */
+  .sety__lenta { position: relative; overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
+  /* Без width: max-content. Он заставлял ряд считать свою ширину по
+     карточкам, а карточки были заданы в долях от ряда — зависимость
+     замыкалась сама на себя, и на телефоне лента раздувалась до 4826 px,
+     утаскивая за собой всю раскладку страницы. Карточкам достаточно
+     запрета на сжатие: flex-строка не переносит их, а лента прокручивает. */
+  .sety__ryad { display: flex; gap: var(--otstup-5); }
   .sety__yacheyka { flex: 0 0 280px; display: flex; }
   .sety__yacheyka > :global(*) { width: 100%; }
 
@@ -627,7 +637,9 @@ const ogFoto = foto('neon-mesto-gde-horosho');
     .begushchaya__punkt { font-size: 0.875rem; }
     .plitki { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 180px; }
     .plitki__yacheyka:first-child { grid-column: span 1; }
-    .sety__yacheyka { flex: 0 0 76%; }
+    /* Ширина в пикселях, а не в долях экрана: доля тоже участвовала бы
+       в круговой зависимости с шириной ленты. */
+    .sety__yacheyka { flex: 0 0 260px; }
     .zavtraki__foto { display: flex; overflow-x: auto; gap: var(--otstup-4); }
     .zavtraki__foto li { flex: 0 0 60%; }
     .kofe__kartochki { grid-template-columns: minmax(0, 1fr); }
