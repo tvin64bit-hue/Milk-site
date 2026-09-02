@@ -9,10 +9,11 @@
     "dev": "npm run check:menu && npm run razmery && astro dev",
     "build": "npm run check:menu && npm run razmery && node scripts/robots.mjs && astro build",
     "preview": "astro preview",
-    "check": "npm run check:menu && npm run check:verstka && npm run check:seo",
+    "check": "npm run check:menu && npm run check:verstka && npm run check:fon && npm run check:seo",
     "razmery": "node scripts/sverit-razmery.mjs",
     "check:verstka": "node scripts/proverka-vyorstki.mjs",
-    "check:seo": "node scripts/proverka-seo.mjs"
+    "check:seo": "node scripts/proverka-seo.mjs",
+    "check:fon": "node scripts/proverka-fona.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

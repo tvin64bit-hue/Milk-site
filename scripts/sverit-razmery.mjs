@@ -48,7 +48,13 @@ for (const file of readdirSync(`${PAPKA}/photo`)) {
 }
 
 const logo = { milk: await razmer(`${PAPKA}/logo/logo-milk.png`) };
-const fakt = { blyuda, foto, logo };
+
+// Фон первого экрана. Пока владелец не положил Referens/hero-fon.png,
+// файла нет и в разметку идёт запасная заливка.
+const fonFile = `${PAPKA}/fon/hero-fon-1536.webp`;
+const heroFon = existsSync(fonFile) ? await razmer(fonFile) : null;
+
+const fakt = { blyuda, foto, logo, heroFon };
 
 // Сверяем с кэшем и рассказываем, что разошлось.
 if (kesh) {
@@ -66,6 +72,7 @@ if (kesh) {
   for (const id of new Set([...Object.keys(foto), ...Object.keys(kesh.foto ?? {})])) {
     sverit(`фото ${id}`, foto[id], kesh.foto?.[id]);
   }
+  if (heroFon || kesh.heroFon) sverit('фон первого экрана', heroFon, kesh.heroFon);
   if (rashozhdeniya.length) {
     console.warn(`\n  Размеры изображений разошлись с кэшем (${rashozhdeniya.length}) — беру фактические:`);
     for (const r of rashozhdeniya.slice(0, 15)) console.warn(`   • ${r}`);
@@ -79,4 +86,5 @@ if (kesh) {
 }
 
 writeFileSync(KESH, JSON.stringify(fakt, null, 2) + '\n');
-console.log(`  Размеры пересчитаны из файлов: ${Object.keys(blyuda).length} блюд, ${Object.keys(foto).length} кадров.`);
+console.log(`  Размеры пересчитаны из файлов: ${Object.keys(blyuda).length} блюд, ${Object.keys(foto).length} кадров`
+  + `${heroFon ? ', фон первого экрана' : ', фона первого экрана нет'}.`);
