@@ -36,8 +36,10 @@ const forma = (nomer % 4) + 1;
   .layf { display: block; }
   .layf :global(img) { width: 100%; height: auto; border-radius: var(--skruglenie-karta); }
   .layf--blob :global(img) {
-    clip-path: var(--kadr-maska, var(--forma));
-    border-radius: var(--kadr-skruglenie, 0);
+    /* Своя пара токенов: форма лайфстайл-кадров решается отдельно от
+       фотографий блюд — у блюд блоб срезал края посуды, здесь нет. */
+    clip-path: var(--kadr-maska-layf, var(--forma));
+    border-radius: var(--kadr-skruglenie-layf, 0);
     aspect-ratio: 1 / 1;
     object-fit: cover;
   }
