@@ -1,0 +1,106 @@
+---
+// Футер. Фон --coffee-dark, текст --milk.
+//
+// Логотип здесь — светлая надпись «Милк» с дескриптором текстом, а не
+// logo-1: акварельная подложка на тёмно-коричневом читается как наклейка
+// неправильной формы. Оба варианта рядом на /styleguide.
+import Volna from './Volna.astro';
+import { KAFE, NAVIGACIYA } from '../lib/kafe';
+import { put } from '../lib/put';
+import { RAZMERY } from '../lib/menu';
+
+const logo = RAZMERY.logo.milk;
+const vysota = 52;
+---
+<Volna cvet="var(--coffee-dark)" />
+<footer class="futer">
+  <div class="konteyner futer__setka">
+    <div class="futer__kolonka futer__brend">
+      <img
+        class="futer__logotip"
+        src={put('/images/logo/logo-milk-svetlyy.png')}
+        alt="Кафе «Милк»"
+        width={Math.round((logo.width / logo.height) * vysota)}
+        height={vysota}
+      />
+      <p class="futer__deskriptor melkiy">вкусная еда и кофе</p>
+    </div>
+
+    <nav class="futer__kolonka" aria-label="Навигация в подвале">
+      <h2 class="futer__zagolovok metka-tekst">Меню</h2>
+      <ul class="futer__spisok">
+        {NAVIGACIYA.map((punkt) => <li><a class="futer__ssylka" href={put(punkt.adres)}>{punkt.nazvanie}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="futer__kolonka">
+      <h2 class="futer__zagolovok metka-tekst">Контакты</h2>
+      <ul class="futer__spisok">
+        <li><a class="futer__ssylka" href={KAFE.telefonSsylka}>{KAFE.telefon}</a></li>
+        <li>{KAFE.adres}</li>
+      </ul>
+    </div>
+
+    <div class="futer__kolonka">
+      <h2 class="futer__zagolovok metka-tekst">Мы в сети</h2>
+      <ul class="futer__spisok">
+        <li><a class="futer__ssylka" href={KAFE.vk} target="_blank" rel="noopener">{KAFE.vkPodpis}</a></li>
+        <li>{KAFE.rezhim}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="konteyner">
+    <p class="futer__kopirayt melkiy">© 2026 Кафе «Милк», Благовещенск</p>
+  </div>
+</footer>
+
+<style>
+  .futer {
+    background: var(--coffee-dark);
+    color: var(--milk);
+    padding-block: var(--otstup-8) var(--otstup-5);
+  }
+
+  .futer__setka {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: var(--otstup-7) var(--otstup-5);
+  }
+
+  .futer__logotip { height: 52px; width: auto; }
+  .futer__deskriptor { margin-top: var(--otstup-2); opacity: 0.75; }
+
+  .futer__zagolovok { margin-bottom: var(--otstup-3); color: var(--beige); }
+  .futer__spisok { display: grid; gap: var(--otstup-2); font-size: var(--razmer-melkiy); }
+  .futer__ssylka {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: var(--tolschina-obvodki);
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color var(--plavno-navedenie);
+  }
+  .futer__ssylka:hover { text-decoration-color: var(--beige); }
+
+  .futer__kopirayt {
+    /* Абзацы ограничены 68 знаками, а разделительная линия должна идти
+       на всю ширину контейнера. */
+    max-width: none;
+    margin-top: var(--otstup-8);
+    padding-top: var(--otstup-4);
+    border-top: 1px solid rgba(248, 238, 228, 0.16);
+    opacity: 0.75;
+  }
+
+  /* Контур фокуса на тёмном фоне должен быть светлым. */
+  .futer :global(a:focus-visible) { outline-color: var(--beige); }
+
+  @media (max-width: 1023px) {
+    .futer__setka { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 767px) {
+    /* На мобильном контакты идут первыми. */
+    .futer__setka { grid-template-columns: minmax(0, 1fr); }
+    .futer__kolonka:nth-child(3) { order: -1; }
+  }
+</style>

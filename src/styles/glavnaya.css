@@ -1,0 +1,29 @@
+/* Общие приёмы главной страницы: появление при прокрутке и слой дудлов. */
+
+[data-poyavlenie] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--plavno-poyavlenie) var(--krivaya-poyavlenie),
+    transform var(--plavno-poyavlenie) var(--krivaya-poyavlenie);
+  transition-delay: var(--zaderzhka, 0ms);
+}
+[data-poyavlenie].vidno { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-poyavlenie] { opacity: 1; transform: none; transition: none; }
+}
+
+/* Слой фоновых дудлов: вне текста, ближе к краям секции. */
+.dudly-sloy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dudly-sloy__znak {
+  position: absolute;
+  color: var(--beige);
+  opacity: 0.32;
+  will-change: transform;
+}

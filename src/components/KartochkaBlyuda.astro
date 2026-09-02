@@ -1,0 +1,141 @@
+---
+// Карточка блюда в каталоге. Кликабельна целиком.
+import type { Blyudo } from '../lib/menu';
+import { cena, estDobavka } from '../lib/menu';
+import { put } from '../lib/put';
+import FotoBlyuda from './FotoBlyuda.astro';
+import Metka from './Metka.astro';
+
+interface Props {
+  blyudo: Blyudo;
+  nomer?: number;
+  prioritet?: boolean;
+}
+const { blyudo, nomer = 0, prioritet = false } = Astro.props;
+const dobavka = estDobavka(blyudo);
+---
+<article class:list={['kartochka', { 'kartochka--net': !blyudo.available }]}>
+  <a class="kartochka__ssylka" href={put(`/menu/${blyudo.id}`)}>
+    <div class="kartochka__foto">
+      <FotoBlyuda blyudo={blyudo} nomer={nomer} prioritet={prioritet} />
+      {(blyudo.badges.length > 0 || !blyudo.available) && (
+        <div class="kartochka__metki">
+          {!blyudo.available && <Metka vid="net-v-nalichii" />}
+          {blyudo.badges.map((b) => <Metka vid={b} />)}
+        </div>
+      )}
+    </div>
+
+    <h3 class="kartochka__nazvanie">{blyudo.name}</h3>
+    <p class="kartochka__sostav melkiy priglushenno">{blyudo.description}</p>
+
+    <div class="kartochka__niz">
+      <span class="kartochka__ves melkiy priglushenno">{blyudo.weight}</span>
+      <p class="kartochka__ceny">
+        {blyudo.oldPrice && (
+          <span class="kartochka__staraya melkiy priglushenno">
+            <span class="tolko-dlya-chteniya">Старая цена</span>{cena(blyudo.oldPrice)}
+          </span>
+        )}
+        <span class="kartochka__cena">{cena(blyudo.price, dobavka)}</span>
+      </p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .kartochka {
+    /* Без этого состав с white-space: nowrap раздувает min-content колонки
+       и сетка каталога разъезжается за пределы контейнера. */
+    min-width: 0;
+    background: var(--cream);
+    border-radius: var(--skruglenie-karta);
+    transition: transform var(--plavno-karta) ease-out, box-shadow var(--plavno-karta);
+  }
+  .kartochka:hover { transform: translateY(-4px); box-shadow: var(--ten); }
+  .kartochka:hover :global(.foto img) { transform: scale(1.05); }
+
+  .kartochka__ssylka {
+    display: flex;
+    flex-direction: column;
+    gap: var(--otstup-2);
+    height: 100%;
+    min-width: 0;
+    padding: var(--otstup-4);
+    border-radius: var(--skruglenie-karta);
+  }
+  /* Контур фокуса рисуется по всей карточке, а не по тексту ссылки. */
+  .kartochka__ssylka:focus-visible { outline: 3px solid var(--coffee); outline-offset: 2px; }
+
+  .kartochka__foto { position: relative; }
+  .kartochka__metki {
+    position: absolute;
+    top: var(--otstup-2);
+    left: var(--otstup-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--otstup-1);
+    max-width: calc(100% - var(--otstup-4));
+  }
+
+  .kartochka__nazvanie {
+    margin: var(--otstup-2) 0 0;
+    font-size: 1.125rem;
+    /* На узкой карточке «морепродуктами» не влезало в строку целиком,
+       вылезало за край и обрезалось без многоточия. */
+    overflow-wrap: break-word;
+    /* Не больше двух строк, иначе карточки в ряду разъезжаются. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .kartochka__sostav {
+    margin: 0;
+    overflow-wrap: break-word;
+    /* Две строки: одной хватало на четыре слова, состав обрывался слишком рано. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* Схема одна для всех карточек: вес отдельной строкой, под ним цена.
+     Когда вес и цены делили строку, длинный вес сета переносился и ряд
+     переставал выравниваться по нижнему краю. */
+  .kartochka__niz {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--otstup-1);
+    margin-top: auto;
+    padding-top: var(--otstup-2);
+  }
+  /* Строка веса выводится всегда, даже пустая: иначе у позиций без веса
+     нижний край карточки уезжает вверх. */
+  .kartochka__ves { min-height: 1.5em; }
+  .kartochka__ceny { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--otstup-2); margin: 0; }
+  .kartochka__staraya { text-decoration: line-through; }
+  .kartochka__cena {
+    font-family: var(--shrift-zagolovok);
+    font-size: var(--razmer-cena);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--orange);
+  }
+
+  /* Нет в наличии: карточка приглушается, но страница блюда остаётся доступной. */
+  .kartochka--net { opacity: 0.5; }
+
+  @media (max-width: 767px) {
+    .kartochka__nazvanie { font-size: 0.9375rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kartochka, .kartochka :global(.foto img) { transition: none; }
+    .kartochka:hover { transform: none; }
+    .kartochka:hover :global(.foto img) { transform: none; }
+  }
+</style>

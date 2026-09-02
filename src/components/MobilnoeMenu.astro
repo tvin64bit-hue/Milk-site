@@ -1,0 +1,57 @@
+---
+// Мобильное меню. Выезжает сверху той же анимацией, что и панель заказа:
+// общая основа в Vydvizhnaya.astro.
+import Vydvizhnaya from './Vydvizhnaya.astro';
+import { KAFE, NAVIGACIYA } from '../lib/kafe';
+import { put } from '../lib/put';
+---
+<Vydvizhnaya imya="menyu" podpis="Меню сайта" vid="menyu">
+  <nav class="mobmenyu__navigaciya" aria-label="Основная навигация">
+    <ul>
+      {NAVIGACIYA.map((punkt, i) => (
+        <li style={`--zaderzhka: ${i * 60}ms`}>
+          <a href={put(punkt.adres)} data-zakryt>{punkt.nazvanie}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <div class="mobmenyu__niz melkiy">
+    <a class="mobmenyu__telefon" href={KAFE.telefonSsylka}>{KAFE.telefon}</a>
+    <p class="priglushenno">{KAFE.adres}</p>
+    <p class="priglushenno">{KAFE.rezhim}</p>
+    <a class="tekst-ssylka" href={KAFE.vk} target="_blank" rel="noopener">{KAFE.vkPodpis}</a>
+  </div>
+</Vydvizhnaya>
+
+<style>
+  .mobmenyu__navigaciya ul { display: grid; gap: var(--otstup-3); margin-bottom: var(--otstup-7); }
+  .mobmenyu__navigaciya a {
+    display: inline-block;
+    padding: var(--otstup-1) 0;
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    /* Пункты появляются друг за другом с задержкой 60 мс. */
+    opacity: 0;
+    transform: translateY(12px);
+    animation: mobmenyu-punkt var(--plavno-poyavlenie) var(--krivaya-poyavlenie) var(--zaderzhka) forwards;
+  }
+  .mobmenyu__navigaciya a:hover { color: var(--orange); }
+
+  @keyframes mobmenyu-punkt { to { opacity: 1; transform: none; } }
+
+  .mobmenyu__niz { display: grid; gap: var(--otstup-2); padding-bottom: var(--otstup-4); }
+  .mobmenyu__niz p { margin: 0; }
+  .mobmenyu__telefon {
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--orange);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobmenyu__navigaciya a { opacity: 1; transform: none; animation: none; }
+  }
+</style>

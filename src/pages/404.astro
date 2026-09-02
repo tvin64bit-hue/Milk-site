@@ -1,0 +1,73 @@
+---
+// Мягкая заглушка в стиле бренда. Дудлы по фону статичны, без параллакса.
+import Bazovyy from '../layouts/Bazovyy.astro';
+import Knopka from '../components/Knopka.astro';
+import Dudl from '../components/Dudl.astro';
+import type { ImyaDudla } from '../components/Dudl.astro';
+import { put } from '../lib/put';
+import { foto } from '../lib/menu';
+import { POLNYY_ADRES } from '../../sayt.config.mjs';
+
+const DUDLY: { imya: ImyaDudla; verh: string; levo: string; razmer: number }[] = [
+  { imya: 'kruassan', verh: '12%', levo: '8%', razmer: 72 },
+  { imya: 'chashka', verh: '68%', levo: '5%', razmer: 56 },
+  { imya: 'ponchik', verh: '22%', levo: '86%', razmer: 64 },
+  { imya: 'vaflya', verh: '74%', levo: '88%', razmer: 48 },
+  { imya: 'butylka', verh: '46%', levo: '92%', razmer: 40 },
+];
+---
+<Bazovyy
+  zagolovok="Страница не найдена | Кафе «Милк», Благовещенск"
+  opisanie="Такой страницы у нас нет. Зато есть 91 позиция в меню и кофе, который сварят прямо сейчас."
+  kanon="/404"
+  ogKartinka={new URL(foto('neon-mesto-gde-horosho').jpg(1280), POLNYY_ADRES).href}
+  shapkaSFonom
+>
+  <meta slot="golova" name="robots" content="noindex" />
+
+  <section class="oshibka">
+    <div class="oshibka__dudly" aria-hidden="true">
+      {DUDLY.map((d) => (
+        <span class="oshibka__dudl" style={`top:${d.verh}; left:${d.levo}`}>
+          <Dudl imya={d.imya} razmer={d.razmer} />
+        </span>
+      ))}
+    </div>
+
+    <div class="konteyner oshibka__vnutri">
+      <img class="oshibka__logotip" src={put('/images/logo/logo-dekor.webp')}
+           alt="" width="240" height="182" loading="eager" />
+      <h1>Кажется, это блюдо уже съели</h1>
+      <p class="oshibka__tekst">
+        Такой страницы у нас нет. Зато есть 91 позиция в меню и кофе, который сварят прямо сейчас.
+      </p>
+      <div class="oshibka__knopki">
+        <Knopka vid="glavnaya" adres={put('/')}>На главную</Knopka>
+        <Knopka vid="vtoraya" adres={put('/menu')}>Смотреть меню</Knopka>
+      </div>
+    </div>
+  </section>
+</Bazovyy>
+
+<style>
+  .oshibka {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: calc(100dvh - var(--vysota-shapki));
+    padding-block: var(--otstup-8);
+    overflow: hidden;
+  }
+  .oshibka__dudly { position: absolute; inset: 0; pointer-events: none; }
+  .oshibka__dudl { position: absolute; color: var(--beige); opacity: 0.35; }
+
+  .oshibka__vnutri { position: relative; text-align: center; }
+  .oshibka__logotip { width: 240px; height: auto; margin: 0 auto var(--otstup-5); }
+  .oshibka__tekst { margin: var(--otstup-4) auto var(--otstup-6); max-width: 46ch; }
+  .oshibka__knopki { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--otstup-4); }
+
+  @media (max-width: 767px) {
+    .oshibka__logotip { width: 160px; }
+    .oshibka__knopki { flex-direction: column; align-items: stretch; }
+  }
+</style>

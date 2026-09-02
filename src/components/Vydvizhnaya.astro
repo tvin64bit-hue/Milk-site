@@ -1,0 +1,112 @@
+---
+// Выезжающий сверху слой: основа панели «Заказать» и мобильного меню.
+// Оба используют одну кривую, одну длительность, один волнистый нижний край
+// и одну ловушку фокуса — поведение задано в src/scripts/vydvizhnaya.ts.
+import Volna from './Volna.astro';
+
+interface Props {
+  imya: string;
+  podpis: string;
+  /** Панель ограничена по высоте, мобильное меню занимает весь экран. */
+  vid?: 'panel' | 'menyu';
+}
+const { imya, podpis, vid = 'panel' } = Astro.props;
+---
+<div
+  class:list={['vydvizhnaya', `vydvizhnaya--${vid}`]}
+  data-vydvizhnaya={imya}
+  role="dialog"
+  aria-modal="true"
+  aria-label={podpis}
+  hidden
+>
+  <div class="vydvizhnaya__zatemnenie" data-zatemnenie></div>
+
+  <div class="vydvizhnaya__sloy">
+    <div class="vydvizhnaya__korpus">
+      <button class="vydvizhnaya__krest" type="button" data-zakryt aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+      <div class="vydvizhnaya__soderzhimoe"><slot /></div>
+    </div>
+    <Volna cvet="var(--cream)" klass="vydvizhnaya__volna" />
+  </div>
+</div>
+
+<style>
+  .vydvizhnaya { position: fixed; inset: 0; z-index: 60; }
+  .vydvizhnaya[hidden] { display: none; }
+
+  .vydvizhnaya__zatemnenie {
+    position: absolute;
+    inset: 0;
+    background: var(--zatemnenie);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity var(--plavno-panel) var(--krivaya-panel);
+  }
+
+  .vydvizhnaya__sloy {
+    position: relative;
+    width: 100%;
+    max-width: var(--konteyner);
+    margin-inline: auto;
+    /* Полоса прокрутки исчезает вместе с прокруткой страницы —
+       компенсируем её ширину, чтобы панель не дёргалась вбок. */
+    padding-right: var(--polosa-prokrutki, 0px);
+    transform: translateY(-100%);
+    transition: transform var(--plavno-panel) var(--krivaya-panel);
+  }
+
+  .vydvizhnaya--otkryta .vydvizhnaya__zatemnenie { opacity: 1; }
+  .vydvizhnaya--otkryta .vydvizhnaya__sloy { transform: translateY(0); }
+
+  .vydvizhnaya__korpus {
+    position: relative;
+    background: var(--cream);
+    padding: var(--otstup-6) var(--pole) var(--otstup-4);
+  }
+  .vydvizhnaya--panel .vydvizhnaya__korpus { max-height: 480px; overflow-y: auto; }
+  .vydvizhnaya--menyu .vydvizhnaya__korpus { max-height: 100dvh; overflow-y: auto; }
+
+  /* Нижний край — та же кривая, что у разделителей секций, отражённая
+     по вертикали: заливка сверху, волнистый край снизу.
+     Отрицательный отступ раньше прятал её целиком за корпусом. */
+  .vydvizhnaya__volna { margin-top: -1px; pointer-events: none; }
+  .vydvizhnaya :global(.vydvizhnaya__volna svg) { transform: scaleY(-1); }
+
+  .vydvizhnaya__krest {
+    position: absolute;
+    top: var(--otstup-4);
+    right: var(--pole);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--skruglenie-knopka);
+    color: var(--ink);
+    transition: background-color var(--plavno-navedenie);
+  }
+  .vydvizhnaya__krest:hover { background: var(--milk); }
+
+  /* Мобильное меню держит узкую колонку, панель раскладывается сама.
+     Отступ справа оставляет место крестику, чтобы содержимое под него не лезло. */
+  .vydvizhnaya__soderzhimoe { padding-right: 56px; }
+  .vydvizhnaya--menyu .vydvizhnaya__soderzhimoe { max-width: 640px; }
+
+  @media (max-width: 1023px) {
+    .vydvizhnaya--panel .vydvizhnaya__sloy { max-width: 90%; }
+  }
+  @media (max-width: 767px) {
+    .vydvizhnaya--panel .vydvizhnaya__sloy { max-width: 100%; }
+    .vydvizhnaya--panel .vydvizhnaya__korpus { max-height: 80dvh; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vydvizhnaya__zatemnenie,
+    .vydvizhnaya__sloy { transition: none; }
+  }
+</style>

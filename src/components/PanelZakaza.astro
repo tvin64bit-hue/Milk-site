@@ -1,0 +1,88 @@
+---
+// Панель «Заказать». Открывается любой кнопкой «Заказать» и «Забронировать зал»
+// с любой страницы. Форм отправки данных здесь нет и быть не должно.
+import Vydvizhnaya from './Vydvizhnaya.astro';
+import Knopka from './Knopka.astro';
+import Dudl from './Dudl.astro';
+import { KAFE } from '../lib/kafe';
+import { put } from '../lib/put';
+
+const ZAGOLOVOK = 'Заказать в «Милке»';
+const TEKST = 'Мы принимаем заказы по телефону — так быстрее и точнее любой формы. '
+  + 'Позвоните, назовите блюда, и мы скажем, когда всё будет готово.';
+---
+<Vydvizhnaya imya="zakaz" podpis="Заказать в «Милке»" vid="panel">
+  <p class="panel__kontekst melkiy priglushenno" data-pole="kontekst" hidden></p>
+
+  <div class="panel__kolonki">
+    <div class="panel__levaya">
+      <h3 class="panel__zagolovok" data-pole="zagolovok" data-poumolchaniyu={ZAGOLOVOK}>{ZAGOLOVOK}</h3>
+      <!-- Телефон стоит сразу под заголовком, до абзаца: звонок здесь главное
+           действие, а не третье по счёту. -->
+      <a class="panel__telefon" href={KAFE.telefonSsylka}>{KAFE.telefon}</a>
+      <p class="panel__tekst" data-pole="tekst" data-poumolchaniyu={TEKST}>{TEKST}</p>
+    </div>
+
+    <div class="panel__pravaya">
+      <p class="panel__rezhim melkiy priglushenno">{KAFE.rezhim}</p>
+
+      <p class="panel__adres melkiy">
+        <Dudl imya="metka" razmer={20} cvet="var(--coffee-deep)" klass="panel__dudl" />
+        <a class="tekst-ssylka" href="https://yandex.ru/maps/?text=Благовещенск, улица Седова, 113/4"
+           target="_blank" rel="noopener">{KAFE.adres} — самовывоз</a>
+      </p>
+
+      <p class="panel__dostavka melkiy priglushenno">
+        Доставка по городу. При заказе от {KAFE.dostavkaOt}&nbsp;₽ — бесплатно.
+      </p>
+
+      <div class="panel__knopki">
+        <Knopka vid="glavnaya" adres={put('/menu')}>Смотреть меню</Knopka>
+        <Knopka vid="vtoraya" adres={KAFE.vk} target="_blank" rel="noopener">Написать во ВКонтакте</Knopka>
+      </div>
+    </div>
+  </div>
+</Vydvizhnaya>
+
+<style>
+  .panel__kontekst { margin: 0 0 var(--otstup-3); }
+
+  /* На широком экране содержимое занимало левую половину, справа оставалась
+     пустота. Две колонки: слева обращение и телефон, справа условия и кнопки. */
+  .panel__kolonki {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--otstup-5) var(--otstup-7);
+    align-items: start;
+  }
+  .panel__zagolovok { margin-bottom: var(--otstup-2); }
+  .panel__tekst { margin-bottom: 0; }
+  .panel__pravaya { display: grid; align-content: start; }
+
+  .panel__telefon {
+    display: inline-block;
+    margin-bottom: var(--otstup-3);
+    font-family: var(--shrift-zagolovok);
+    /* На тесных экранах телефон уменьшается раньше, чем панель уйдёт в прокрутку. */
+    font-size: clamp(1.75rem, 1.5rem + 1vw, 2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--orange);
+  }
+  .panel__telefon:hover { color: var(--orange-dark); }
+
+  .panel__rezhim { margin: 0 0 var(--otstup-3); }
+  .panel__adres { display: flex; align-items: center; gap: var(--otstup-2); margin-bottom: var(--otstup-2); }
+  .panel__adres :global(.panel__dudl) { flex: none; }
+  .panel__dostavka { margin-bottom: var(--otstup-5); }
+
+  .panel__knopki { display: flex; flex-wrap: wrap; gap: var(--otstup-3); }
+
+  /* На планшете и мобильном — одна колонка. */
+  @media (max-width: 1023px) {
+    .panel__kolonki { grid-template-columns: minmax(0, 1fr); gap: var(--otstup-4); }
+  }
+  @media (max-width: 767px) {
+    .panel__knopki { flex-direction: column; align-items: stretch; }
+  }
+</style>

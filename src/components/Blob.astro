@@ -1,0 +1,17 @@
+---
+// Определения четырёх масок-блобов. Компонент выводится один раз в макете,
+// дальше на маски ссылаются через clip-path: url(#blob-1).
+// Координаты в долях от 0 до 1, поэтому маска подходит элементу любого размера.
+import { FORMY_BLOBA } from '../../scripts/blob.mjs';
+---
+<svg class="blob-opredeleniya" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    {FORMY_BLOBA.map((d, i) => (
+      <clipPath id={`blob-${i + 1}`} clipPathUnits="objectBoundingBox"><path d={d} /></clipPath>
+    ))}
+  </defs>
+</svg>
+
+<style>
+  .blob-opredeleniya { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>

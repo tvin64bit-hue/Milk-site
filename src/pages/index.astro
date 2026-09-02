@@ -1,0 +1,617 @@
+---
+// Главная страница. Порядок блоков и все тексты — из разделов 4.1 и 10.1 ТЗ.
+// Ритм фонов: молочный → молочно-розовый → молочный → тёмно-кофейный →
+// молочный → молочно-розовый → молочный.
+import Bazovyy from '../layouts/Bazovyy.astro';
+import Volna from '../components/Volna.astro';
+import Knopka from '../components/Knopka.astro';
+import Dudl from '../components/Dudl.astro';
+import DudlyFona from '../components/DudlyFona.astro';
+import FotoLayf from '../components/FotoLayf.astro';
+import FotoBlyuda from '../components/FotoBlyuda.astro';
+import KartochkaBlyuda from '../components/KartochkaBlyuda.astro';
+import { KATEGORII, blyudaKategorii, blyudoPoId, dlyaPodborki, cena, foto } from '../lib/menu';
+import { KAFE } from '../lib/kafe';
+import { put } from '../lib/put';
+import { POLNYY_ADRES } from '../../sayt.config.mjs';
+import '../styles/glavnaya.css';
+
+const BEGUSHCHAYA = ['Завтраки', 'Роллы', 'Сеты', 'Пицца', 'Паста', 'Кофе', 'Десерты', 'Детское меню'];
+
+const NAPRAVLENIYA = [
+  { nazvanie: 'Завтраки', kolichestvo: '15 позиций', podpis: 'Шакшука, вафли с яйцом пашот, сырники, блины', cat: 'zavtraki', foto: 'shakshuka' },
+  { nazvanie: 'Роллы и сеты', kolichestvo: '35 позиций', podpis: 'Холодные, темпура, запечённые и 10 готовых сетов', cat: 'sety,rolly-holodnye,rolly-tempura,rolly-zapechennye', foto: 'set-hit-n1' },
+  { nazvanie: 'Пицца и паста', kolichestvo: '10 позиций', podpis: 'Пицца 29–30 см и паста на любой вкус', cat: 'picca,pasta', foto: 'picca-pepperoni' },
+  { nazvanie: 'Кофе и напитки', kolichestvo: '17 позиций', podpis: 'Латте с сырной пенкой трёх вкусов', cat: 'kofe-napitki', foto: 'latte-s-syrnoy-penkoy-lavanda' },
+  { nazvanie: 'Горячее и салаты', kolichestvo: '10 позиций', podpis: 'Борщ, сковородки, цезарь, чизкейк', cat: 'supy-salaty,goryachee-zakuski,deserty', foto: 'borsch' },
+  { nazvanie: 'Детское меню', kolichestvo: '4 позиции', podpis: 'Мини-роллы, которые понравятся детям', cat: 'detskie-rolly', foto: 'mini-s-ogurcom' },
+];
+
+// Позиции без снимка и с чужой съёмкой в подборки не идут.
+const sety = dlyaPodborki(blyudaKategorii('sety'));
+const zavtrakiSetka = ['shakshuka', 'vafli-s-bekonom', 'syrniki-s-kokosovoy-sguschenkoy', 'bliny-s-lososem'].map((id) => blyudoPoId(id)!);
+const latte = ['latte-s-syrnoy-penkoy-lavanda', 'latte-s-syrnoy-penkoy-malina', 'latte-s-syrnoy-penkoy-popkorn'].map((id) => blyudoPoId(id)!);
+const PODPISI_LATTE: Record<string, string> = {
+  'latte-s-syrnoy-penkoy-lavanda': 'Латте с сырной пенкой и лавандой',
+  'latte-s-syrnoy-penkoy-malina': 'Латте с сырной пенкой и малиной',
+  'latte-s-syrnoy-penkoy-popkorn': 'Латте с сырной пенкой со вкусом карамельного попкорна',
+};
+
+const GALEREYA = ['bar-vitrina', 'neon-schastye-kofe', 'pavlova-romashki', 'stol-rolly-limonad',
+  'fotozona-lyustry', 'pavlova-dva', 'rolly-tarelka', 'kofe-love'];
+
+const SHAGI = [
+  { nomer: '1', dudl: 'vaflya', zagolovok: 'Выберите блюда', tekst: 'Откройте меню и решите, что хотите. Записывать не обязательно — назовёте по телефону.' },
+  { nomer: '2', dudl: 'chashka', zagolovok: 'Позвоните нам', tekst: `${KAFE.telefon}, ежедневно с 10:00 до 21:00. Примем заказ и скажем, когда всё будет готово.` },
+  { nomer: '3', dudl: 'roll', zagolovok: 'Заберите или дождитесь', tekst: 'Самовывоз — ул. Седова, 113/4. Или привезём по городу: при заказе от 1200 ₽ доставка бесплатная.' },
+] as const;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: 'Кафе «Милк»',
+  description: 'Городское кафе в Благовещенске: завтраки, кофе, роллы, пицца и паста.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'ул. Седова, 113/4',
+    addressLocality: 'Благовещенск',
+    addressCountry: 'RU',
+  },
+  telephone: KAFE.telefon,
+  openingHours: KAFE.rezhimSchema,
+  servesCuisine: ['Завтраки', 'Японская', 'Итальянская', 'Кофе'],
+  url: POLNYY_ADRES,
+  sameAs: [KAFE.vk],
+};
+
+const ogFoto = foto('neon-mesto-gde-horosho');
+---
+<Bazovyy
+  zagolovok="Кафе «Милк» в Благовещенске — завтраки, кофе, роллы и пицца"
+  opisanie="Городское кафе в Благовещенске: завтраки, кофе от своих бариста, роллы, пицца и паста. Каждый день с 10:00 до 21:00."
+  kanon="/"
+  ogKartinka={new URL(ogFoto.jpg(1280), POLNYY_ADRES).href}
+>
+  <script slot="golova" type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <!-- Блок 2. Первый экран -->
+  <section class="ekran">
+    <DudlyFona />
+    <div class="konteyner ekran__vnutri">
+      <div class="ekran__tekst">
+        <h1>Место, где хорошо</h1>
+        <p class="ekran__podzagolovok">
+          Кафе «Милк» в центре Благовещенска. Завтраки, кофе от своих бариста, роллы,
+          пицца и паста. Каждый день с 10:00 до 21:00.
+        </p>
+        <div class="ekran__knopki">
+          <Knopka vid="glavnaya" adres={put('/menu')}>Смотреть меню</Knopka>
+          <Knopka vid="vtoraya" adres={KAFE.telefonSsylka}>Заказать по телефону</Knopka>
+        </div>
+      </div>
+      <div class="ekran__foto" data-parallaks="0.25" data-parallaks-predel="60">
+        <FotoLayf
+          imya="hero-sup-latte"
+          vBlobe
+          prioritet
+          alt="Горячее блюдо с яйцом и капучино на столе кафе «Милк»"
+          sizes="(min-width: 1024px) 46vw, 90vw"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Блок 3. Бегущая строка -->
+  <div class="begushchaya" aria-hidden="true">
+    <div class="begushchaya__lenta">
+      {[0, 1].map(() => (
+        <div class="begushchaya__gruppa">
+          {BEGUSHCHAYA.map((slovo) => (
+            <span class="begushchaya__punkt">
+              {slovo}
+              <Dudl imya="roll" razmer={22} cvet="rgba(255,255,255,0.55)" />
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <Volna cvet="var(--milk-rose)" />
+
+  <!-- Блок 4. О кафе -->
+  <section class="sekciya o-kafe" id="o-kafe">
+    <div class="konteyner o-kafe__setka">
+      <div data-poyavlenie>
+        <FotoLayf imya="neon-mesto-gde-horosho" vBlobe nomer={1} sizes="(min-width: 1024px) 44vw, 92vw" />
+      </div>
+      <div class="o-kafe__tekst" data-poyavlenie style="--zaderzhka: 80ms">
+        <h2>Милк — ваше место в сердце города</h2>
+        <p>
+          Мы придумали «Милк» как место, куда можно прийти в любом настроении. Утром — сесть
+          с ноутбуком и чашкой кофе за столик у окна. Днём — забежать на обед. Вечером —
+          собраться компанией за большим столом с сетом роллов.
+        </p>
+        <p>
+          Здесь варят кофе из свежеобжаренных зёрен, пекут вафли и сырники, крутят роллы
+          и готовят пиццу — всё на одной кухне. И здесь не торопят: можно сидеть с одной
+          чашкой столько, сколько нужно.
+        </p>
+        <p>
+          На стене у нас светится «Место, где хорошо». Это не слоган, придуманный для
+          вывески, — это то, зачем мы открывались.
+        </p>
+        <img class="o-kafe__logotip" src={put('/images/logo/logo-dekor.webp')} alt=""
+             width="240" height="182" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk)" />
+
+  <!-- Блок 5. Направления кухни -->
+  <section class="sekciya napravleniya">
+    <div class="konteyner">
+      <h2 data-poyavlenie>Что у нас есть</h2>
+      <p class="napravleniya__podzagolovok" data-poyavlenie>91 позиция в меню — от овсянки до сета на большую компанию.</p>
+      <ul class="plitki">
+        {NAPRAVLENIYA.map((n, i) => (
+          <li class="plitki__yacheyka" data-poyavlenie style={`--zaderzhka: ${i * 80}ms`}>
+            <a class="plitka" href={put(`/menu?cat=${n.cat}`)}>
+              <FotoBlyuda blyudo={blyudoPoId(n.foto)!} nomer={i} klass="plitka__foto" />
+              <span class="plitka__zaliv"></span>
+              <span class="plitka__soderzhimoe">
+                <span class="plitka__kolichestvo metka-tekst">{n.kolichestvo}</span>
+                <span class="plitka__nazvanie">{n.nazvanie}</span>
+                <span class="plitka__podpis melkiy">{n.podpis}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk-rose)" />
+
+  <!-- Блок 6. Сеты -->
+  <section class="sekciya sety">
+    <div class="konteyner">
+      <h2 data-poyavlenie>Сеты — выгоднее, чем поштучно</h2>
+      <p class="sety__podzagolovok" data-poyavlenie>
+        Собрали десять наборов на любую компанию: от двоих до большого стола.
+        В наборе те же роллы, что и в меню, но дешевле.
+      </p>
+    </div>
+    <div class="konteyner">
+      <div class="sety__lenta" tabindex="0" role="group" aria-label="Сеты">
+        <div class="sety__ryad">
+          {sety.map((s, i) => (
+            <div class="sety__yacheyka"><KartochkaBlyuda blyudo={s} nomer={i} /></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk)" />
+
+  <!-- Блок 7. Завтраки -->
+  <section class="sekciya zavtraki" id="zavtraki">
+    <div class="konteyner zavtraki__setka">
+      <div class="zavtraki__tekst" data-poyavlenie>
+        <h2>Завтраки, ради которых возвращаются</h2>
+        <p>
+          Вафли с беконом, вешенками и яйцом пашот. Сырники с кокосовой сгущёнкой и свежими
+          ягодами. Шакшука с болгарским перцем и кинзой. Омлеты из трёх яиц на сливках —
+          с лососем, морепродуктами или рваной говядиной. Блины с лососем и крем-муссом.
+        </p>
+        <p>Пятнадцать позиций, каждую готовим с утра.</p>
+        <Knopka vid="vtoraya" adres={put('/menu?cat=zavtraki')}>Все завтраки</Knopka>
+      </div>
+      <ul class="zavtraki__foto">
+        {zavtrakiSetka.map((b, i) => (
+          <li data-poyavlenie style={`--zaderzhka: ${i * 80}ms`}>
+            <a href={put(`/menu/${b.id}`)} aria-label={b.name}>
+              <FotoBlyuda blyudo={b} nomer={i} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Volna cvet="var(--coffee-dark)" />
+
+  <!-- Блок 8. Кофе -->
+  <section class="sekciya kofe">
+    <div class="konteyner kofe__setka">
+      <div data-poyavlenie>
+        <FotoLayf imya="kofe-love" vBlobe nomer={2} sizes="(min-width: 1024px) 44vw, 92vw" />
+      </div>
+      <div class="kofe__tekst" data-poyavlenie style="--zaderzhka: 80ms">
+        <h2>Счастье пахнет кофе и тобой</h2>
+        <p>
+          Кофе в «Милке» готовят из свежеобжаренных зёрен. Бариста подбирает смесь и мелет
+          зерно перед каждым заказом — поэтому чашка эспрессо здесь пахнет так, как должна.
+        </p>
+        <p>
+          Кроме классики есть авторское: раф на взбитых сливках и латте
+          с солоновато-сливочной сырной пенкой трёх вкусов.
+        </p>
+      </div>
+    </div>
+
+    <ul class="konteyner kofe__kartochki">
+      {latte.map((b, i) => (
+        <li data-poyavlenie style={`--zaderzhka: ${i * 80}ms`}>
+          <a class="latte" href={put(`/menu/${b.id}`)}>
+            <FotoBlyuda blyudo={b} nomer={i} />
+            <span class="latte__nazvanie">{b.name.replace(/^Латте с сырной пенкой /, '').replace(/[«»]/g, '')}</span>
+            <span class="latte__podpis melkiy">{PODPISI_LATTE[b.id]}</span>
+            <span class="latte__cena">{cena(b.price)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="konteyner kofe__niz">
+      <p class="kofe__pripiska melkiy">Альтернативное молоко +70 ₽ · Сироп +20 ₽</p>
+      <Knopka vid="vtoraya" adres={put('/menu?cat=kofe-napitki')} klass="kofe__knopka">Вся кофейная карта</Knopka>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk)" />
+
+  <!-- Блок 9. Банкеты -->
+  <section class="sekciya bankety" id="bankety">
+    <div class="konteyner bankety__setka">
+      <div class="bankety__tekst" data-poyavlenie>
+        <h2>Банкеты и большие компании</h2>
+        <p>
+          Зал «Милка» вмещает большую компанию — накрываем один длинный стол на всех сразу,
+          без рассадки гостей по разным углам. День рождения, корпоратив, встреча выпускников,
+          новогодний вечер.
+        </p>
+        <p>
+          Меню собираем под повод: холодные закуски и салаты, горячее, роллы и сеты, десерты.
+          Можно взять то, что уже есть в меню, а можно обсудить блюда отдельно. Зал оформляем
+          под событие.
+        </p>
+        <p>Позвоните — обсудим дату, количество гостей и меню.</p>
+        <Knopka
+          vid="glavnaya"
+          data-otkryt="zakaz"
+          data-zagolovok="Забронировать зал"
+          data-tekst="Позвоните — обсудим дату, количество гостей и меню под ваш повод."
+        >Забронировать зал</Knopka>
+      </div>
+      <div class="bankety__foto" data-poyavlenie style="--zaderzhka: 80ms">
+        <FotoLayf imya="banket-zhemchug" vBlobe nomer={0} klass="bankety__kadr bankety__kadr--pervyy" sizes="40vw" />
+        <FotoLayf imya="banket-novogodniy" vBlobe nomer={2} klass="bankety__kadr bankety__kadr--vtoroy" sizes="40vw" />
+      </div>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk-rose)" />
+
+  <!-- Блок 10. Галерея -->
+  <section class="sekciya galereya">
+    <div class="konteyner"><h2 data-poyavlenie>Как у нас</h2></div>
+    <div class="galereya__polosy">
+      <div class="galereya__polosa" data-parallaks="0.15" data-parallaks-os="x" data-parallaks-predel="160">
+        {GALEREYA.slice(0, 4).map((imya) => (
+          <FotoLayf imya={imya} klass="galereya__kadr" sizes="320px" />
+        ))}
+      </div>
+      <div class="galereya__polosa galereya__polosa--nazad" data-parallaks="-0.15" data-parallaks-os="x" data-parallaks-predel="160">
+        {GALEREYA.slice(4).map((imya) => (
+          <FotoLayf imya={imya} klass="galereya__kadr" sizes="320px" />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk)" />
+
+  <!-- Блок 11. Как заказать -->
+  <section class="sekciya kak-zakazat">
+    <div class="konteyner">
+      <h2 data-poyavlenie>Заказать просто</h2>
+      <ol class="shagi">
+        {SHAGI.map((sh, i) => (
+          <li class="shag" data-poyavlenie style={`--zaderzhka: ${i * 80}ms`}>
+            <span class="shag__nomer" aria-hidden="true">{sh.nomer}</span>
+            <Dudl imya={sh.dudl} razmer={48} cvet="var(--coffee-deep)" klass="shag__dudl" />
+            <h3 class="shag__zagolovok">{sh.zagolovok}</h3>
+            <p class="melkiy">{sh.tekst}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="kak-zakazat__niz" data-poyavlenie>
+        <a class="kak-zakazat__telefon" href={KAFE.telefonSsylka}>{KAFE.telefon}</a>
+        <p class="melkiy priglushenno">Доставка по Благовещенску. От 1200 ₽ — бесплатно.</p>
+      </div>
+    </div>
+  </section>
+
+  <Volna cvet="var(--milk-rose)" />
+
+  <!-- Блок 12. Контакты -->
+  <section class="sekciya kontakty" id="kontakty">
+    <div class="konteyner kontakty__setka">
+      <div class="kontakty__tekst" data-poyavlenie>
+        <h2>Где нас найти</h2>
+        <dl class="kontakty__spisok">
+          <dt class="metka-tekst priglushenno">Адрес</dt>
+          <dd>{KAFE.adres}</dd>
+          <dt class="metka-tekst priglushenno">Телефон</dt>
+          <dd><a class="kontakty__telefon" href={KAFE.telefonSsylka}>{KAFE.telefon}</a></dd>
+          <dt class="metka-tekst priglushenno">Режим работы</dt>
+          <dd>{KAFE.rezhim}</dd>
+          <dt class="metka-tekst priglushenno">ВКонтакте</dt>
+          <dd><a class="tekst-ssylka" href={KAFE.vk} target="_blank" rel="noopener">{KAFE.vkPodpis}</a></dd>
+        </dl>
+      </div>
+
+      <div class="karta" data-poyavlenie style="--zaderzhka: 80ms">
+        <div class="karta__polotno">
+          <Dudl imya="metka" razmer={56} cvet="var(--orange)" klass="karta__metka" />
+          <p class="karta__adres">{KAFE.adresKratko}</p>
+        </div>
+        <Knopka
+          vid="vtoraya"
+          adres="https://yandex.ru/maps/?text=Благовещенск, улица Седова, 113/4"
+          target="_blank"
+          rel="noopener"
+        >Открыть в Яндекс.Картах</Knopka>
+      </div>
+    </div>
+  </section>
+</Bazovyy>
+
+<style>
+  /* ---- Блок 2. Первый экран ---- */
+  .ekran {
+    position: relative;
+    display: grid;
+    align-items: center;
+    /* 90 % высоты окна: край следующего блока должен быть виден. */
+    min-height: 90dvh;
+    margin-top: calc(-1 * var(--vysota-shapki));
+    padding-top: var(--vysota-shapki);
+    overflow: hidden;
+  }
+  .ekran__vnutri {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--otstup-7);
+  }
+  .ekran__podzagolovok { margin: var(--otstup-5) 0 var(--otstup-6); font-size: 1.125rem; }
+  .ekran__knopki { display: flex; flex-wrap: wrap; gap: var(--otstup-4); }
+  .ekran__foto { will-change: transform; }
+
+  /* ---- Блок 3. Бегущая строка ---- */
+  .begushchaya {
+    display: flex;
+    align-items: center;
+    height: var(--vysota-begushchey);
+    background: var(--coffee);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .begushchaya__lenta { display: flex; width: max-content; animation: begushchaya var(--begushchaya-cikl) linear infinite; }
+  .begushchaya:hover .begushchaya__lenta { animation-play-state: paused; }
+  .begushchaya__gruppa { display: flex; }
+  .begushchaya__punkt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--otstup-5);
+    padding-right: var(--otstup-5);
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.125rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  @keyframes begushchaya { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .begushchaya__lenta { animation: none; }
+  }
+
+  /* ---- Блок 4. О кафе ---- */
+  .o-kafe { background: var(--milk-rose); }
+  .o-kafe__setka { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .o-kafe__logotip { width: 240px; height: auto; margin-top: var(--otstup-6); opacity: 0.4; }
+
+  /* ---- Блок 5. Направления кухни ---- */
+  .napravleniya__podzagolovok { margin: 0 0 var(--otstup-7); }
+  .plitki {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 220px;
+    gap: var(--otstup-5);
+  }
+  /* Первая плитка занимает две колонки и две строки. */
+  .plitki__yacheyka:first-child { grid-column: span 2; grid-row: span 2; }
+  .plitka {
+    position: relative;
+    display: block;
+    height: 100%;
+    border-radius: var(--skruglenie-karta);
+    overflow: hidden;
+  }
+  .plitka :global(.plitka__foto) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    clip-path: none;
+    border-radius: 0;
+  }
+  .plitka :global(.plitka__foto img) { height: 100%; object-fit: cover; }
+  .plitka__zaliv {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(95, 53, 21, 0.25), rgba(95, 53, 21, 0.72));
+    transition: background-color var(--plavno-karta);
+  }
+  .plitka:hover .plitka__zaliv { background: linear-gradient(180deg, rgba(95, 53, 21, 0.18), rgba(95, 53, 21, 0.62)); }
+  .plitka:hover :global(.plitka__foto img) { transform: scale(1.05); }
+  .plitka__soderzhimoe {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: var(--otstup-2);
+    padding: var(--otstup-5);
+    color: var(--white);
+  }
+  .plitka__kolichestvo { opacity: 0.85; }
+  .plitka__nazvanie { font-family: var(--shrift-zagolovok); font-size: var(--razmer-h3); font-weight: 600; }
+  .plitka__podpis { opacity: 0.9; }
+
+  /* ---- Блок 6. Сеты ---- */
+  .sety { background: var(--milk-rose); }
+  .sety__podzagolovok { margin: 0 0 var(--otstup-7); max-width: 68ch; }
+  /* Лента прокручивается внутри контейнера. Контейнер внутри прокручиваемой
+     области ограничивал ширину, и карточки выходили за экран вместо прокрутки. */
+  .sety__lenta { overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
+  .sety__ryad { display: flex; gap: var(--otstup-5); width: max-content; }
+  .sety__yacheyka { flex: 0 0 280px; display: flex; }
+  .sety__yacheyka > :global(*) { width: 100%; }
+
+  /* ---- Блок 7. Завтраки ---- */
+  .zavtraki__setka { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .zavtraki__tekst :global(.knopka) { margin-top: var(--otstup-5); }
+  .zavtraki__foto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-5); }
+
+  /* ---- Блок 8. Кофе ---- */
+  .kofe { background: var(--coffee-dark); color: var(--milk); }
+  .kofe :global(h2), .kofe :global(h3) { color: var(--milk); }
+  .kofe__setka { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .kofe__kartochki { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--otstup-5); margin-top: var(--otstup-8); }
+  .latte {
+    display: grid;
+    gap: var(--otstup-2);
+    padding: var(--otstup-4);
+    background: rgba(248, 238, 228, 0.08);
+    border-radius: var(--skruglenie-karta);
+    transition: background-color var(--plavno-karta);
+  }
+  .latte:hover { background: rgba(248, 238, 228, 0.14); }
+  .latte__nazvanie { margin-top: var(--otstup-3); font-family: var(--shrift-zagolovok); font-size: var(--razmer-h4); font-weight: 600; }
+  .latte__podpis { color: var(--beige); }
+  .latte__cena { font-family: var(--shrift-zagolovok); font-size: var(--razmer-cena); font-weight: 700; color: var(--milk); }
+  .kofe__niz { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--otstup-4); margin-top: var(--otstup-6); }
+  .kofe__pripiska { color: var(--beige); margin: 0; }
+  .kofe :global(.kofe__knopka) { color: var(--milk); box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige); }
+  .kofe :global(.kofe__knopka:hover) { background: var(--beige); color: var(--ink); }
+  .kofe :global(a:focus-visible) { outline-color: var(--beige); }
+
+  /* ---- Блок 9. Банкеты ---- */
+  .bankety__setka { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--otstup-7); align-items: center; }
+  .bankety__tekst :global(.knopka) { margin-top: var(--otstup-5); }
+  .bankety__foto { position: relative; padding-bottom: 26%; }
+  .bankety :global(.bankety__kadr) { width: 64%; }
+  .bankety :global(.bankety__kadr--vtoroy) { position: absolute; right: 0; bottom: 0; }
+
+  /* ---- Блок 10. Галерея ---- */
+  .galereya { background: var(--milk-rose); overflow: hidden; }
+  .galereya__polosy { display: grid; gap: var(--otstup-5); margin-top: var(--otstup-6); }
+  .galereya__polosa { display: flex; gap: var(--otstup-5); will-change: transform; }
+  .galereya__polosa--nazad { justify-content: flex-end; }
+  .galereya :global(.galereya__kadr) { flex: 0 0 320px; }
+  .galereya :global(.galereya__kadr img) { aspect-ratio: 4 / 3; object-fit: cover; transition: transform var(--plavno-karta); }
+  .galereya :global(.galereya__kadr:hover img) { transform: scale(1.04); }
+
+  /* ---- Блок 11. Как заказать ---- */
+  .shagi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--otstup-5); margin-top: var(--otstup-7); }
+  .shag { position: relative; padding: var(--otstup-6); background: var(--cream); border-radius: var(--skruglenie-karta); overflow: hidden; }
+  .shag__nomer {
+    position: absolute;
+    top: var(--otstup-2);
+    right: var(--otstup-4);
+    font-family: var(--shrift-zagolovok);
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--beige);
+  }
+  .shag :global(.shag__dudl) { margin-bottom: var(--otstup-4); }
+  .shag__zagolovok { margin-bottom: var(--otstup-3); }
+  .kak-zakazat__niz { margin-top: var(--otstup-8); text-align: center; }
+  .kak-zakazat__telefon {
+    display: inline-block;
+    font-family: var(--shrift-zagolovok);
+    font-size: var(--razmer-h2);
+    font-weight: 700;
+    color: var(--orange);
+  }
+  .kak-zakazat__telefon:hover { color: var(--orange-dark); }
+  .kak-zakazat__niz p { margin: var(--otstup-3) auto 0; }
+
+  /* ---- Блок 12. Контакты ---- */
+  .kontakty { background: var(--milk-rose); }
+  .kontakty__setka { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--otstup-7); align-items: start; }
+  .kontakty__spisok { display: grid; gap: var(--otstup-2); margin-top: var(--otstup-5); }
+  .kontakty__spisok dt { margin-top: var(--otstup-3); }
+  .kontakty__spisok dd { margin: 0; }
+  .kontakty__telefon { font-family: var(--shrift-zagolovok); font-size: var(--razmer-h4); font-weight: 700; color: var(--orange); }
+
+  /* Живой виджет карты грузится долго и ломает гамму, поэтому здесь
+     фирменная плашка с меткой и ссылка на Яндекс.Карты. */
+  .karta { display: grid; gap: var(--otstup-4); justify-items: start; }
+  .karta__polotno {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: var(--otstup-3);
+    width: 100%;
+    min-height: 320px;
+    background: var(--beige);
+    border-radius: var(--skruglenie-karta);
+  }
+  .karta__adres { margin: 0; font-family: var(--shrift-zagolovok); font-weight: 600; }
+
+  /* ---- Адаптивность ---- */
+  @media (max-width: 1023px) {
+    .ekran { min-height: auto; padding-block: var(--otstup-8); }
+    .ekran__vnutri,
+    .o-kafe__setka,
+    .zavtraki__setka,
+    .kofe__setka,
+    .bankety__setka,
+    .kontakty__setka { grid-template-columns: minmax(0, 1fr); }
+    .ekran__foto { order: 2; max-width: 420px; }
+    .plitki { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 200px; }
+    .plitki__yacheyka:first-child { grid-column: span 2; grid-row: span 1; }
+    .bankety__foto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); padding-bottom: 0; }
+    .bankety :global(.bankety__kadr) { width: 100%; }
+    .bankety :global(.bankety__kadr--vtoroy) { position: static; }
+    .o-kafe__logotip { width: 140px; }
+  }
+
+  @media (max-width: 767px) {
+    .ekran__knopki { flex-direction: column; align-items: stretch; }
+    .ekran__foto { max-width: 320px; margin-inline: auto; }
+    .begushchaya__punkt { font-size: 0.875rem; }
+    .plitki { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 180px; }
+    .plitki__yacheyka:first-child { grid-column: span 1; }
+    .sety__yacheyka { flex: 0 0 76%; }
+    .zavtraki__foto { display: flex; overflow-x: auto; gap: var(--otstup-4); }
+    .zavtraki__foto li { flex: 0 0 60%; }
+    .kofe__kartochki { grid-template-columns: minmax(0, 1fr); }
+    .shagi { grid-template-columns: minmax(0, 1fr); }
+    .galereya__polosy { gap: var(--otstup-4); }
+    .galereya__polosa--nazad { display: none; }
+    .galereya__polosy { overflow-x: auto; }
+    .galereya :global(.galereya__kadr) { flex: 0 0 260px; }
+  }
+</style>
+
+<script>
+  import { nastroitDvizhenie } from '../scripts/dvizhenie';
+  nastroitDvizhenie();
+</script>

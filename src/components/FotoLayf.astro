@@ -1,0 +1,44 @@
+---
+// Лайфстайл-кадр: интерьер, банкеты, десерты. В отличие от фото блюд
+// их можно ставить широко — они сняты в 1280 px.
+import { foto } from '../lib/menu';
+
+interface Props {
+  imya: string;
+  vBlobe?: boolean;
+  nomer?: number;
+  prioritet?: boolean;
+  klass?: string;
+  alt?: string;
+  sizes?: string;
+}
+const { imya, vBlobe = false, nomer = 0, prioritet = false, klass = '', alt, sizes = '(min-width: 1024px) 50vw, 100vw' } = Astro.props;
+const f = foto(imya);
+const forma = (nomer % 4) + 1;
+---
+<picture
+  class:list={['layf', klass, { 'layf--blob': vBlobe }]}
+  style={vBlobe ? `--forma: url(#blob-${forma})` : undefined}
+>
+  <source type="image/webp" srcset={`${f.webp(480)} 480w, ${f.webp(960)} 960w, ${f.webp(1280)} 1280w`} sizes={sizes} />
+  <img
+    src={f.jpg(960)}
+    alt={alt ?? f.alt}
+    width={f.width}
+    height={f.height}
+    loading={prioritet ? 'eager' : 'lazy'}
+    decoding={prioritet ? 'sync' : 'async'}
+    fetchpriority={prioritet ? 'high' : undefined}
+  />
+</picture>
+
+<style>
+  .layf { display: block; }
+  .layf :global(img) { width: 100%; height: auto; border-radius: var(--skruglenie-karta); }
+  .layf--blob :global(img) {
+    clip-path: var(--kadr-maska, var(--forma));
+    border-radius: var(--kadr-skruglenie, 0);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+</style>

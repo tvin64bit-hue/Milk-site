@@ -1,0 +1,74 @@
+---
+// Базовая обёртка страницы: шрифты, метатеги, общие стили.
+// Шапка, футер, панель «Заказать» и мобильное меню — сквозные для всех страниц.
+import '../styles/base.css';
+import { put } from '../lib/put';
+import Blob from '../components/Blob.astro';
+import Shapka from '../components/Shapka.astro';
+import Futer from '../components/Futer.astro';
+import PanelZakaza from '../components/PanelZakaza.astro';
+import MobilnoeMenu from '../components/MobilnoeMenu.astro';
+
+interface Props {
+  zagolovok: string;
+  opisanie: string;
+  kanon: string;
+  ogKartinka?: string;
+  ogTip?: 'website' | 'article';
+  /** На внутренних страницах шапка сразу с фоном. */
+  shapkaSFonom?: boolean;
+}
+
+const { zagolovok, opisanie, kanon, ogKartinka, ogTip = 'website', shapkaSFonom = false } = Astro.props;
+const kanonPolnyy = new URL(put(kanon), Astro.site).href;
+const ogPolnaya = ogKartinka ? new URL(ogKartinka, Astro.site).href : undefined;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{zagolovok}</title>
+    <meta name="description" content={opisanie} />
+    <link rel="canonical" href={kanonPolnyy} />
+
+    <meta property="og:type" content={ogTip} />
+    <meta property="og:title" content={zagolovok} />
+    <meta property="og:description" content={opisanie} />
+    <meta property="og:url" content={kanonPolnyy} />
+    <meta property="og:locale" content="ru_RU" />
+    {ogPolnaya && <meta property="og:image" content={ogPolnaya} />}
+
+    <link rel="icon" href={put('/favicon.svg')} type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700&family=Onest:wght@400;500;600&display=swap&subset=cyrillic,latin"
+    />
+
+    <!-- Место под счётчик Яндекс.Метрики. Идентификатора нет, счётчик не подключён. -->
+    <slot name="golova" />
+  </head>
+  <body>
+    <Blob />
+    <a class="propustit" href="#glavnoe">Перейти к содержимому</a>
+
+    <Shapka srazuSFonom={shapkaSFonom} />
+
+    <main id="glavnoe">
+      <slot />
+    </main>
+
+    <Futer />
+
+    <PanelZakaza />
+    <MobilnoeMenu />
+
+    <script>
+      import { nastroit } from '../scripts/vydvizhnaya';
+      nastroit();
+    </script>
+  </body>
+</html>

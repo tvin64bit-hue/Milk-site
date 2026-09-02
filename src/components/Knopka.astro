@@ -1,0 +1,121 @@
+---
+// Кнопки сайта. Главная — оранжевая с наплывом заливки снизу вверх.
+// Вторая — прозрачная с кофейной обводкой. Третья — ссылка без фона.
+interface Props {
+  vid?: 'glavnaya' | 'vtoraya' | 'ssylka';
+  adres?: string;
+  tip?: 'button' | 'submit';
+  otklyuchena?: boolean;
+  naVsyuShirinu?: boolean;
+  klass?: string;
+  [key: string]: unknown;
+}
+
+const {
+  vid = 'glavnaya', adres, tip = 'button', otklyuchena = false,
+  naVsyuShirinu = false, klass = '', ...ostalnoe
+} = Astro.props;
+
+const klassy = ['knopka', `knopka--${vid}`, klass, { 'knopka--shirokaya': naVsyuShirinu }];
+const Tag = adres && !otklyuchena ? 'a' : 'button';
+---
+<Tag
+  class:list={klassy}
+  href={Tag === 'a' ? adres : undefined}
+  type={Tag === 'button' ? tip : undefined}
+  disabled={Tag === 'button' && otklyuchena ? true : undefined}
+  aria-disabled={otklyuchena ? 'true' : undefined}
+  {...ostalnoe}
+>
+  <span class="knopka__tekst"><slot /></span>
+</Tag>
+
+<style>
+  .knopka {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--otstup-2);
+    /* Минимальная площадь нажатия на сенсорных экранах. */
+    min-height: 44px;
+    padding: var(--otstup-4) var(--otstup-6);
+    border-radius: var(--skruglenie-knopka);
+    font-family: var(--shrift-zagolovok);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      transform var(--plavno-navedenie) ease-out,
+      background-color var(--plavno-navedenie),
+      color var(--plavno-navedenie),
+      box-shadow var(--plavno-navedenie);
+  }
+  .knopka__tekst { position: relative; z-index: 1; }
+  .knopka--shirokaya { display: flex; width: 100%; }
+
+  /* ---- Главная кнопка ---- */
+  .knopka--glavnaya { background: var(--orange); color: var(--white); }
+
+  /* Заливка не переключается мгновенно, а наплывает снизу вверх. */
+  .knopka--glavnaya::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--orange-dark);
+    transform: translateY(100%);
+    transition: transform var(--plavno-navedenie) ease-out;
+  }
+  .knopka--glavnaya:hover:not([aria-disabled='true'])::before { transform: translateY(0); }
+  .knopka--glavnaya:hover:not([aria-disabled='true']) {
+    transform: translateY(-2px);
+    box-shadow: var(--ten);
+  }
+  .knopka--glavnaya:active:not([aria-disabled='true']) { transform: translateY(0) scale(0.98); }
+
+  /* ---- Вторая кнопка ---- */
+  .knopka--vtoraya {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--coffee);
+  }
+  /* Заливка под светлым текстом должна проходить контраст 4.5:1,
+     поэтому здесь --coffee-deep, а не декоративный --coffee. */
+  .knopka--vtoraya:hover:not([aria-disabled='true']) {
+    background: var(--coffee-deep);
+    color: var(--cream);
+  }
+  .knopka--vtoraya:active:not([aria-disabled='true']) { transform: scale(0.98); }
+
+  /* ---- Кнопка-ссылка ---- */
+  .knopka--ssylka {
+    min-height: auto;
+    padding: var(--otstup-2) 0;
+    background: none;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--beige);
+    text-decoration-thickness: var(--tolschina-obvodki);
+    text-underline-offset: 0.3em;
+  }
+  .knopka--ssylka:hover:not([aria-disabled='true']) { text-decoration-color: var(--orange); }
+
+  /* ---- Недоступное состояние ---- */
+  .knopka[aria-disabled='true'],
+  .knopka:disabled {
+    background: var(--beige);
+    color: var(--ink-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .knopka[aria-disabled='true']::before { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knopka, .knopka--glavnaya::before { transition: none; }
+    .knopka:hover, .knopka:active { transform: none; }
+  }
+</style>

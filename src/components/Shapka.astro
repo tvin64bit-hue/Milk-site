@@ -1,0 +1,160 @@
+---
+// Шапка. Прозрачная поверх первого экрана, при прокрутке ниже 100 px
+// прилипает к верху, получает фон --cream и лёгкую тень.
+import Knopka from './Knopka.astro';
+import { KAFE, NAVIGACIYA } from '../lib/kafe';
+import { put } from '../lib/put';
+import { RAZMERY } from '../lib/menu';
+
+interface Props {
+  /** На внутренних страницах шапка сразу с фоном: прозрачной ей не на чем лежать. */
+  srazuSFonom?: boolean;
+}
+const { srazuSFonom = false } = Astro.props;
+const logo = RAZMERY.logo.milk;
+const vysotaLogotipa = 46;
+---
+<header class:list={['shapka', { 'shapka--s-fonom': srazuSFonom }]} data-shapka>
+  <div class="shapka__vnutri konteyner">
+    <a class="shapka__logotip" href={put('/')} aria-label="Кафе «Милк», на главную">
+      <img
+        src={put('/images/logo/logo-milk.png')}
+        alt="Милк"
+        width={Math.round((logo.width / logo.height) * vysotaLogotipa)}
+        height={vysotaLogotipa}
+      />
+    </a>
+
+    <nav class="shapka__navigaciya" aria-label="Основная навигация">
+      <ul>
+        {NAVIGACIYA.map((punkt) => <li><a href={put(punkt.adres)}>{punkt.nazvanie}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="shapka__sprava">
+      <a class="shapka__telefon" href={KAFE.telefonSsylka}>
+        <span class="shapka__telefon-tekst">{KAFE.telefon}</span>
+        <svg class="shapka__telefon-znak" viewBox="0 0 24 24" width="24" height="24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+             role="img" aria-label={`Позвонить: ${KAFE.telefon}`}>
+          <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z" />
+        </svg>
+      </a>
+
+      <Knopka vid="glavnaya" klass="shapka__zakaz" data-otkryt="zakaz">Заказать</Knopka>
+
+      <button class="shapka__burger" type="button" data-otkryt="menyu" aria-label="Открыть меню">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .shapka {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: var(--vysota-shapki);
+    /* Компенсация исчезнувшей полосы прокрутки, когда открыт слой. */
+    padding-right: var(--polosa-prokrutki, 0px);
+    transition: background-color var(--plavno-navedenie), box-shadow var(--plavno-navedenie);
+  }
+  .shapka--s-fonom { background: var(--cream); box-shadow: var(--ten-myagkaya); }
+
+  .shapka__vnutri {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--otstup-5);
+    height: 100%;
+    min-width: 0;
+  }
+
+  /* Минимальная площадь нажатия 44 px по высоте, картинка при этом меньше. */
+  .shapka__logotip { flex: none; display: grid; align-items: center; min-height: 44px; }
+  .shapka__logotip img { height: 46px; width: auto; }
+
+  .shapka__navigaciya ul { display: flex; gap: var(--otstup-6); }
+  .shapka__navigaciya a {
+    position: relative;
+    padding: var(--otstup-2) 0;
+    font-weight: 500;
+  }
+  .shapka__navigaciya a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: var(--tolschina-obvodki);
+    background: var(--orange);
+    transform: scaleX(0);
+    transition: transform var(--plavno-navedenie) ease-out;
+  }
+  .shapka__navigaciya a:hover::after { transform: scaleX(1); }
+
+  .shapka__sprava { display: flex; align-items: center; gap: var(--otstup-4); }
+  .shapka__telefon { display: grid; place-items: center; min-width: 44px; min-height: 44px; font-weight: 600; }
+  .shapka__telefon:hover { color: var(--orange); }
+  .shapka__telefon-znak { display: none; }
+
+  .shapka__burger { display: none; place-items: center; width: 44px; height: 44px; }
+
+  @media (max-width: 1023px) {
+    .shapka__navigaciya { display: none; }
+    .shapka__burger { display: grid; }
+    .shapka__telefon-tekst { display: none; }
+    .shapka__telefon-znak { display: block; }
+  }
+  @media (max-width: 767px) {
+    /* На узких экранах в строке четыре элемента: логотип, телефон, «Заказать»
+       и кнопка меню. Кнопка ужимается, иначе строка не помещается и уезжает
+       за правый край — незаметно, потому что body прячет переполнение. */
+    .shapka__vnutri { gap: var(--otstup-2); }
+    .shapka__logotip img { height: 32px; }
+    .shapka__sprava { gap: var(--otstup-1); }
+    .shapka :global(.shapka__zakaz) {
+      padding-inline: var(--otstup-4);
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .shapka__logotip img { height: 28px; }
+    .shapka :global(.shapka__zakaz) { padding-inline: var(--otstup-3); }
+  }
+
+  /* На 320 px строка не помещается даже так: логотип ужимается ещё немного.
+     Площадь нажатия у телефона и кнопки меню при этом остаётся 44×44. */
+  @media (max-width: 360px) {
+    .shapka__logotip img { height: 24px; }
+    .shapka :global(.shapka__zakaz) { padding-inline: var(--otstup-2); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shapka, .shapka__navigaciya a::after { transition: none; }
+  }
+</style>
+
+<script>
+  // Шапка прилипает и получает фон после 100 px прокрутки.
+  const shapka = document.querySelector('[data-shapka]');
+  if (shapka && !shapka.classList.contains('shapka--s-fonom')) {
+    let zaprosheno = false;
+    const proverit = () => {
+      shapka.classList.toggle('shapka--s-fonom', window.scrollY > 100);
+      zaprosheno = false;
+    };
+    // Обработчик прокрутки с ограничением частоты через requestAnimationFrame.
+    window.addEventListener('scroll', () => {
+      if (zaprosheno) return;
+      zaprosheno = true;
+      requestAnimationFrame(proverit);
+    }, { passive: true });
+    proverit();
+  }
+</script>

@@ -1,0 +1,25 @@
+{
+  "name": "milk-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "images": "node scripts/process-images.mjs && node scripts/proba-fon.mjs",
+    "check:menu": "node scripts/validate-menu.mjs",
+    "dev": "npm run check:menu && npm run razmery && astro dev",
+    "build": "npm run check:menu && npm run razmery && node scripts/robots.mjs && astro build",
+    "preview": "astro preview",
+    "check": "npm run check:menu && npm run check:verstka && npm run check:seo",
+    "razmery": "node scripts/sverit-razmery.mjs",
+    "check:verstka": "node scripts/proverka-vyorstki.mjs",
+    "check:seo": "node scripts/proverka-seo.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.9",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

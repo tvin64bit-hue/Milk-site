@@ -1,0 +1,131 @@
+/* Единственное место, где заданы цвета, размеры и длительности сайта.
+   Хардкод значений в компонентах запрещён — только переменные отсюда. */
+
+:root {
+  /* ---- Цвета ---------------------------------------------------------- */
+  --milk: #F8EEE4;          /* основной фон страницы */
+  --milk-rose: #F9E4DA;     /* фон чередующихся секций */
+  --cream: #FFFBF5;         /* фон карточек, шапки, выезжающей панели */
+  --ink: #3D2B1C;           /* основной текст и заголовки */
+  --ink-muted: #78644E;     /* состав, вес, зачёркнутая цена */
+  --coffee: #A18152;        /* только декоративные заливки: блобы, плашки без текста */
+  --coffee-deep: #8A6F47;   /* заливки, поверх которых идёт светлый текст */
+  --coffee-dark: #5F3515;   /* тёмные секции и футер */
+  --beige: #E3CFAC;         /* дудлы, разделители, рамки, заглушки */
+  --orange: #C85111;        /* главный акцент: кнопки, актуальные цены, метка «Хит» */
+  --orange-dark: #B04409;   /* наведение на оранжевых кнопках */
+  --white: #FFFFFF;         /* текст на тёмных и оранжевых подложках */
+  --error: #C4432B;         /* ошибки и метка «Острое» */
+
+  /* Полупрозрачные производные. */
+  --zatemnenie: rgba(61, 43, 28, 0.35);
+  --ten: 0 12px 32px rgba(61, 43, 28, 0.10);
+  --ten-myagkaya: 0 4px 16px rgba(61, 43, 28, 0.06);
+
+  /* ---- Шрифты --------------------------------------------------------- */
+  --shrift-zagolovok: 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shrift-tekst: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Размеры плавают между 480 px и 1280 px ширины окна. */
+  --razmer-h1: clamp(2.5rem, 1.3rem + 4vw, 4.5rem);            /* 40 → 72 */
+  --razmer-h2: clamp(2rem, 1.4rem + 2vw, 3rem);                /* 32 → 48 */
+  --razmer-h3: clamp(1.5rem, 1.35rem + 0.5vw, 1.75rem);        /* 24 → 28 */
+  --razmer-h4: clamp(1.125rem, 1.05rem + 0.25vw, 1.25rem);     /* 18 → 20 */
+  --razmer-tekst: clamp(1rem, 0.9625rem + 0.125vw, 1.0625rem); /* 16 → 17 */
+  --razmer-melkiy: clamp(0.875rem, 0.8375rem + 0.125vw, 0.9375rem); /* 14 → 15 */
+  --razmer-metka: clamp(0.75rem, 0.7125rem + 0.125vw, 0.8125rem);   /* 12 → 13 */
+  --razmer-cena: clamp(1.25rem, 1.175rem + 0.25vw, 1.375rem);       /* 20 → 22 */
+
+  --interlinyazh-h1: 1.05;
+  --interlinyazh-h2: 1.1;
+  --interlinyazh-h3: 1.2;
+  --interlinyazh-h4: 1.3;
+  --interlinyazh-tekst: 1.65;
+  --interlinyazh-melkiy: 1.5;
+
+  --trekking-h1: -0.02em;
+  --trekking-h2: -0.015em;
+  --trekking-h3: -0.01em;
+  --trekking-metka: 0.04em;
+
+  /* ---- Сетка и отступы ------------------------------------------------ */
+  --konteyner: 1280px;
+  --pole: 16px;             /* боковое поле, растёт на широких экранах */
+  --kolonok: 12;
+  --promezhutok: 16px;
+
+  /* Шкала отступов. Других значений в вёрстке быть не должно. */
+  --otstup-1: 4px;
+  --otstup-2: 8px;
+  --otstup-3: 12px;
+  --otstup-4: 16px;
+  --otstup-5: 24px;
+  --otstup-6: 32px;
+  --otstup-7: 48px;
+  --otstup-8: 64px;
+  --otstup-9: 96px;
+  --otstup-10: 128px;
+
+  --mezhdu-sekciyami: var(--otstup-8);  /* 64 мобильный → 128 десктоп */
+
+  /* ---- Форма ---------------------------------------------------------- */
+  --skruglenie-knopka: 999px;
+  --skruglenie-karta: 24px;
+  --skruglenie-metka: 12px;
+  --tolschina-obvodki: 1.5px;
+
+  /* ---- Форма кадра фотографий ----
+     Решение отложено до конца сборки (приложение к ТЗ, раздел 1).
+     Переключается здесь и только здесь, правок в компонентах не требует.
+
+     Сейчас блоб: обе переменные не заданы, и кадр берёт запасные значения
+     из FotoBlyuda — маску блоба и нулевое скругление.
+     Для прямоугольника достаточно раскомментировать две строки ниже.
+
+     Задавать здесь --kadr-maska: var(--forma) нельзя: значение переменной
+     вычисляется на :root, где --forma ещё не существует, и обращается в none. */
+  /* --kadr-maska: none; */
+  /* --kadr-skruglenie: var(--skruglenie-karta); */
+
+  --vysota-shapki: 64px;
+  --vysota-volny: 40px;
+  --vysota-begushchey: 48px;
+  --maks-shirina-foto-blyuda: 480px;   /* жёсткий предел: исходники низкого разрешения */
+
+  /* ---- Движение ------------------------------------------------------- */
+  --plavno-navedenie: 250ms;
+  --plavno-karta: 300ms;
+  --plavno-poyavlenie: 500ms;
+  --plavno-panel: 400ms;
+  --krivaya-poyavlenie: cubic-bezier(0.16, 1, 0.3, 1);
+  --krivaya-panel: cubic-bezier(0.22, 1, 0.36, 1);
+  --begushchaya-cikl: 40s;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --pole: 20px;
+    --promezhutok: 24px;
+    --vysota-shapki: 80px;
+    --vysota-volny: 80px;
+    --vysota-begushchey: 64px;
+    --mezhdu-sekciyami: var(--otstup-9);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --pole: 24px;
+    --mezhdu-sekciyami: var(--otstup-10);
+  }
+}
+
+/* Требование доступности, не пожелание: движение отключается полностью. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --plavno-navedenie: 1ms;
+    --plavno-karta: 1ms;
+    --plavno-poyavlenie: 1ms;
+    --plavno-panel: 1ms;
+  }
+}
