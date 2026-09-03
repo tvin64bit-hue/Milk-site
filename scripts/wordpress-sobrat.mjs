@@ -20,7 +20,7 @@ function oblozhka(soderzhimoe, { metka, zatemnenie = 50, cvetZalivki = 'black', 
     style: { spacing: { padding: { top: '3rem', bottom: '3rem', left: '2rem', right: '2rem' } } } };
   const klassPozicii = `is-position-${poziciya.replace(/\s+/g, '-')}`;
   return `<!-- wp:cover ${JSON.stringify(atr)} -->
-<div class="wp-block-cover has-custom-content-position ${klassPozicii}" style="padding-top:3rem;padding-right:2rem;padding-bottom:3rem;padding-left:2rem;min-height:${vysota}"><span aria-hidden="true" class="wp-block-cover__background has-${cvetZalivki}-background-color has-background-dim-${zatemnenie} has-background-dim"></span><img class="wp-block-cover__image-background" src="${metka}" data-object-fit="cover"/><div class="wp-block-cover__inner-container">${soderzhimoe.join('\n\n')}</div></div>
+<div class="wp-block-cover has-custom-content-position ${klassPozicii}" style="padding-top:3rem;padding-right:2rem;padding-bottom:3rem;padding-left:2rem;min-height:${vysota}"><span aria-hidden="true" class="wp-block-cover__background has-${cvetZalivki}-background-color has-background-dim-${zatemnenie} has-background-dim"></span><img class="wp-block-cover__image-background" src="${metka}" data-object-fit="cover"/><div class="wp-block-cover__inner-container is-layout-flow wp-block-cover-is-layout-flow">${soderzhimoe.join('\n\n')}</div></div>
 <!-- /wp:cover -->`;
 }
 
@@ -146,7 +146,7 @@ const citata = gruppa([
 const galereya = gruppa([
   zagolovok('У нас внутри', { poCentru: true, nizhniyOtstup: '2.5rem' }),
   `<!-- wp:gallery {"columns":3,"linkTo":"none","style":{"spacing":{"blockGap":{"left":"1rem","top":"1rem"}}}} -->
-<figure class="wp-block-gallery has-nested-images columns-3 is-cropped">${
+<figure class="wp-block-gallery has-nested-images columns-3 is-cropped wp-block-gallery-is-layout-flex wp-block-gallery-is-layout-flex">${
     [['ГАЛЕРЕЯ-1', 'Барная стойка с витриной десертов'],
      ['ГАЛЕРЕЯ-2', 'Неоновая надпись «Счастье пахнет кофе и тобой»'],
      ['ГАЛЕРЕЯ-3', 'Два стакана кофе с надписью LOVE на сырной пенке'],

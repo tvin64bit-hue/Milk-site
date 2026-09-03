@@ -75,8 +75,8 @@ function knopka(nadpis, adres, { vid = 'glavnaya' } = {}) {
 
 function knopki(spisok, { poCentru = false } = {}) {
   const atr = poCentru ? { layout: { type: 'flex', justifyContent: 'center' } } : {};
-  const klassy = ['wp-block-buttons', poCentru && 'is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex']
-    .filter(Boolean).join(' ');
+  const klassy = ['wp-block-buttons', poCentru && 'is-content-justification-center',
+    'is-layout-flex', 'wp-block-buttons-is-layout-flex'].filter(Boolean).join(' ');
   return `<!-- wp:buttons ${json(atr)} -->
 <div class="${klassy}">${spisok.join('\n\n')}</div>
 <!-- /wp:buttons -->`;
@@ -87,7 +87,11 @@ function gruppa(soderzhimoe, { fon = null, otstupY = '5rem', shirina = '1100px',
     spacing: { padding: { top: otstupY, bottom: otstupY, left: '1.5rem', right: '1.5rem' } } };
   const atr = { ...(yakor ? { anchor: yakor } : {}), style: stil,
     layout: { type: 'constrained', contentSize: shirina } };
-  const klassy = ['wp-block-group', fon && 'has-background'].filter(Boolean).join(' ');
+  // Классы раскладки WordPress проставляет сам при сохранении блока. Если их
+  // не написать, редактор сочтёт разметку не своей и пометит блок как
+  // повреждённый — вставка перестанет быть чистой.
+  const klassy = ['wp-block-group', fon && 'has-background',
+    'is-layout-constrained', 'wp-block-group-is-layout-constrained'].filter(Boolean).join(' ');
   const css = [fon && `background-color:${fon}`,
     `padding-top:${otstupY};padding-right:1.5rem;padding-bottom:${otstupY};padding-left:1.5rem`].filter(Boolean).join(';');
   return `<!-- wp:group ${json(atr)} -->
@@ -98,7 +102,8 @@ function gruppa(soderzhimoe, { fon = null, otstupY = '5rem', shirina = '1100px',
 function kolonki(spisok, { promezhutok = '1.5rem', poVertikaliCentr = false } = {}) {
   const atr = { ...(poVertikaliCentr ? { verticalAlignment: 'center' } : {}),
     style: { spacing: { blockGap: { left: promezhutok } } } };
-  const klassy = ['wp-block-columns', poVertikaliCentr && 'are-vertically-aligned-center'].filter(Boolean).join(' ');
+  const klassy = ['wp-block-columns', poVertikaliCentr && 'are-vertically-aligned-center',
+    'is-layout-flex', 'wp-block-columns-is-layout-flex'].filter(Boolean).join(' ');
   return `<!-- wp:columns ${json(atr)} -->
 <div class="${klassy}">${spisok.join('\n\n')}</div>
 <!-- /wp:columns -->`;
@@ -110,8 +115,8 @@ function kolonka(soderzhimoe, { shirina = null, fon = null, skruglenie = null, o
     ...(otstup ? { spacing: { padding: { top: otstup, bottom: otstup, left: otstup, right: otstup } } } : {}) };
   const atr = { ...(poVertikaliCentr ? { verticalAlignment: 'center' } : {}),
     ...(shirina ? { width: shirina } : {}), ...(Object.keys(stil).length ? { style: stil } : {}) };
-  const klassy = ['wp-block-column', poVertikaliCentr && 'is-vertically-aligned-center', fon && 'has-background']
-    .filter(Boolean).join(' ');
+  const klassy = ['wp-block-column', poVertikaliCentr && 'is-vertically-aligned-center', fon && 'has-background',
+    'is-layout-flow', 'wp-block-column-is-layout-flow'].filter(Boolean).join(' ');
   const css = [shirina && `flex-basis:${shirina}`, skruglenie && `border-radius:${skruglenie}`,
     fon && `background-color:${fon}`,
     otstup && `padding-top:${otstup};padding-right:${otstup};padding-bottom:${otstup};padding-left:${otstup}`]
