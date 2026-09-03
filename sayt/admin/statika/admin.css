@@ -1,0 +1,161 @@
+/* Оформление админки. Палитра сайта, но плотнее: это рабочий стол,
+   а не витрина, и на экране должно помещаться много строк. */
+:root {
+  --milk: #f8eee4;
+  --rose: #f9e4da;
+  --ink: #3d2b1c;
+  --muted: #78644e;
+  --beige: #e3cfac;
+  --coffee: #a18152;
+  --coffee-dark: #5f3515;
+  --orange: #c85111;
+  --orange-dark: #b04409;
+  --white: #fff;
+  --krasnyy: #a3281a;
+  --zelenyy: #2f6b3c;
+  --ten: 0 2px 10px rgba(61, 43, 28, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--milk);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+a { color: var(--orange); }
+a:hover { color: var(--orange-dark); }
+
+.shapka {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.5rem;
+  background: var(--coffee-dark);
+  color: var(--milk);
+}
+.shapka__nazvanie { color: var(--milk); font-weight: 700; text-decoration: none; font-size: 1.1rem; }
+.shapka__ssylki { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.shapka__ssylki a { color: var(--beige); text-decoration: none; }
+.shapka__ssylki a:hover { color: var(--white); text-decoration: underline; }
+
+.soderzhimoe { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; }
+
+.soobshchenie {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--zelenyy);
+  background: var(--white);
+  box-shadow: var(--ten);
+}
+.soobshchenie--oshibka { border-left-color: var(--krasnyy); }
+.soobshchenie ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+
+/* ---- Формы ---- */
+.polya { display: grid; gap: 1rem; }
+.pole { display: grid; gap: 0.35rem; }
+.pole__podpis { font-weight: 600; font-size: 0.9rem; }
+.pole__podskazka { font-size: 0.82rem; color: var(--muted); }
+
+input[type="text"], input[type="number"], input[type="password"], input[type="search"],
+textarea, select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--beige);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+input:focus, textarea:focus, select:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+textarea { min-height: 5rem; resize: vertical; }
+
+.ryad { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+.metki { display: flex; flex-wrap: wrap; gap: 1rem; }
+.metka-vybor, .pereklyuchatel { display: flex; align-items: center; gap: 0.45rem; font-size: 0.95rem; }
+
+.knopka {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--white);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.knopka:hover { background: var(--orange-dark); color: var(--white); }
+.knopka--vtoraya { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--coffee); }
+.knopka--vtoraya:hover { background: var(--rose); color: var(--ink); }
+.knopka--opasnaya { background: var(--krasnyy); }
+.knopka--opasnaya:hover { background: #8a2116; }
+.knopki { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+
+/* ---- Список позиций ---- */
+.poisk-stroka { margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.poisk-stroka input { max-width: 340px; }
+.schetchik { color: var(--muted); font-size: 0.9rem; }
+
+.gruppa { margin-bottom: 2rem; }
+.gruppa__zagolovok {
+  display: flex; align-items: baseline; gap: 0.6rem;
+  margin: 0 0 0.6rem; font-size: 1.05rem;
+}
+.gruppa__chislo { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+
+.spisok { display: grid; gap: 0.5rem; }
+.strochka {
+  display: grid;
+  grid-template-columns: 56px 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--ten);
+  text-decoration: none;
+  color: inherit;
+}
+.strochka:hover { background: var(--rose); color: inherit; }
+.strochka__foto { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: var(--beige); }
+.strochka__net-foto {
+  display: grid; place-items: center; font-size: 0.7rem; color: var(--muted);
+  width: 56px; height: 56px; border-radius: 10px; background: var(--beige);
+}
+.strochka__nazvanie { font-weight: 600; }
+.strochka__sostav { font-size: 0.85rem; color: var(--muted); }
+.strochka__cena { font-weight: 700; color: var(--orange); white-space: nowrap; }
+.strochka__pometka { font-size: 0.75rem; color: var(--krasnyy); white-space: nowrap; }
+
+/* ---- Обрезка снимка ---- */
+.foto-blok { display: grid; gap: 1rem; }
+.foto-tekushchee { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.foto-tekushchee img { width: 140px; height: 140px; border-radius: 14px; object-fit: cover; }
+.obrezka { display: none; }
+.obrezka--vidna { display: block; }
+.obrezka__polotno { max-width: 100%; max-height: 60vh; }
+.obrezka__ramka { max-width: 460px; }
+
+/* ---- Вход ---- */
+.vhod { max-width: 380px; margin: 8vh auto; padding: 2rem; background: var(--white);
+        border-radius: 20px; box-shadow: var(--ten); }
+.vhod h1 { text-align: center; }
+
+@media (max-width: 640px) {
+  .strochka { grid-template-columns: 44px 1fr; }
+  .strochka__foto, .strochka__net-foto { width: 44px; height: 44px; }
+  .strochka__cena, .strochka__pometka { grid-column: 2; }
+}

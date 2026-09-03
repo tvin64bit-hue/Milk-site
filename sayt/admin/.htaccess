@@ -1,0 +1,20 @@
+# Админка закрыта от индексации и требует собственных лимитов загрузки:
+# дефолтные 2M/8M у большинства хостингов малы для фото с телефона (часто
+# 3-10 МБ). Строки ниже работают только при mod_php (Apache исполняет PHP
+# как свой модуль, не как CGI/FPM) — так чаще всего устроено на shared
+# хостинге вроде sweb. Если хостинг использует php-cgi/php-fpm, эти строки
+# Apache проигнорирует молча, и лимит останется тем, что задан в php.ini
+# хостинга — тогда предел общий (0,4.3.1) сообщит о нём и объяснит, что
+# делать.
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 15M
+    php_value post_max_size 16M
+</IfModule>
+<IfModule mod_php.c>
+    php_value upload_max_filesize 15M
+    php_value post_max_size 16M
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
