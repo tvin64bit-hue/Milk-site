@@ -1,0 +1,27 @@
+# Все адреса, кроме существующих файлов, обрабатывает index.php.
+# Синтаксис Apache 2.2 — на сервере стоит именно он.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /milk-site/
+
+    # Существующие файлы и папки отдаются как есть: картинки, стили, скрипты.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Кодировка ответов: содержимое сайта на русском.
+AddDefaultCharset UTF-8
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    # Картинки и шрифты не меняются — их можно держать в кэше долго.
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+</IfModule>

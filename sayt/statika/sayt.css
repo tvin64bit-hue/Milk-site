@@ -1,0 +1,1372 @@
+/* Стили сайта. Собраны из src/styles и блоков <style> компонентов
+   скриптом scripts/sobrat-statiku.mjs — руками этот файл не правят. */
+
+/* ---- src/styles/tokens.css ---- */
+/* Единственное место, где заданы цвета, размеры и длительности сайта.
+   Хардкод значений в компонентах запрещён — только переменные отсюда. */
+
+:root {
+  /* ---- Цвета ---------------------------------------------------------- */
+  --milk: #F8EEE4;          /* основной фон страницы */
+  --milk-rose: #F9E4DA;     /* фон чередующихся секций */
+  --cream: #FFFBF5;         /* фон карточек, шапки, выезжающей панели */
+  --ink: #3D2B1C;           /* основной текст и заголовки */
+  --ink-muted: #78644E;     /* состав, вес, зачёркнутая цена */
+  --coffee: #A18152;        /* только декоративные заливки: блобы, плашки без текста */
+  --coffee-deep: #8A6F47;   /* заливки, поверх которых идёт светлый текст */
+  --coffee-dark: #5F3515;   /* тёмные секции и футер */
+  --beige: #E3CFAC;         /* дудлы, разделители, рамки, заглушки */
+  --orange: #C85111;        /* главный акцент: кнопки, актуальные цены, метка «Хит» */
+  --orange-dark: #B04409;   /* наведение на оранжевых кнопках */
+  --white: #FFFFFF;         /* текст на тёмных и оранжевых подложках */
+  --error: #C4432B;         /* ошибки и метка «Острое» */
+
+  /* Полупрозрачные производные. */
+  --zatemnenie: rgba(61, 43, 28, 0.35);
+  --ten: 0 12px 32px rgba(61, 43, 28, 0.10);
+  --ten-myagkaya: 0 4px 16px rgba(61, 43, 28, 0.06);
+
+  /* ---- Шрифты --------------------------------------------------------- */
+  --shrift-zagolovok: 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shrift-tekst: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Размеры плавают между 480 px и 1280 px ширины окна. */
+  --razmer-h1: clamp(2.5rem, 1.3rem + 4vw, 4.5rem);            /* 40 → 72 */
+  --razmer-h2: clamp(2rem, 1.4rem + 2vw, 3rem);                /* 32 → 48 */
+  --razmer-h3: clamp(1.5rem, 1.35rem + 0.5vw, 1.75rem);        /* 24 → 28 */
+  --razmer-h4: clamp(1.125rem, 1.05rem + 0.25vw, 1.25rem);     /* 18 → 20 */
+  --razmer-tekst: clamp(1rem, 0.9625rem + 0.125vw, 1.0625rem); /* 16 → 17 */
+  --razmer-melkiy: clamp(0.875rem, 0.8375rem + 0.125vw, 0.9375rem); /* 14 → 15 */
+  --razmer-metka: clamp(0.75rem, 0.7125rem + 0.125vw, 0.8125rem);   /* 12 → 13 */
+  --razmer-cena: clamp(1.25rem, 1.175rem + 0.25vw, 1.375rem);       /* 20 → 22 */
+
+  --interlinyazh-h1: 1.05;
+  --interlinyazh-h2: 1.1;
+  --interlinyazh-h3: 1.2;
+  --interlinyazh-h4: 1.3;
+  --interlinyazh-tekst: 1.65;
+  --interlinyazh-melkiy: 1.5;
+
+  --trekking-h1: -0.02em;
+  --trekking-h2: -0.015em;
+  --trekking-h3: -0.01em;
+  --trekking-metka: 0.04em;
+
+  /* ---- Сетка и отступы ------------------------------------------------ */
+  --konteyner: 1280px;
+  --pole: 16px;             /* боковое поле, растёт на широких экранах */
+  --kolonok: 12;
+  --promezhutok: 16px;
+
+  /* Шкала отступов. Других значений в вёрстке быть не должно. */
+  --otstup-1: 4px;
+  --otstup-2: 8px;
+  --otstup-3: 12px;
+  --otstup-4: 16px;
+  --otstup-5: 24px;
+  --otstup-6: 32px;
+  --otstup-7: 48px;
+  --otstup-8: 64px;
+  --otstup-9: 96px;
+  --otstup-10: 128px;
+
+  --mezhdu-sekciyami: var(--otstup-8);  /* 64 мобильный → 128 десктоп */
+
+  /* ---- Форма ---------------------------------------------------------- */
+  --skruglenie-knopka: 999px;
+  --skruglenie-karta: 24px;
+  --skruglenie-metka: 12px;
+  --tolschina-obvodki: 1.5px;
+
+  /* ---- Форма кадра фотографий ----
+     Решение отложено до конца сборки (приложение к ТЗ, раздел 1).
+     Переключается здесь и только здесь, правок в компонентах не требует.
+
+     Две пары токенов, потому что решения разные. Фото блюд — прямоугольник
+     со скруглением: блоб срезал края круглой посуды, а еда должна быть
+     видна целиком. Лайфстайл-кадры — интерьер, банкеты, десерты — остаются
+     в блобе: там ничего не срезается, и форма держит акварельный характер.
+
+     Незаданный токен означает блоб: кадр берёт запасное значение из
+     компонента. Задавать здесь --kadr-maska: var(--forma) нельзя — значение
+     вычисляется на :root, где --forma ещё не существует, и обращается в none. */
+  --kadr-maska: none;
+  --kadr-skruglenie: var(--skruglenie-karta);
+  /* Вернуть блоб фотографиям блюд — закомментировать две строки выше.
+     Перевести в прямоугольник и лайфстайл — раскомментировать две ниже. */
+  /* --kadr-maska-layf: none; */
+  /* --kadr-skruglenie-layf: var(--skruglenie-karta); */
+
+  --vysota-shapki: 64px;
+  --vysota-volny: 40px;
+  --vysota-begushchey: 48px;
+  --maks-shirina-foto-blyuda: 480px;   /* жёсткий предел: исходники низкого разрешения */
+
+  /* ---- Движение ------------------------------------------------------- */
+  --plavno-navedenie: 250ms;
+  --plavno-karta: 300ms;
+  --plavno-poyavlenie: 500ms;
+  --plavno-panel: 400ms;
+  --krivaya-poyavlenie: cubic-bezier(0.16, 1, 0.3, 1);
+  --krivaya-panel: cubic-bezier(0.22, 1, 0.36, 1);
+  --begushchaya-cikl: 40s;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --pole: 20px;
+    --promezhutok: 24px;
+    --vysota-shapki: 80px;
+    --vysota-volny: 80px;
+    --vysota-begushchey: 64px;
+    --mezhdu-sekciyami: var(--otstup-9);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --pole: 24px;
+    --mezhdu-sekciyami: var(--otstup-10);
+  }
+}
+
+/* Требование доступности, не пожелание: движение отключается полностью. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --plavno-navedenie: 1ms;
+    --plavno-karta: 1ms;
+    --plavno-poyavlenie: 1ms;
+    --plavno-panel: 1ms;
+  }
+}
+
+/* ---- src/styles/base.css ---- */
+/* Сброс и базовая типографика. Все значения — из tokens.css. */
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* Плавная прокрутка к якорям с учётом высоты прилипшей шапки. */
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--vysota-shapki) + var(--otstup-5));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  /* Шапка зафиксирована поверх страницы, поэтому содержимое начинается ниже.
+     На главной первый экран лежит под шапкой сам и отступ снимает. */
+  padding-top: var(--vysota-shapki);
+  background: var(--milk);
+  color: var(--ink);
+  font-family: var(--shrift-tekst);
+  font-size: var(--razmer-tekst);
+  font-weight: 400;
+  line-height: var(--interlinyazh-tekst);
+  /* Горизонтальной прокрутки не должно быть ни на одном размере от 320 px. */
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  /* Отступ после заголовка задаётся здесь: без него заголовок и первый
+     абзац слипались во всех текстовых блоках. */
+  margin: 0 0 var(--otstup-4);
+  font-family: var(--shrift-zagolovok);
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--razmer-h1); font-weight: 700; line-height: var(--interlinyazh-h1); letter-spacing: var(--trekking-h1); }
+h2 { font-size: var(--razmer-h2); font-weight: 700; line-height: var(--interlinyazh-h2); letter-spacing: var(--trekking-h2); }
+h3 { font-size: var(--razmer-h3); font-weight: 600; line-height: var(--interlinyazh-h3); letter-spacing: var(--trekking-h3); }
+h4 { font-size: var(--razmer-h4); font-weight: 600; line-height: var(--interlinyazh-h4); }
+
+p { margin: 0 0 var(--otstup-4); max-width: 68ch; }
+p:last-child { margin-bottom: 0; }
+
+ul, ol { margin: 0; padding: 0; }
+li { list-style: none; }
+
+img, picture, svg, video { display: block; max-width: 100%; }
+img { height: auto; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Ссылка внутри текста: подчёркивание бежевым, при наведении оранжевым. */
+.tekst-ssylka {
+  text-decoration: underline;
+  text-decoration-color: var(--beige);
+  text-decoration-thickness: var(--tolschina-obvodki);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--plavno-navedenie);
+}
+.tekst-ssylka:hover { text-decoration-color: var(--orange); }
+
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input { font: inherit; }
+
+/* Видимый контур фокуса обязателен везде. */
+:focus-visible {
+  outline: 3px solid var(--coffee);
+  outline-offset: 2px;
+  border-radius: var(--otstup-1);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ---- Служебные классы ------------------------------------------------- */
+
+.konteyner {
+  width: 100%;
+  max-width: var(--konteyner);
+  margin-inline: auto;
+  padding-inline: var(--pole);
+}
+
+.sekciya { padding-block: var(--mezhdu-sekciyami); }
+
+.melkiy { font-size: var(--razmer-melkiy); line-height: var(--interlinyazh-melkiy); }
+.priglushenno { color: var(--ink-muted); }
+
+.metka-tekst {
+  font-size: var(--razmer-metka);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: var(--trekking-metka);
+  text-transform: uppercase;
+}
+
+/* Видно только программам чтения с экрана. */
+.tolko-dlya-chteniya {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Ссылка «к содержимому» для тех, кто ходит по сайту клавиатурой. */
+.propustit {
+  position: absolute;
+  left: var(--otstup-4);
+  top: calc(-1 * var(--otstup-10));
+  z-index: 100;
+  padding: var(--otstup-3) var(--otstup-5);
+  background: var(--cream);
+  border-radius: var(--skruglenie-knopka);
+  box-shadow: var(--ten);
+  transition: top var(--plavno-navedenie);
+}
+.propustit:focus { top: var(--otstup-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- src/styles/glavnaya.css ---- */
+/* Общие приёмы главной страницы: появление при прокрутке и слой дудлов. */
+
+[data-poyavlenie] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--plavno-poyavlenie) var(--krivaya-poyavlenie),
+    transform var(--plavno-poyavlenie) var(--krivaya-poyavlenie);
+  transition-delay: var(--zaderzhka, 0ms);
+}
+[data-poyavlenie].vidno { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-poyavlenie] { opacity: 1; transform: none; transition: none; }
+}
+
+/* Слой фоновых дудлов: вне текста, ближе к краям секции. */
+.dudly-sloy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dudly-sloy__znak {
+  position: absolute;
+  color: var(--beige);
+  opacity: 0.32;
+  will-change: transform;
+}
+
+/* ---- src/components/Blob.astro ---- */
+.blob-opredeleniya:not(.__) { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ---- src/components/Dudl.astro ---- */
+/* Цвет наследуется от родителя: в заглушке он кофейный, в фоновом слое бежевый. */
+  .dudl:not(.__) { display: block; }
+  /* Надпись на этикетке — как в фирменном паттерне на упаковке. */
+  .dudl__nadpis:not(.__) { font-family: var(--shrift-zagolovok); }
+
+/* ---- src/components/FonEkrana.astro ---- */
+.fon-ekrana:not(.__) {
+    position: absolute;
+    /* Запас сверху и снизу равен пределу параллакса: при сдвиге картинки
+       из-под неё не должен показаться край блока. */
+    inset: -80px 0;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .fon-ekrana:not(.__) img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Текст стоит в левой трети картинки — там ровный светлый участок.
+       Кадр прижат влево, чтобы эта треть всегда начиналась от края экрана:
+       при любом другом смещении на узком окне светлая зона уезжает
+       внутрь кадра и заголовок частью ложится на пятно. */
+    object-position: left center;
+  }
+  .fon-ekrana--zapas:not(.__) {
+    background:
+      radial-gradient(60% 80% at 78% 45%, var(--beige) 0%, rgba(227, 207, 172, 0) 70%),
+      var(--milk);
+  }
+
+  /* На телефоне кадр вертикальный: в нём остаётся та же светлая левая
+     часть, а акварельное пятно уходит за правый край — отдельного
+     правила не нужно, позиция та же. */
+
+/* ---- src/components/FotoBlyuda.astro ---- */
+.foto:not(.__) {
+    display: block;
+    position: relative;
+    /* Без явной ширины заглушка сжималась по размеру дудла: на странице
+       блюда вместо кадра 480 px получался значок 128 px. */
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    /* Форма кадра переключается токенами в tokens.css. Запасные значения —
+       текущий вариант с блобом; переопределение токенов даёт прямоугольник. */
+    clip-path: var(--kadr-maska, var(--forma));
+    border-radius: var(--kadr-skruglenie, 0);
+    background: var(--beige);
+    overflow: hidden;
+  }
+  .foto:not(.__) img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--plavno-karta) ease-out;
+  }
+  /* На странице блюда кадр сохраняет свои пропорции и не шире 480 px. */
+  .foto--bolshoe:not(.__) {
+    aspect-ratio: auto;
+    max-width: var(--maks-shirina-foto-blyuda);
+  }
+  .foto--bolshoe:not(.__) img { height: auto; }
+  .foto--zaglushka:not(.__) {
+    display: grid;
+    place-items: center;
+    color: var(--coffee-deep);
+  }
+  /* Несколько заглушек подряд сливаются в бежевую стену, поэтому дудл
+     не только меняется по категории, но и стоит под разным наклоном. */
+  .foto--zaglushka:not(.__) .dudl { transform: rotate(var(--naklon)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .foto img { transition: none; }
+  }
+
+/* ---- src/components/FotoLayf.astro ---- */
+.layf:not(.__) { display: block; }
+  .layf:not(.__) img { width: 100%; height: auto; border-radius: var(--skruglenie-karta); }
+  .layf--blob:not(.__) img {
+    /* Своя пара токенов: форма лайфстайл-кадров решается отдельно от
+       фотографий блюд — у блюд блоб срезал края посуды, здесь нет. */
+    clip-path: var(--kadr-maska-layf, var(--forma));
+    border-radius: var(--kadr-skruglenie-layf, 0);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+/* ---- src/components/Futer.astro ---- */
+.futer:not(.__) {
+    background: var(--coffee-dark);
+    color: var(--milk);
+    padding-block: var(--otstup-8) var(--otstup-5);
+  }
+  .futer__setka:not(.__) {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: var(--otstup-7) var(--otstup-5);
+  }
+  .futer__logotip:not(.__) { height: 52px; width: auto; }
+  .futer__deskriptor:not(.__) { margin-top: var(--otstup-2); opacity: 0.75; }
+  .futer__zagolovok:not(.__) { margin-bottom: var(--otstup-3); color: var(--beige); }
+  .futer__spisok:not(.__) { display: grid; gap: var(--otstup-2); font-size: var(--razmer-melkiy); }
+  .futer__ssylka:not(.__) {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: var(--tolschina-obvodki);
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color var(--plavno-navedenie);
+  }
+  .futer__ssylka:hover:not(.__) { text-decoration-color: var(--beige); }
+  .futer__kopirayt:not(.__) {
+    /* Абзацы ограничены 68 знаками, а разделительная линия должна идти
+       на всю ширину контейнера. */
+    max-width: none;
+    margin-top: var(--otstup-8);
+    padding-top: var(--otstup-4);
+    border-top: 1px solid rgba(248, 238, 228, 0.16);
+    opacity: 0.75;
+  }
+  /* Контур фокуса на тёмном фоне должен быть светлым. */
+  .futer:not(.__) a:focus-visible { outline-color: var(--beige); }
+
+  @media (max-width: 1023px) {
+    .futer__setka { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 767px) {
+    /* На мобильном контакты идут первыми. */
+  .futer__setka:not(.__) { grid-template-columns: minmax(0, 1fr); }
+  .futer__kolonka:nth-child(3):not(.__) { order: -1; }
+  }
+
+/* ---- src/components/KartochkaBlyuda.astro ---- */
+.kartochka:not(.__) {
+    /* Без этого состав с white-space: nowrap раздувает min-content колонки
+       и сетка каталога разъезжается за пределы контейнера. */
+    min-width: 0;
+    background: var(--cream);
+    border-radius: var(--skruglenie-karta);
+    transition: transform var(--plavno-karta) ease-out, box-shadow var(--plavno-karta);
+  }
+  .kartochka:hover:not(.__) { transform: translateY(-4px); box-shadow: var(--ten); }
+  .kartochka:hover:not(.__) .foto img { transform: scale(1.05); }
+  .kartochka__ssylka:not(.__) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--otstup-2);
+    height: 100%;
+    min-width: 0;
+    padding: var(--otstup-4);
+    border-radius: var(--skruglenie-karta);
+  }
+  /* Контур фокуса рисуется по всей карточке, а не по тексту ссылки. */
+  .kartochka__ssylka:focus-visible:not(.__) { outline: 3px solid var(--coffee); outline-offset: 2px; }
+  .kartochka__foto:not(.__) { position: relative; }
+  .kartochka__metki:not(.__) {
+    position: absolute;
+    top: var(--otstup-2);
+    left: var(--otstup-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--otstup-1);
+    max-width: calc(100% - var(--otstup-4));
+  }
+  .kartochka__nazvanie:not(.__) {
+    margin: var(--otstup-2) 0 0;
+    font-size: 1.125rem;
+    /* На узкой карточке «морепродуктами» не влезало в строку целиком,
+       вылезало за край и обрезалось без многоточия. */
+    overflow-wrap: break-word;
+    /* Не больше двух строк, иначе карточки в ряду разъезжаются. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  .kartochka__sostav:not(.__) {
+    margin: 0;
+    overflow-wrap: break-word;
+    /* Две строки: одной хватало на четыре слова, состав обрывался слишком рано. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  /* Схема одна для всех карточек: вес отдельной строкой, под ним цена.
+     Когда вес и цены делили строку, длинный вес сета переносился и ряд
+     переставал выравниваться по нижнему краю. */
+  .kartochka__niz:not(.__) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--otstup-1);
+    margin-top: auto;
+    padding-top: var(--otstup-2);
+  }
+  /* Строка веса выводится всегда, даже пустая: иначе у позиций без веса
+     нижний край карточки уезжает вверх. */
+  .kartochka__ves:not(.__) { min-height: 1.5em; }
+  .kartochka__ceny:not(.__) { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--otstup-2); margin: 0; }
+  .kartochka__staraya:not(.__) { text-decoration: line-through; }
+  .kartochka__cena:not(.__) {
+    font-family: var(--shrift-zagolovok);
+    font-size: var(--razmer-cena);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--orange);
+  }
+  /* Нет в наличии: карточка приглушается, но страница блюда остаётся доступной. */
+  .kartochka--net:not(.__) { opacity: 0.5; }
+
+  @media (max-width: 767px) {
+    .kartochka__nazvanie { font-size: 0.9375rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kartochka, .kartochka .foto img { transition: none; }
+  .kartochka:hover:not(.__) { transform: none; }
+  .kartochka:hover:not(.__) .foto img { transform: none; }
+  }
+
+/* ---- src/components/Knopka.astro ---- */
+.knopka:not(.__) {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--otstup-2);
+    /* Минимальная площадь нажатия на сенсорных экранах. */
+    min-height: 44px;
+    padding: var(--otstup-4) var(--otstup-6);
+    border-radius: var(--skruglenie-knopka);
+    font-family: var(--shrift-zagolovok);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      transform var(--plavno-navedenie) ease-out,
+      background-color var(--plavno-navedenie),
+      color var(--plavno-navedenie),
+      box-shadow var(--plavno-navedenie);
+  }
+  .knopka__tekst:not(.__) { position: relative; z-index: 1; }
+  .knopka--shirokaya:not(.__) { display: flex; width: 100%; }
+  /* ---- Главная кнопка ---- */
+  .knopka--glavnaya:not(.__) { background: var(--orange); color: var(--white); }
+  /* Заливка не переключается мгновенно, а наплывает снизу вверх. */
+  .knopka--glavnaya::before:not(.__) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--orange-dark);
+    transform: translateY(100%);
+    transition: transform var(--plavno-navedenie) ease-out;
+  }
+  .knopka--glavnaya:hover:not([aria-disabled='true'])::before:not(.__) { transform: translateY(0); }
+  .knopka--glavnaya:hover:not([aria-disabled='true']):not(.__) {
+    transform: translateY(-2px);
+    box-shadow: var(--ten);
+  }
+  .knopka--glavnaya:active:not([aria-disabled='true']):not(.__) { transform: translateY(0) scale(0.98); }
+  /* ---- Вторая кнопка ---- */
+  .knopka--vtoraya:not(.__) {
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--coffee);
+  }
+  /* Заливка под светлым текстом должна проходить контраст 4.5:1,
+     поэтому здесь --coffee-deep, а не декоративный --coffee. */
+  .knopka--vtoraya:hover:not([aria-disabled='true']):not(.__) {
+    background: var(--coffee-deep);
+    color: var(--cream);
+  }
+  .knopka--vtoraya:active:not([aria-disabled='true']):not(.__) { transform: scale(0.98); }
+  /* ---- Кнопка-ссылка ---- */
+  .knopka--ssylka:not(.__) {
+    min-height: auto;
+    padding: var(--otstup-2) 0;
+    background: none;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--beige);
+    text-decoration-thickness: var(--tolschina-obvodki);
+    text-underline-offset: 0.3em;
+  }
+  .knopka--ssylka:hover:not([aria-disabled='true']):not(.__) { text-decoration-color: var(--orange); }
+  /* ---- Недоступное состояние ---- */
+  .knopka[aria-disabled='true']:not(.__), 
+  .knopka:disabled:not(.__) {
+    background: var(--beige);
+    color: var(--ink-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .knopka[aria-disabled='true']::before:not(.__) { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knopka, .knopka--glavnaya::before { transition: none; }
+  .knopka:hover:not(.__),  .knopka:active:not(.__) { transform: none; }
+  }
+
+/* ---- src/components/Metka.astro ---- */
+.metka:not(.__) {
+    display: inline-block;
+    padding: var(--otstup-1) var(--otstup-3);
+    border-radius: var(--skruglenie-metka);
+    white-space: nowrap;
+  }
+  .metka--hit:not(.__) { background: var(--orange); color: var(--white); }
+  /* Заливка под белым текстом — --coffee-deep: декоративный --coffee
+     не проходит контраст 4.5:1. */
+  .metka--detskoe:not(.__) { background: var(--coffee-deep); color: var(--white); }
+  .metka--ostroe:not(.__) { background: var(--error); color: var(--white); }
+  .metka--dobavka:not(.__) {
+    background: var(--cream);
+    color: var(--ink-muted);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige);
+  }
+  .metka--net-v-nalichii:not(.__) { background: var(--ink-muted); color: var(--white); }
+
+/* ---- src/components/MobilnoeMenu.astro ---- */
+.mobmenyu__navigaciya:not(.__) ul { display: grid; gap: var(--otstup-3); margin-bottom: var(--otstup-7); }
+  .mobmenyu__navigaciya:not(.__) a {
+    display: inline-block;
+    padding: var(--otstup-1) 0;
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    /* Пункты появляются друг за другом с задержкой 60 мс. */
+    opacity: 0;
+    transform: translateY(12px);
+    animation: mobmenyu-punkt var(--plavno-poyavlenie) var(--krivaya-poyavlenie) var(--zaderzhka) forwards;
+  }
+  .mobmenyu__navigaciya:not(.__) a:hover { color: var(--orange); }
+
+  @keyframes mobmenyu-punkt { to { opacity: 1; transform: none; } }
+  .mobmenyu__niz:not(.__) { display: grid; gap: var(--otstup-2); padding-bottom: var(--otstup-4); }
+  .mobmenyu__niz:not(.__) p { margin: 0; }
+  .mobmenyu__telefon:not(.__) {
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--orange);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobmenyu__navigaciya a { opacity: 1; transform: none; animation: none; }
+  }
+
+/* ---- src/components/PanelZakaza.astro ---- */
+.panel__kontekst:not(.__) { margin: 0 0 var(--otstup-3); }
+  /* На широком экране содержимое занимало левую половину, справа оставалась
+     пустота. Две колонки: слева обращение и телефон, справа условия и кнопки. */
+  .panel__kolonki:not(.__) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--otstup-5) var(--otstup-7);
+    align-items: start;
+  }
+  .panel__zagolovok:not(.__) { margin-bottom: var(--otstup-2); }
+  .panel__tekst:not(.__) { margin-bottom: 0; }
+  .panel__pravaya:not(.__) { display: grid; align-content: start; }
+  .panel__telefon:not(.__) {
+    display: inline-block;
+    margin-bottom: var(--otstup-3);
+    font-family: var(--shrift-zagolovok);
+    /* На тесных экранах телефон уменьшается раньше, чем панель уйдёт в прокрутку. */
+    font-size: clamp(1.75rem, 1.5rem + 1vw, 2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--orange);
+  }
+  .panel__telefon:hover:not(.__) { color: var(--orange-dark); }
+  .panel__rezhim:not(.__) { margin: 0 0 var(--otstup-3); }
+  .panel__adres:not(.__) { display: flex; align-items: center; gap: var(--otstup-2); margin-bottom: var(--otstup-2); }
+  .panel__adres:not(.__) .panel__dudl { flex: none; }
+  .panel__dostavka:not(.__) { margin-bottom: var(--otstup-5); }
+  .panel__knopki:not(.__) { display: flex; flex-wrap: wrap; gap: var(--otstup-3); }
+
+  /* На планшете и мобильном — одна колонка. */
+  @media (max-width: 1023px) {
+    .panel__kolonki { grid-template-columns: minmax(0, 1fr); gap: var(--otstup-4); }
+  }
+  @media (max-width: 767px) {
+    .panel__knopki { flex-direction: column; align-items: stretch; }
+  }
+
+/* ---- src/components/Shapka.astro ---- */
+.shapka:not(.__) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: var(--vysota-shapki);
+    /* Компенсация исчезнувшей полосы прокрутки, когда открыт слой. */
+    padding-right: var(--polosa-prokrutki, 0px);
+    transition: background-color var(--plavno-navedenie), box-shadow var(--plavno-navedenie);
+  }
+  .shapka--s-fonom:not(.__) { background: var(--cream); box-shadow: var(--ten-myagkaya); }
+  .shapka__vnutri:not(.__) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--otstup-5);
+    height: 100%;
+    min-width: 0;
+  }
+  /* Минимальная площадь нажатия 44 px по высоте, картинка при этом меньше. */
+  .shapka__logotip:not(.__) { flex: none; display: grid; align-items: center; min-height: 44px; }
+  .shapka__logotip:not(.__) img { height: 46px; width: auto; }
+  .shapka__navigaciya:not(.__) ul { display: flex; gap: var(--otstup-6); }
+  .shapka__navigaciya:not(.__) a {
+    position: relative;
+    padding: var(--otstup-2) 0;
+    font-weight: 500;
+  }
+  .shapka__navigaciya:not(.__) a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: var(--tolschina-obvodki);
+    background: var(--orange);
+    transform: scaleX(0);
+    transition: transform var(--plavno-navedenie) ease-out;
+  }
+  .shapka__navigaciya:not(.__) a:hover::after { transform: scaleX(1); }
+  .shapka__sprava:not(.__) { display: flex; align-items: center; gap: var(--otstup-4); }
+  .shapka__telefon:not(.__) { display: grid; place-items: center; min-width: 44px; min-height: 44px; font-weight: 600; }
+  .shapka__telefon:hover:not(.__) { color: var(--orange); }
+  .shapka__telefon-znak:not(.__) { display: none; }
+  .shapka__burger:not(.__) { display: none; place-items: center; width: 44px; height: 44px; }
+
+  @media (max-width: 1023px) {
+    .shapka__navigaciya { display: none; }
+  .shapka__burger:not(.__) { display: grid; }
+  .shapka__telefon-tekst:not(.__) { display: none; }
+  .shapka__telefon-znak:not(.__) { display: block; }
+  }
+  @media (max-width: 767px) {
+    /* На узких экранах в строке четыре элемента: логотип, телефон, «Заказать»
+       и кнопка меню. Кнопка ужимается, иначе строка не помещается и уезжает
+       за правый край — незаметно, потому что body прячет переполнение. */
+  .shapka__vnutri:not(.__) { gap: var(--otstup-2); }
+  .shapka__logotip:not(.__) img { height: 32px; }
+  .shapka__sprava:not(.__) { gap: var(--otstup-1); }
+  .shapka:not(.__) .shapka__zakaz {
+      padding-inline: var(--otstup-4);
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .shapka__logotip img { height: 28px; }
+  .shapka:not(.__) .shapka__zakaz { padding-inline: var(--otstup-3); }
+  }
+
+  /* На 320 px строка не помещается даже так: логотип ужимается ещё немного.
+     Площадь нажатия у телефона и кнопки меню при этом остаётся 44×44. */
+  @media (max-width: 360px) {
+    .shapka__logotip img { height: 24px; }
+  .shapka:not(.__) .shapka__zakaz { padding-inline: var(--otstup-2); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shapka, .shapka__navigaciya a::after { transition: none; }
+  }
+
+/* ---- src/components/StrelkaLenty.astro ---- */
+.strelka-lenty:not(.__) {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: var(--milk);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige), var(--ten-myagkaya);
+    transition: background-color var(--plavno-navedenie), color var(--plavno-navedenie);
+  }
+  .strelka-lenty:hover:not(.__) { background: var(--orange); color: var(--white); box-shadow: var(--ten-myagkaya); }
+  /* Без этого hidden не работает: display из класса перебивает [hidden],
+     и скрытая стрелка продолжала висеть поверх крайней кнопки. */
+  .strelka-lenty[hidden]:not(.__) { display: none; }
+  .strelka-lenty--nazad:not(.__) { left: 0; }
+  .strelka-lenty--vpered:not(.__) { right: 0; }
+
+  /* Пальцем лента листается напрямую, стрелки там только мешали бы. */
+  @media (hover: none) {
+    .strelka-lenty { display: none; }
+  }
+
+/* ---- src/components/Volna.astro ---- */
+.volna:not(.__) {
+    display: block;
+    width: 100%;
+    height: var(--vysota-volny);
+    line-height: 0;
+    /* Волна перекрывает предыдущую секцию, не оставляя щели на дробных пикселях. */
+    margin-bottom: -1px;
+  }
+  .volna:not(.__) svg { display: block; width: 100%; height: 100%; }
+  .volna--vniz:not(.__) { transform: scaleY(-1); margin-bottom: 0; margin-top: -1px; }
+
+/* ---- src/components/Vydvizhnaya.astro ---- */
+.vydvizhnaya:not(.__) { position: fixed; inset: 0; z-index: 60; }
+  .vydvizhnaya[hidden]:not(.__) { display: none; }
+  .vydvizhnaya__zatemnenie:not(.__) {
+    position: absolute;
+    inset: 0;
+    background: var(--zatemnenie);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity var(--plavno-panel) var(--krivaya-panel);
+  }
+  .vydvizhnaya__sloy:not(.__) {
+    position: relative;
+    width: 100%;
+    max-width: var(--konteyner);
+    margin-inline: auto;
+    /* Полоса прокрутки исчезает вместе с прокруткой страницы —
+       компенсируем её ширину, чтобы панель не дёргалась вбок. */
+    padding-right: var(--polosa-prokrutki, 0px);
+    transform: translateY(-100%);
+    transition: transform var(--plavno-panel) var(--krivaya-panel);
+  }
+  .vydvizhnaya--otkryta:not(.__) .vydvizhnaya__zatemnenie { opacity: 1; }
+  .vydvizhnaya--otkryta:not(.__) .vydvizhnaya__sloy { transform: translateY(0); }
+  .vydvizhnaya__korpus:not(.__) {
+    position: relative;
+    background: var(--cream);
+    padding: var(--otstup-6) var(--pole) var(--otstup-4);
+  }
+  .vydvizhnaya--panel:not(.__) .vydvizhnaya__korpus { max-height: 480px; overflow-y: auto; }
+  .vydvizhnaya--menyu:not(.__) .vydvizhnaya__korpus { max-height: 100dvh; overflow-y: auto; }
+  /* Нижний край — та же кривая, что у разделителей секций, отражённая
+     по вертикали: заливка сверху, волнистый край снизу.
+     Отрицательный отступ раньше прятал её целиком за корпусом. */
+  .vydvizhnaya__volna:not(.__) { margin-top: -1px; pointer-events: none; }
+  .vydvizhnaya:not(.__) .vydvizhnaya__volna svg { transform: scaleY(-1); }
+  .vydvizhnaya__krest:not(.__) {
+    position: absolute;
+    top: var(--otstup-4);
+    right: var(--pole);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--skruglenie-knopka);
+    color: var(--ink);
+    transition: background-color var(--plavno-navedenie);
+  }
+  .vydvizhnaya__krest:hover:not(.__) { background: var(--milk); }
+  /* Мобильное меню держит узкую колонку, панель раскладывается сама.
+     Отступ справа оставляет место крестику, чтобы содержимое под него не лезло. */
+  .vydvizhnaya__soderzhimoe:not(.__) { padding-right: 56px; }
+  .vydvizhnaya--menyu:not(.__) .vydvizhnaya__soderzhimoe { max-width: 640px; }
+
+  @media (max-width: 1023px) {
+    .vydvizhnaya--panel .vydvizhnaya__sloy { max-width: 90%; }
+  }
+  @media (max-width: 767px) {
+    .vydvizhnaya--panel .vydvizhnaya__sloy { max-width: 100%; }
+  .vydvizhnaya--panel:not(.__) .vydvizhnaya__korpus { max-height: 80dvh; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vydvizhnaya__zatemnenie,
+    .vydvizhnaya__sloy { transition: none; }
+  }
+
+/* ---- src/pages/index.astro ---- */
+/* ---- Блок 2. Первый экран ---- */
+  .ekran:not(.__) {
+    position: relative;
+    display: grid;
+    align-items: center;
+    /* 90 % высоты окна: край следующего блока должен быть виден. */
+    min-height: 90dvh;
+    margin-top: calc(-1 * var(--vysota-shapki));
+    padding-top: var(--vysota-shapki);
+    overflow: hidden;
+  }
+  .ekran__vnutri:not(.__) {
+    position: relative;
+    /* Над фоном: иначе картинка перекрывает заголовок и кнопки. */
+    z-index: 1;
+    display: grid;
+    /* Текст занимает левую треть — там ровный светлый участок фона.
+       Правая часть отдана акварельному пятну. */
+    grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--otstup-7);
+  }
+  .ekran__podzagolovok:not(.__) { margin: var(--otstup-5) 0 var(--otstup-6); font-size: 1.125rem; }
+  .ekran__knopki:not(.__) { display: flex; flex-wrap: wrap; gap: var(--otstup-4); }
+  /* ---- Блок 3. Бегущая строка ---- */
+  .begushchaya:not(.__) {
+    display: flex;
+    align-items: center;
+    height: var(--vysota-begushchey);
+    background: var(--coffee);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .begushchaya__lenta:not(.__) {
+    display: flex;
+    width: max-content;
+    /* Сдвиг ровно на одну группу: при любом их числе стык приходится на
+       одинаковое содержимое и шва не видно. */
+    --grupp: 4;
+    animation: begushchaya var(--begushchaya-cikl) linear infinite;
+  }
+  .begushchaya:hover:not(.__) .begushchaya__lenta { animation-play-state: paused; }
+  .begushchaya__gruppa:not(.__) { display: flex; }
+  .begushchaya:not(.__) .begushchaya__dudl { flex: none; stroke-width: 2; }
+  .begushchaya__punkt:not(.__) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--otstup-5);
+    padding-right: var(--otstup-5);
+    font-family: var(--shrift-zagolovok);
+    font-size: 1.125rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  @keyframes begushchaya { to { transform: translateX(calc(-100% / var(--grupp))); } }
+  @media (prefers-reduced-motion: reduce) {
+    .begushchaya__lenta { animation: none; }
+  }
+  /* ---- Блок 4. О кафе ---- */
+  .o-kafe:not(.__) { background: var(--milk-rose); }
+  .o-kafe__setka:not(.__) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .o-kafe__logotip:not(.__) { width: 240px; height: auto; margin-top: var(--otstup-6); opacity: 0.4; }
+  /* ---- Блок 5. Направления кухни ---- */
+  .napravleniya__podzagolovok:not(.__) { margin: 0 0 var(--otstup-7); }
+  .plitki:not(.__) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 220px;
+    gap: var(--otstup-5);
+  }
+  /* Первая плитка занимает две колонки и две строки. */
+  .plitki__yacheyka:first-child:not(.__) { grid-column: span 2; grid-row: span 2; }
+  .plitka:not(.__) {
+    position: relative;
+    display: block;
+    height: 100%;
+    border-radius: var(--skruglenie-karta);
+    overflow: hidden;
+  }
+  .plitka:not(.__) .plitka__foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    clip-path: none;
+    border-radius: 0;
+  }
+  .plitka:not(.__) .plitka__foto img { height: 100%; object-fit: cover; }
+  .plitka__zaliv:not(.__) {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(95, 53, 21, 0.25), rgba(95, 53, 21, 0.72));
+    transition: background-color var(--plavno-karta);
+  }
+  .plitka:hover:not(.__) .plitka__zaliv { background: linear-gradient(180deg, rgba(95, 53, 21, 0.18), rgba(95, 53, 21, 0.62)); }
+  .plitka:hover:not(.__) .plitka__foto img { transform: scale(1.05); }
+  .plitka__soderzhimoe:not(.__) {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: var(--otstup-2);
+    padding: var(--otstup-5);
+    color: var(--white);
+  }
+  .plitka__kolichestvo:not(.__) { opacity: 0.85; }
+  .plitka__nazvanie:not(.__) { font-family: var(--shrift-zagolovok); font-size: var(--razmer-h3); font-weight: 600; }
+  .plitka__podpis:not(.__) { opacity: 0.9; }
+  /* ---- Блок 6. Сеты ---- */
+  .sety:not(.__) { background: var(--milk-rose); }
+  .sety__podzagolovok:not(.__) { margin: 0 0 var(--otstup-7); max-width: 68ch; }
+  /* Лента прокручивается внутри контейнера. Контейнер внутри прокручиваемой
+     области ограничивал ширину, и карточки выходили за экран вместо прокрутки. */
+  /* Стрелки стоят по краям обёртки, поэтому она и есть точка отсчёта. */
+  .sety__obolochka:not(.__) { position: relative; }
+  /* position: relative обязателен. Внутри карточек есть подписи для
+     скринридеров с position: absolute; без позиционированной ленты их
+     точкой отсчёта становилась обёртка со стрелками, и прокрутка их не
+     обрезала: самая правая подпись оказывалась на 2304 px и растягивала
+     документ на телефоне вчетверо шире экрана. */
+  .sety__lenta:not(.__) { position: relative; overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--otstup-4); }
+  /* Без width: max-content. Он заставлял ряд считать свою ширину по
+     карточкам, а карточки были заданы в долях от ряда — зависимость
+     замыкалась сама на себя, и на телефоне лента раздувалась до 4826 px,
+     утаскивая за собой всю раскладку страницы. Карточкам достаточно
+     запрета на сжатие: flex-строка не переносит их, а лента прокручивает. */
+  .sety__ryad:not(.__) { display: flex; gap: var(--otstup-5); }
+  .sety__yacheyka:not(.__) { flex: 0 0 280px; display: flex; }
+  .sety__yacheyka:not(.__) > * { width: 100%; }
+  /* ---- Блок 7. Завтраки ---- */
+  .zavtraki__setka:not(.__) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .zavtraki__tekst:not(.__) .knopka { margin-top: var(--otstup-5); }
+  .zavtraki__foto:not(.__) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-5); }
+  /* ---- Блок 8. Кофе ---- */
+  .kofe:not(.__) { background: var(--coffee-dark); color: var(--milk); }
+  .kofe:not(.__) h2,  .kofe:not(.__) h3 { color: var(--milk); }
+  .kofe__setka:not(.__) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--otstup-7); align-items: center; }
+  .kofe__kartochki:not(.__) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--otstup-5); margin-top: var(--otstup-8); }
+  .latte:not(.__) {
+    display: grid;
+    gap: var(--otstup-2);
+    padding: var(--otstup-4);
+    background: rgba(248, 238, 228, 0.08);
+    border-radius: var(--skruglenie-karta);
+    transition: background-color var(--plavno-karta);
+  }
+  .latte:hover:not(.__) { background: rgba(248, 238, 228, 0.14); }
+  .latte__nazvanie:not(.__) { margin-top: var(--otstup-3); font-family: var(--shrift-zagolovok); font-size: var(--razmer-h4); font-weight: 600; }
+  .latte__podpis:not(.__) { color: var(--beige); }
+  .latte__cena:not(.__) { font-family: var(--shrift-zagolovok); font-size: var(--razmer-cena); font-weight: 700; color: var(--milk); }
+  .kofe__niz:not(.__) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--otstup-4); margin-top: var(--otstup-6); }
+  .kofe__pripiska:not(.__) { color: var(--beige); margin: 0; }
+  .kofe:not(.__) .kofe__knopka { color: var(--milk); box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige); }
+  .kofe:not(.__) .kofe__knopka:hover { background: var(--beige); color: var(--ink); }
+  .kofe:not(.__) a:focus-visible { outline-color: var(--beige); }
+  /* ---- Блок 9. Банкеты ---- */
+  .bankety__setka:not(.__) { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: var(--otstup-7); align-items: center; }
+  .bankety__tekst:not(.__) .knopka { margin-top: var(--otstup-5); }
+  .bankety__foto:not(.__) { position: relative; padding-bottom: 26%; }
+  .bankety:not(.__) .bankety__kadr { width: 64%; }
+  .bankety:not(.__) .bankety__kadr--vtoroy { position: absolute; right: 0; bottom: 0; }
+  /* ---- Блок 10. Галерея ---- */
+  .galereya:not(.__) { background: var(--milk-rose); overflow: hidden; }
+  .galereya__polosy:not(.__) { display: grid; gap: var(--otstup-5); margin-top: var(--otstup-6); }
+  .galereya__polosa:not(.__) { display: flex; gap: var(--otstup-5); will-change: transform; }
+  .galereya__polosa--nazad:not(.__) { justify-content: flex-end; }
+  .galereya:not(.__) .galereya__kadr { flex: 0 0 320px; }
+  .galereya:not(.__) .galereya__kadr img { aspect-ratio: 4 / 3; object-fit: cover; transition: transform var(--plavno-karta); }
+  .galereya:not(.__) .galereya__kadr:hover img { transform: scale(1.04); }
+  /* ---- Блок 11. Как заказать ---- */
+  .shagi:not(.__) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--otstup-5); margin-top: var(--otstup-7); }
+  .shag:not(.__) { position: relative; padding: var(--otstup-6); background: var(--cream); border-radius: var(--skruglenie-karta); overflow: hidden; }
+  .shag__nomer:not(.__) {
+    position: absolute;
+    top: var(--otstup-2);
+    right: var(--otstup-4);
+    font-family: var(--shrift-zagolovok);
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--beige);
+  }
+  .shag:not(.__) .shag__dudl { margin-bottom: var(--otstup-4); }
+  .shag__zagolovok:not(.__) { margin-bottom: var(--otstup-3); }
+  .kak-zakazat__niz:not(.__) { margin-top: var(--otstup-8); text-align: center; }
+  .kak-zakazat__telefon:not(.__) {
+    display: inline-block;
+    font-family: var(--shrift-zagolovok);
+    font-size: var(--razmer-h2);
+    font-weight: 700;
+    color: var(--orange);
+  }
+  .kak-zakazat__telefon:hover:not(.__) { color: var(--orange-dark); }
+  .kak-zakazat__niz:not(.__) p { margin: var(--otstup-3) auto 0; }
+  /* ---- Блок 12. Контакты ---- */
+  .kontakty:not(.__) { background: var(--milk-rose); }
+  .kontakty__setka:not(.__) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--otstup-7); align-items: start; }
+  .kontakty__spisok:not(.__) { display: grid; gap: var(--otstup-2); margin-top: var(--otstup-5); }
+  .kontakty__spisok:not(.__) dt { margin-top: var(--otstup-3); }
+  .kontakty__spisok:not(.__) dd { margin: 0; }
+  .kontakty__telefon:not(.__) { font-family: var(--shrift-zagolovok); font-size: var(--razmer-h4); font-weight: 700; color: var(--orange); }
+  /* Живой виджет карты грузится долго и ломает гамму, поэтому здесь
+     фирменная плашка с меткой и ссылка на Яндекс.Карты. */
+  .karta:not(.__) { display: grid; gap: var(--otstup-4); justify-items: start; }
+  .karta__polotno:not(.__) {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: var(--otstup-3);
+    width: 100%;
+    min-height: 320px;
+    background: var(--beige);
+    border-radius: var(--skruglenie-karta);
+  }
+  .karta__adres:not(.__) { margin: 0; font-family: var(--shrift-zagolovok); font-weight: 600; }
+
+  /* ---- Адаптивность ---- */
+  /* На планшете колонка шире: в 38 % заголовок ломался на три строки. */
+  @media (max-width: 1279px) {
+    .ekran__vnutri { grid-template-columns: minmax(0, 46%) minmax(0, 1fr); }
+  }
+
+  @media (max-width: 1023px) {
+    /* padding-block перебивал бы padding-top с высотой шапки, и заголовок
+       уезжал под логотип. Считаем оба отступа явно. */
+  .ekran:not(.__) {
+      min-height: auto;
+      padding-top: calc(var(--vysota-shapki) + var(--otstup-7));
+      padding-bottom: var(--otstup-8);
+    }
+  .ekran__vnutri:not(.__), 
+    .o-kafe__setka:not(.__), 
+    .zavtraki__setka:not(.__), 
+    .kofe__setka:not(.__), 
+    .bankety__setka:not(.__), 
+    .kontakty__setka:not(.__) { grid-template-columns: minmax(0, 1fr); }
+  .plitki:not(.__) { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 200px; }
+  .plitki__yacheyka:first-child:not(.__) { grid-column: span 2; grid-row: span 1; }
+  .bankety__foto:not(.__) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); padding-bottom: 0; }
+  .bankety:not(.__) .bankety__kadr { width: 100%; }
+  .bankety:not(.__) .bankety__kadr--vtoroy { position: static; }
+  .o-kafe__logotip:not(.__) { width: 140px; }
+  }
+
+  @media (max-width: 767px) {
+    .ekran__knopki { flex-direction: column; align-items: stretch; }
+  .begushchaya__punkt:not(.__) { font-size: 0.875rem; }
+  .plitki:not(.__) { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 180px; }
+  .plitki__yacheyka:first-child:not(.__) { grid-column: span 1; }
+  /* Ширина в пикселях, а не в долях экрана: доля тоже участвовала бы
+       в круговой зависимости с шириной ленты. */
+    .sety__yacheyka:not(.__) { flex: 0 0 260px; }
+  .zavtraki__foto:not(.__) { display: flex; overflow-x: auto; gap: var(--otstup-4); }
+  .zavtraki__foto:not(.__) li { flex: 0 0 60%; }
+  .kofe__kartochki:not(.__) { grid-template-columns: minmax(0, 1fr); }
+  .shagi:not(.__) { grid-template-columns: minmax(0, 1fr); }
+  .galereya__polosy:not(.__) { gap: var(--otstup-4); }
+  .galereya__polosa--nazad:not(.__) { display: none; }
+  .galereya__polosy:not(.__) { overflow-x: auto; }
+  .galereya:not(.__) .galereya__kadr { flex: 0 0 260px; }
+  }
+
+/* ---- src/pages/menu/index.astro ---- */
+/* ---- Шапка страницы ---- */
+  .shapka-menyu:not(.__) {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: 40dvh;
+    padding-block: var(--otstup-8);
+    background: var(--milk-rose);
+    overflow: hidden;
+  }
+  .shapka-menyu__dudly:not(.__) { position: absolute; inset: 0; pointer-events: none; }
+  .shapka-menyu__dudl:not(.__) { position: absolute; color: var(--beige); opacity: 0.35; }
+  .shapka-menyu__vnutri:not(.__) { position: relative; }
+  .shapka-menyu__podzagolovok:not(.__) { margin-top: 0; }
+  /* ---- Панель категорий ---- */
+  .kategorii:not(.__) {
+    position: sticky;
+    top: var(--vysota-shapki);
+    z-index: 40;
+    padding-block: var(--otstup-3);
+    background: var(--milk);
+    box-shadow: var(--ten-myagkaya);
+  }
+  .kategorii__obolochka:not(.__) { position: relative; }
+  .kategorii__lenta:not(.__) {
+    /* Позиционирование обязательно: иначе абсолютные потомки считаются от
+       обёртки со стрелками и прокрутка их не обрезает. */
+    position: relative;
+    display: flex;
+    gap: var(--otstup-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Лента прокручивается пальцем, полосу не показываем. */
+    padding-bottom: var(--otstup-1);
+    /* Затухание с той стороны, где лента продолжается: обрыв кнопки на
+       ровном месте читался как сломанная вёрстка, а не как прокрутка.
+       Маска ставится классами, поэтому у неподвижной ленты краёв не режет. */
+    --maska-nachalo: transparent;
+    --maska-konec: transparent;
+    --maska: linear-gradient(to right, var(--maska-nachalo) 0, #000 52px,
+      #000 calc(100% - 52px), var(--maska-konec) 100%);
+    -webkit-mask-image: var(--maska);
+    mask-image: var(--maska);
+  }
+  .kategorii__lenta::-webkit-scrollbar:not(.__) { display: none; }
+  .lenta--est-nazad:not(.__) .kategorii__lenta { --maska-nachalo: transparent; }
+  .lenta--est-vpered:not(.__) .kategorii__lenta { --maska-konec: transparent; }
+  .kategorii__obolochka:not(.lenta--est-nazad):not(.__) .kategorii__lenta { --maska-nachalo: #000; }
+  .kategorii__obolochka:not(.lenta--est-vpered):not(.__) .kategorii__lenta { --maska-konec: #000; }
+  /* Отступов под стрелки нет намеренно: они меняли бы ширину ленты в тот
+     момент, когда стрелка появляется, и кнопки прыгали бы под курсором.
+     Стрелка стоит поверх затухания, и перекрытие читается как край. */
+
+  .kategorii__knopka:not(.__) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--otstup-2);
+    flex: none;
+    min-height: 44px;
+    padding: var(--otstup-2) var(--otstup-4);
+    border-radius: var(--skruglenie-knopka);
+    box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--beige);
+    font-size: var(--razmer-melkiy);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color var(--plavno-navedenie), color var(--plavno-navedenie),
+      box-shadow var(--plavno-navedenie);
+  }
+  .kategorii__knopka:hover:not(.__) { box-shadow: inset 0 0 0 var(--tolschina-obvodki) var(--coffee); }
+  .kategorii__knopka--aktivna:not(.__) {
+    background: var(--orange);
+    color: var(--white);
+    box-shadow: none;
+  }
+  .kategorii__knopka--aktivna:hover:not(.__) { background: var(--orange-dark); box-shadow: none; }
+  .kategorii__chislo:not(.__) { opacity: 0.65; font-variant-numeric: tabular-nums; }
+  /* ---- Каталог ---- */
+  .katalog:not(.__) { padding-block: var(--otstup-7) var(--mezhdu-sekciyami); }
+  .katalog__poisk:not(.__) { max-width: 420px; margin-bottom: var(--otstup-7); }
+  .pole-poiska:not(.__) {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--otstup-3) var(--otstup-4);
+    background: var(--cream);
+    border: var(--tolschina-obvodki) solid var(--beige);
+    border-radius: var(--skruglenie-metka);
+    color: var(--ink);
+    transition: border-color var(--plavno-navedenie);
+  }
+  .pole-poiska:hover:not(.__) { border-color: var(--coffee); }
+  .pole-poiska:focus-visible:not(.__) { border-color: var(--orange); }
+  .katalog__schetchik:not(.__) { margin: var(--otstup-2) 0 0; }
+  .gruppa:not(.__) { margin-bottom: var(--otstup-8); }
+  .gruppa[hidden]:not(.__) { display: none; }
+  .gruppa__zagolovok:not(.__) { margin-bottom: var(--otstup-5); }
+  .setka:not(.__) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--otstup-5);
+  }
+  .setka__yacheyka:not(.__) { display: flex; min-width: 0; }
+  .setka__yacheyka[hidden]:not(.__) { display: none; }
+  .setka__yacheyka:not(.__) > * { width: 100%; }
+  .pusto:not(.__) { padding-block: var(--otstup-8); text-align: center; }
+  .pusto:not(.__) p { margin: var(--otstup-4) auto var(--otstup-6); max-width: 40ch; }
+  .katalog__snoska:not(.__) { max-width: 68ch; margin-top: var(--otstup-8); }
+
+  @media (max-width: 1023px) { .setka { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 767px) {
+    .setka { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); }
+  .kategorii__knopka:not(.__) { min-height: 40px; }
+  }
+
+  /* Ниже 360 px карточка в двух колонках сжимается до 136 px, и состав
+     обрывается на втором слове. Одна колонка читается. */
+  @media (max-width: 359px) {
+    .setka { grid-template-columns: minmax(0, 1fr); }
+  }
+
+/* ---- src/pages/menu/[id].astro ---- */
+.blyudo:not(.__) { padding-block: var(--otstup-5) var(--mezhdu-sekciyami); }
+  .kroshki:not(.__) ol { display: flex; flex-wrap: wrap; gap: var(--otstup-2); color: var(--ink-muted); }
+  .kroshki:not(.__) li + li::before { content: '→'; margin-right: var(--otstup-2); }
+  .blyudo__osnovnoy:not(.__) {
+    display: grid;
+    /* Ширину колонки задаём явно: при auto она считалась по содержимому,
+       и заглушка схлопывалась до размера дудла вместо кадра 480 px. */
+    grid-template-columns: minmax(0, var(--maks-shirina-foto-blyuda)) minmax(0, 1fr);
+    gap: var(--otstup-7);
+    align-items: start;
+    margin-top: var(--otstup-6);
+  }
+  /* Жёсткий предел: исходники низкого разрешения, шире 480 px они рассыпаются. */
+  .blyudo__foto:not(.__) { width: 100%; max-width: var(--maks-shirina-foto-blyuda); }
+  .blyudo__foto:not(.__) .foto--zaglushka { max-width: var(--maks-shirina-foto-blyuda); }
+  .blyudo__svedeniya:not(.__) { max-width: 62ch; }
+  .blyudo__kategoriya:not(.__) { margin: 0 0 var(--otstup-2); }
+  .blyudo__nazvanie:not(.__) { margin-bottom: var(--otstup-4); }
+  .blyudo__metki:not(.__) { display: flex; flex-wrap: wrap; gap: var(--otstup-2); margin-bottom: var(--otstup-4); }
+  .blyudo__sostav:not(.__) { margin-bottom: var(--otstup-2); }
+  .blyudo__podzagolovok:not(.__) { font-size: var(--razmer-h4); margin-bottom: var(--otstup-3); }
+  .sostav-seta:not(.__) { display: grid; gap: var(--otstup-2); margin-bottom: var(--otstup-3); }
+  .sostav-seta:not(.__) li { display: flex; align-items: center; gap: var(--otstup-3); }
+  .sostav-seta:not(.__) .sostav-seta__dudl { flex: none; }
+  .blyudo__ves:not(.__) { margin-bottom: var(--otstup-5); }
+  .blyudo__ceny:not(.__) { display: flex; align-items: baseline; gap: var(--otstup-3); margin-bottom: var(--otstup-3); }
+  .blyudo__staraya:not(.__) { font-size: var(--razmer-tekst); text-decoration: line-through; }
+  .blyudo__cena:not(.__) {
+    font-family: var(--shrift-zagolovok);
+    font-size: clamp(2rem, 1.7rem + 1.2vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--orange);
+  }
+  .blyudo__dobavki:not(.__) { margin-bottom: var(--otstup-4); }
+  .blyudo__net:not(.__) {
+    margin-bottom: var(--otstup-4);
+    padding: var(--otstup-3) var(--otstup-4);
+    background: var(--milk-rose);
+    border-radius: var(--skruglenie-metka);
+  }
+  .blyudo__zakaz:not(.__) { margin-top: var(--otstup-5); max-width: 360px; }
+  .blyudo__telefon:not(.__) { margin-top: var(--otstup-3); }
+  .pohozhie:not(.__) { margin-top: var(--mezhdu-sekciyami); }
+  .pohozhie:not(.__) h2 { margin-bottom: var(--otstup-5); }
+  .pohozhie__setka:not(.__) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--otstup-5);
+  }
+  .pohozhie__setka:not(.__) li { display: flex; min-width: 0; }
+  .pohozhie__setka:not(.__) li > * { width: 100%; }
+  .blyudo__nazad:not(.__) { margin-top: var(--otstup-8); }
+
+  @media (max-width: 1023px) {
+    .blyudo__osnovnoy { grid-template-columns: minmax(0, 1fr); gap: var(--otstup-6); }
+  .blyudo__foto:not(.__) { margin-inline: auto; }
+  .pohozhie__setka:not(.__) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 767px) {
+    .pohozhie__setka { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--otstup-4); }
+  .blyudo__zakaz:not(.__) { max-width: none; }
+  /* Кнопка заказа прилипает к низу экрана при прокрутке. */
+    .blyudo__zakaz:not(.__) {
+      position: sticky;
+      bottom: var(--otstup-4);
+      z-index: 30;
+      padding: var(--otstup-3);
+      margin-inline: calc(-1 * var(--otstup-3));
+      background: var(--milk);
+      border-radius: var(--skruglenie-karta);
+      box-shadow: var(--ten);
+    }
+  }
+
+  @media (max-width: 359px) {
+    .pohozhie__setka { grid-template-columns: minmax(0, 1fr); }
+  }
+
+/* ---- src/pages/404.astro ---- */
+.oshibka:not(.__) {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: calc(100dvh - var(--vysota-shapki));
+    padding-block: var(--otstup-8);
+    overflow: hidden;
+  }
+  .oshibka__dudly:not(.__) { position: absolute; inset: 0; pointer-events: none; }
+  .oshibka__dudl:not(.__) { position: absolute; color: var(--beige); opacity: 0.35; }
+  .oshibka__vnutri:not(.__) { position: relative; text-align: center; }
+  .oshibka__logotip:not(.__) { width: 240px; height: auto; margin: 0 auto var(--otstup-5); }
+  .oshibka__tekst:not(.__) { margin: var(--otstup-4) auto var(--otstup-6); max-width: 46ch; }
+  .oshibka__knopki:not(.__) { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--otstup-4); }
+
+  @media (max-width: 767px) {
+    .oshibka__logotip { width: 160px; }
+  .oshibka__knopki:not(.__) { flex-direction: column; align-items: stretch; }
+  }

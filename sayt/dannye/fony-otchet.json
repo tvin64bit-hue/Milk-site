@@ -1,0 +1,302 @@
+{
+  "chuzhaya": [
+    {
+      "id": "filadelfiya-s-ugrem",
+      "kategoriya": "rolly-holodnye",
+      "tip": "тёмный",
+      "yarkost": 0,
+      "teplo": 0,
+      "hex": "#000000"
+    },
+    {
+      "id": "filadelfiya-layt",
+      "kategoriya": "rolly-holodnye",
+      "tip": "тёмный",
+      "yarkost": 63,
+      "teplo": -5,
+      "hex": "#3E3E43"
+    },
+    {
+      "id": "filadelfiya-ugor-layt",
+      "kategoriya": "rolly-holodnye",
+      "tip": "тёмный",
+      "yarkost": 53,
+      "teplo": -6,
+      "hex": "#333639"
+    },
+    {
+      "id": "kaliforniya-klassik",
+      "kategoriya": "rolly-holodnye",
+      "tip": "чисто-белый",
+      "yarkost": 254,
+      "teplo": -1,
+      "hex": "#FDFFFE"
+    },
+    {
+      "id": "kaliforniya-s-forelyu",
+      "kategoriya": "rolly-holodnye",
+      "tip": "тёмный",
+      "yarkost": 52,
+      "teplo": 29,
+      "hex": "#3D3320"
+    },
+    {
+      "id": "tempurnaya-kurochka",
+      "kategoriya": "rolly-tempura",
+      "tip": "тёмный",
+      "yarkost": 58,
+      "teplo": 39,
+      "hex": "#4C3525"
+    },
+    {
+      "id": "mini-s-ogurcom",
+      "kategoriya": "detskie-rolly",
+      "tip": "чисто-белый",
+      "yarkost": 251,
+      "teplo": 1,
+      "hex": "#FBFBFA"
+    },
+    {
+      "id": "mini-s-lososem",
+      "kategoriya": "detskie-rolly",
+      "tip": "тёмный",
+      "yarkost": 62,
+      "teplo": -7,
+      "hex": "#3D3E44"
+    },
+    {
+      "id": "mini-s-krevetkoy",
+      "kategoriya": "detskie-rolly",
+      "tip": "тёмный",
+      "yarkost": 96,
+      "teplo": -21,
+      "hex": "#57626C"
+    },
+    {
+      "id": "mini-s-krabom",
+      "kategoriya": "detskie-rolly",
+      "tip": "чисто-белый",
+      "yarkost": 255,
+      "teplo": 0,
+      "hex": "#FFFFFF"
+    }
+  ],
+  "normalizovano": [
+    {
+      "id": "bliny-s-kuricey-i-veshenkami",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 120,
+      "teplo": 16,
+      "hex": "#7C786C",
+      "otstup": 41
+    },
+    {
+      "id": "limonad",
+      "kategoriya": "kofe-napitki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 126,
+      "teplo": 27,
+      "hex": "#818166",
+      "otstup": 34
+    },
+    {
+      "id": "vafli-s-bekonom",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 139,
+      "teplo": 6,
+      "hex": "#8C8B86",
+      "otstup": 32
+    },
+    {
+      "id": "sendvich-vaflya-s-lososem",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 139,
+      "teplo": 7,
+      "hex": "#8E8B87",
+      "otstup": 31
+    },
+    {
+      "id": "penne",
+      "kategoriya": "pasta",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 128,
+      "teplo": 18,
+      "hex": "#858073",
+      "otstup": 31
+    },
+    {
+      "id": "dabl-roll",
+      "kategoriya": "rolly-holodnye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 130,
+      "teplo": 18,
+      "hex": "#888276",
+      "otstup": 29
+    },
+    {
+      "id": "omlet-s-lososem",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 134,
+      "teplo": 16,
+      "hex": "#898779",
+      "otstup": 27
+    },
+    {
+      "id": "krevetka-tempura",
+      "kategoriya": "rolly-holodnye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 131,
+      "teplo": 19,
+      "hex": "#898376",
+      "otstup": 27
+    },
+    {
+      "id": "syrniki-s-kokosovoy-sguschenkoy",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 136,
+      "teplo": 15,
+      "hex": "#8B887C",
+      "otstup": 26
+    },
+    {
+      "id": "set-premium",
+      "kategoriya": "sety",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 139,
+      "teplo": 32,
+      "hex": "#938B73",
+      "otstup": 26
+    },
+    {
+      "id": "asahi",
+      "kategoriya": "rolly-zapechennye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 135,
+      "teplo": 16,
+      "hex": "#8B887B",
+      "otstup": 26
+    },
+    {
+      "id": "boston",
+      "kategoriya": "rolly-zapechennye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 135,
+      "teplo": 16,
+      "hex": "#8B887B",
+      "otstup": 26
+    },
+    {
+      "id": "omlet-s-moreproduktami",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 136,
+      "teplo": 16,
+      "hex": "#8C897C",
+      "otstup": 25
+    },
+    {
+      "id": "set-bolshaya-kompaniya",
+      "kategoriya": "sety",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 135,
+      "teplo": 27,
+      "hex": "#918676",
+      "otstup": 25
+    },
+    {
+      "id": "ovsyanka",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 172,
+      "teplo": 17,
+      "hex": "#B0AD9F",
+      "otstup": 22
+    },
+    {
+      "id": "filadelfiya-lyuks",
+      "kategoriya": "rolly-holodnye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 135,
+      "teplo": 20,
+      "hex": "#8C8878",
+      "otstup": 22
+    },
+    {
+      "id": "bankog",
+      "kategoriya": "rolly-zapechennye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 133,
+      "teplo": 22,
+      "hex": "#8D8477",
+      "otstup": 22
+    },
+    {
+      "id": "kurinyy-sup",
+      "kategoriya": "supy-salaty",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 168,
+      "teplo": 15,
+      "hex": "#ABA89C",
+      "otstup": 20
+    },
+    {
+      "id": "salat-s-rvanoy-govyadinoy",
+      "kategoriya": "supy-salaty",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 142,
+      "teplo": 16,
+      "hex": "#948D84",
+      "otstup": 19
+    },
+    {
+      "id": "shakshuka",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 172,
+      "teplo": 22,
+      "hex": "#B3AC9D",
+      "otstup": 17
+    },
+    {
+      "id": "pekin",
+      "kategoriya": "rolly-zapechennye",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 139,
+      "teplo": 21,
+      "hex": "#908B7B",
+      "otstup": 17
+    },
+    {
+      "id": "skovoroda-s-rvanoy-govyadinoy",
+      "kategoriya": "goryachee-zakuski",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 161,
+      "teplo": 11,
+      "hex": "#A6A09B",
+      "otstup": 17
+    },
+    {
+      "id": "rigatoni",
+      "kategoriya": "pasta",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 140,
+      "teplo": 22,
+      "hex": "#938B7D",
+      "otstup": 15
+    },
+    {
+      "id": "vafli-s-shokoladnoy-pastoy",
+      "kategoriya": "zavtraki",
+      "tip": "свой фон, сбит баланс",
+      "yarkost": 148,
+      "teplo": 15,
+      "hex": "#979488",
+      "otstup": 14
+    }
+  ]
+}

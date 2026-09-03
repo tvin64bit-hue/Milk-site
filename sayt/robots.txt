@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /styleguide
+
+Sitemap: http://milk-site.ru.swtest.ru/sitemap-index.xml
