@@ -13,6 +13,8 @@ require_once __DIR__ . '/../../app/konfig.php';
 const POPYTOK_DO_BLOKIROVKI = 5;
 /** На сколько минут вход блокируется после исчерпания попыток. */
 const MINUT_BLOKIROVKI = 15;
+/** Сколько держать запись об адресе, с которого больше не стучатся. */
+const SUTKI_HRANIT_POPYTKI = 24 * 60 * 60;
 
 /**
  * Где хранить файл с хешем пароля.
@@ -136,36 +138,66 @@ function voshel(): bool
 /** Журнал попыток входа. Хранится рядом с данными, к сети не доступен. */
 function fajl_popytok(): string { return KOREN . '/dannye/popytki.json'; }
 
+/**
+ * Кого считать. Счёт ведётся отдельно по каждому адресу: общий счётчик
+ * означал бы, что посторонний, подбирающий пароль, заодно закрывает вход
+ * владельцу — достаточно пяти попыток, и хозяин кафе ждёт четверть часа
+ * вместе со взломщиком.
+ *
+ * Берётся только REMOTE_ADDR — адрес, с которого пришло соединение.
+ * X-Forwarded-For и подобные заголовки сюда не годятся: их присылает сам
+ * клиент, и подобрать пароль можно было бы, меняя одну строку в запросе.
+ * Обратная сторона — если сайт однажды окажется за прокси хостера, все
+ * посетители придут с одного адреса и счёт снова станет общим.
+ *
+ * Хранится не сам адрес, а его отпечаток: для счёта попыток этого хватает,
+ * а на диске не лежат адреса посетителей.
+ */
+function otpechatok_adresa(): string
+{
+    $adres = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    return substr(hash('sha256', $adres === '' ? 'neizvestno' : $adres), 0, 16);
+}
+
+/** Весь журнал: отпечаток адреса → счёт попыток и время конца блокировки. */
 function popytki(): array
 {
     $syroe = @file_get_contents(fajl_popytok());
     $dannye = $syroe === false ? null : json_decode($syroe, true);
-    return is_array($dannye) ? $dannye : ['schet' => 0, 'do' => 0];
+    return is_array($dannye) ? $dannye : [];
 }
 
-/** Сколько секунд осталось до конца блокировки. Ноль — вход открыт. */
+/** Сколько секунд осталось до конца блокировки для этого адреса. Ноль — вход открыт. */
 function blokirovka_ostalos(): int
 {
-    $p = popytki();
-    return max(0, (int) ($p['do'] ?? 0) - time());
+    $zapis = popytki()[otpechatok_adresa()] ?? null;
+    return is_array($zapis) ? max(0, (int) ($zapis['do'] ?? 0) - time()) : 0;
 }
 
 function zapisat_popytku(bool $udachno): void
 {
-    $p = popytki();
+    $vse = popytki();
+    $kto = otpechatok_adresa();
+
     if ($udachno) {
-        @file_put_contents(fajl_popytok(), json_encode(['schet' => 0, 'do' => 0]), LOCK_EX);
-        return;
+        unset($vse[$kto]);
+    } else {
+        $schet = (int) ($vse[$kto]['schet'] ?? 0) + 1;
+        $do = $schet >= POPYTOK_DO_BLOKIROVKI ? time() + MINUT_BLOKIROVKI * 60 : 0;
+        // После блокировки счёт обнуляется, иначе каждая следующая ошибка
+        // блокировала бы вход мгновенно и навсегда.
+        $vse[$kto] = ['schet' => $do ? 0 : $schet, 'do' => $do, 'kogda' => time()];
     }
-    $schet = (int) ($p['schet'] ?? 0) + 1;
-    $do = $schet >= POPYTOK_DO_BLOKIROVKI ? time() + MINUT_BLOKIROVKI * 60 : 0;
-    // После блокировки счёт обнуляется, иначе каждая следующая ошибка
-    // блокировала бы вход мгновенно и навсегда.
-    @file_put_contents(
-        fajl_popytok(),
-        json_encode(['schet' => $do ? 0 : $schet, 'do' => $do]),
-        LOCK_EX,
-    );
+
+    // Записи, по которым давно ничего не происходит, выбрасываются: иначе
+    // файл растёт с каждым новым адресом и не уменьшается никогда.
+    $porog = time() - SUTKI_HRANIT_POPYTKI;
+    foreach ($vse as $klyuch => $zapis) {
+        $zhivaya = (int) ($zapis['do'] ?? 0) > time() || (int) ($zapis['kogda'] ?? 0) > $porog;
+        if (!$zhivaya) { unset($vse[$klyuch]); }
+    }
+
+    @file_put_contents(fajl_popytok(), json_encode($vse), LOCK_EX);
 }
 
 /** Проверяет логин и пароль. Сравнение хеша устойчиво к подбору по времени. */
