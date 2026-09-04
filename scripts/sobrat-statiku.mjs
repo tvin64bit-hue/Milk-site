@@ -20,6 +20,35 @@ const VYVOD = 'sayt';
 // и восстанавливает прежний порядок, ничего не выбирая сам по себе.
 const VES = ':not(.__)';
 
+// Запрет на выполнение чего бы то ни было в папке картинок. Туда админка
+// кладёт присланные снимки, и файл с кодом внутри не должен запускаться,
+// даже если проверка типа когда-нибудь пропустит подделку.
+// Синтаксис Apache 2.2 — на хостинге стоит именно он.
+const ZAPRET_ISPOLNENIYA = `# Здесь лежат только картинки. Ничего исполняемого — на всякий случай.
+# Отдача таких файлов закрыта совсем: что нельзя скачать, то нельзя и
+# запустить. AddHandler cgi-script здесь намеренно не используется — если
+# хостинг не даст переопределить Options, он сделал бы ровно обратное.
+<FilesMatch "\\.(php|php3|php4|php5|php7|php8|phtml|phps|pl|py|cgi|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Обработчик PHP гасится там, где он есть. Имя модуля у разных сборок своё,
+# поэтому перечислены все: без обёртки IfModule незнакомая директива
+# роняет сервер пятисотой ошибкой.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php5.c>
+    php_flag engine off
+</IfModule>
+
+Options -Indexes
+`;
+
 /** Поднимает вес селектора так же, как это делал Astro. */
 function sVesom(selektor) {
   return selektor.split(',').map((chast) => {
@@ -56,8 +85,13 @@ function stiliIz(fajl) {
 
   // Вес добавляется каждому селектору правила. Правила @media и @keyframes,
   // а также шаги анимации вида «to {» остаются как есть.
+  //
+  // Открывающая скобка в списке начал обязательна: у первого правила внутри
+  // @media перед ним стоит именно она, и без неё это правило оставалось
+  // лёгким. Так медиазапросы шапки перестали действовать — логотип держал
+  // высоту большого экрана, строка не помещалась и уезжала за правый край.
   const sVesami = bezKommentariev
-    .replace(/(^|\}|\*\/)([^{}@]+)\{/g, (celoe, nachalo, selektor) => {
+    .replace(/(^|\}|\*\/|\{)([^{}@]+)\{/g, (celoe, nachalo, selektor) => {
       const chistyy = selektor.trim();
       if (!chistyy || /^(from|to|[\d.]+%)/.test(chistyy)) return celoe;
       return `${nachalo}\n  ${sVesom(chistyy)} {`;
@@ -122,9 +156,18 @@ if (!existsSync(`${VYVOD}/dannye/menu.json`)) {
 }
 
 // Картинки и значок сайта переносятся как есть: их готовит npm run images.
+// Папка proba остаётся дома: её снимки нужны только странице образцов
+// дизайна, которой в PHP-версии нет, а на хостинг уехало бы полтора мегабайта.
 if (existsSync('public/images')) {
   rmSync(`${VYVOD}/images`, { recursive: true, force: true });
-  cpSync('public/images', `${VYVOD}/images`, { recursive: true });
+  cpSync('public/images', `${VYVOD}/images`, {
+    recursive: true,
+    filter: (ot) => !ot.replace(/\\/g, '/').includes('public/images/proba'),
+  });
+  // Папку пересоздаёт этот же скрипт, поэтому запрет на выполнение пишется
+  // здесь: положенный руками файл пропал бы при первой же пересборке.
+  // В эту папку admin кладёт снимки, присланные из браузера.
+  writeFileSync(`${VYVOD}/images/.htaccess`, ZAPRET_ISPOLNENIYA);
 }
 for (const fajl of ['favicon.svg', 'robots.txt']) {
   if (existsSync(`public/${fajl}`)) cpSync(`public/${fajl}`, `${VYVOD}/${fajl}`);

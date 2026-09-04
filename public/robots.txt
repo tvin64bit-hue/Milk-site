@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /styleguide
 
-Sitemap: http://milk-site.ru.swtest.ru/sitemap-index.xml
+Sitemap: https://web-styles.ru/milk-site/sitemap-index.xml

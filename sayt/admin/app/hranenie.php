@@ -89,8 +89,17 @@ function proverit_poziciyu(array $p, array $pozicii, ?string $prezhniyId = null)
 function sobrat_poziciyu(array $forma, ?array $prezhnyaya = null): array
 {
     $staraya = trim((string) ($forma['oldPrice'] ?? ''));
+    // Адрес обычно подставляет форма при вводе названия. Если скрипт не
+    // отработал, он приходит пустым — тогда адрес делается здесь, из того
+    // же названия и по той же таблице, а не выдаётся ошибка на ровном месте.
+    // Только для новой позиции: у существующей пустое поле означает, что его
+    // очистили, и подставлять адрес молча нельзя — на прежний уже есть ссылки.
+    $adres = trim((string) ($forma['id'] ?? ''));
+    if ($adres === '' && $prezhnyaya === null) {
+        $adres = v_identifikator(trim((string) ($forma['name'] ?? '')));
+    }
     $pozicija = [
-        'id' => trim((string) ($forma['id'] ?? '')),
+        'id' => $adres,
         'category' => (string) ($forma['category'] ?? ''),
         'name' => trim((string) ($forma['name'] ?? '')),
         'description' => trim((string) ($forma['description'] ?? '')),

@@ -21,6 +21,22 @@ if (existsSync(ZHURNAL)) rmSync(ZHURNAL);
 
 let plohih = 0;
 let proverено = 0;
+
+// Карта сайта проверяется отдельно: это XML, у неё нет ни </html>, ни H1,
+// зато должны быть все адреса меню — иначе поисковик не увидит новые блюда.
+for (const put of ['/sitemap.xml', '/sitemap-index.xml']) {
+  const otvet = await fetch(`${BAZA}${put}`);
+  const tekst = await otvet.text();
+  const bylo = (tekst.match(/<loc>/g) ?? []).length;
+  const nado = menu.items.length + 2;
+  const oshibki = [];
+  if (otvet.status !== 200) oshibki.push(`код ${otvet.status}, ждали 200`);
+  if (bylo !== nado) oshibki.push(`адресов ${bylo}, ждали ${nado}`);
+  if (!tekst.includes('</urlset>')) oshibki.push('карта оборвана — нет </urlset>');
+  if (oshibki.length) { plohih++; console.log(`✗ ${put}: ${oshibki.join('; ')}`); }
+  proverено++;
+}
+
 for (const [put, ozhidaemyy] of adresa) {
   const otvet = await fetch(`${BAZA}${put}`);
   const tekst = await otvet.text();

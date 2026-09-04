@@ -45,5 +45,7 @@ function admin_konec(array $skripty = []): void
 /** Сообщение об удаче или ошибке. */
 function soobshchenie(string $tekst, string $vid = 'horosho'): string
 {
-    return '<p class="soobshchenie soobshchenie--' . e($vid) . '">' . $tekst . '</p>';
+    // Обёртка — div, а не p: список ошибок внутри абзаца браузер вынес бы
+    // наружу, закрыв абзац перед <ul>, и перечень вывалился бы из плашки.
+    return '<div class="soobshchenie soobshchenie--' . e($vid) . '">' . $tekst . '</div>';
 }

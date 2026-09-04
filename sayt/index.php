@@ -37,6 +37,10 @@ $parametry = [];
 
 if ($put === '/') {
     $stranica = 'glavnaya';
+} elseif ($put === '/sitemap.xml' || $put === '/sitemap-index.xml') {
+    // Карта сайта отдаётся по обоим адресам: на первый смотрят поисковики
+    // по привычке, второй записан в robots.txt со времён прежней сборки.
+    $stranica = 'karta-sayta';
 } elseif ($put === '/menu') {
     $stranica = 'katalog';
 } elseif (preg_match('~^/menu/([a-z0-9-]+)$~', $put, $sovpadenie)) {
