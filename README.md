@@ -173,8 +173,13 @@ JavaScript).
 ```bash
 npm install     # один раз
 npm run images  # готовит картинки, кладёт их в том числе в sayt/images/
-npm run sayt    # собирает стили, графику и robots.txt для sayt/
+npm run sayt    # собирает стили, графику, шрифты и robots.txt для sayt/
 ```
+
+Шрифты качать не нужно: они лежат в репозитории, в `public/fonts/`, и
+`npm run sayt` переносит их в `sayt/fonts/`. Обновить их до свежих версий
+можно командой `npm run shrifty` — она сходит на Google Fonts и перепишет
+папку; без интернета команда не нужна вовсе.
 
 Только после этого `sayt/` полна и её можно заливать. Если выгрузить
 папку без этого шага, сайт откроется, но будет без единой фотографии.
@@ -237,6 +242,7 @@ npm install            # установка зависимостей
 npm run images          # готовит public/images/ из Referens/ и попутно sayt/images/
 npm run dev              # локальный сервер разработки дизайна (Astro)
 npm run build             # сборка Astro-версии — используется для сверки при изменении дизайна
+npm run shrifty             # скачивает шрифты Rubik и Onest в public/fonts (нужен интернет)
 npm run sayt               # пересобирает sayt/statika/sayt.css и sayt/app/grafika.php из src/
 npm run sayt:server         # локальный сервер PHP-версии, та же подпапка /milk-site, что на хостинге
 npm run check:menu           # проверка menu.json без сборки
@@ -254,6 +260,14 @@ PHP-версии (`npm run sayt:server`):
 ```bash
 node scripts/proverka-vyorstki.mjs http://127.0.0.1:8080/milk-site
 ```
+
+Шрифты Rubik и Onest лежат рядом с сайтом, а не тянутся с Google Fonts:
+оттуда они шли неровно, а при недоступности страница меняла вид на
+системный шрифт. Оба вариативные, поэтому файл один на подмножество, а
+вес в `@font-face` задан диапазоном. Подмножеств три — `latin`,
+`latin-ext`, `cyrillic`; `latin-ext` нужен не для европейских языков, а
+ради знака рубля U+20BD, который лежит именно там. Лицензия SIL Open Font
+License, её текст выгружается вместе со шрифтами (`LICENSE-*.txt`).
 
 Стек публикации: PHP 8.2+, встроенный GD для обработки фото в админке,
 обычный CSS с переменными в `src/styles/tokens.css` — единственном месте

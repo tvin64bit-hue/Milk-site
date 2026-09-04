@@ -41,12 +41,12 @@ const ogPolnaya = ogKartinka ? new URL(ogKartinka, Astro.site).href : undefined;
 
     <link rel="icon" href={put('/favicon.svg')} type="image/svg+xml" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700&family=Onest:wght@400;500;600&display=swap&subset=cyrillic,latin"
-    />
+    <!-- Шрифты лежат рядом с сайтом: с Google Fonts они шли неровно, а при
+         недоступности страница меняла вид на системный шрифт. Кириллица
+         подгружается заранее — ею набрано всё, что видно сразу. -->
+    <link rel="preload" href={put('/fonts/rubik-cyrillic.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={put('/fonts/onest-cyrillic.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href={put('/fonts/shrifty.css')} />
 
     <!-- Место под счётчик Яндекс.Метрики. Идентификатора нет, счётчик не подключён. -->
     <slot name="golova" />

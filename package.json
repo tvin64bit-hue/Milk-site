@@ -16,7 +16,8 @@
     "check:fon": "node scripts/proverka-fona.mjs",
     "sayt": "node scripts/robots.mjs && node scripts/sobrat-statiku.mjs && node scripts/sobrat-grafiku.mjs",
     "sayt:server": "php -S 127.0.0.1:8080 -t .php-koren .php-koren/router.php",
-    "check:php": "node scripts/proverka-php.mjs"
+    "check:php": "node scripts/proverka-php.mjs",
+    "shrifty": "node scripts/shrifty.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

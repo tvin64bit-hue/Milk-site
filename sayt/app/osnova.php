@@ -37,9 +37,12 @@ function stranica_nachalo(array $o): void
 <?php endif; ?>
 <link rel="icon" href="<?= e(put('/favicon.svg')) ?>" type="image/svg+xml" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700&amp;family=Onest:wght@400;500;600&amp;display=swap&amp;subset=cyrillic,latin" />
+<?php // Шрифты лежат рядом с сайтом: с Google Fonts они шли неровно, а при
+      // недоступности страница меняла вид на системный шрифт. Кириллица и
+      // латиница подгружаются заранее — ими набрано всё, что видно сразу. ?>
+<link rel="preload" href="<?= e(put('/fonts/rubik-cyrillic.woff2')) ?>" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="<?= e(put('/fonts/onest-cyrillic.woff2')) ?>" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="<?= e(put('/fonts/shrifty.css')) ?>" />
 <link rel="stylesheet" href="<?= e(put('/statika/sayt.css')) ?>" />
 
 <!-- Место под счётчик Яндекс.Метрики. Идентификатора нет, счётчик не подключён. -->

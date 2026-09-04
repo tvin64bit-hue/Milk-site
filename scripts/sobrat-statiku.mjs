@@ -169,6 +169,15 @@ if (existsSync('public/images')) {
   // В эту папку admin кладёт снимки, присланные из браузера.
   writeFileSync(`${VYVOD}/images/.htaccess`, ZAPRET_ISPOLNENIYA);
 }
+// Шрифты. Их скачивает node scripts/shrifty.mjs; пути внутри shrifty.css
+// относительные, поэтому подкаталог сайта на них не влияет.
+if (existsSync('public/fonts')) {
+  rmSync(`${VYVOD}/fonts`, { recursive: true, force: true });
+  cpSync('public/fonts', `${VYVOD}/fonts`, { recursive: true });
+} else {
+  console.log('  ВНИМАНИЕ: public/fonts нет — запустите node scripts/shrifty.mjs');
+}
+
 for (const fajl of ['favicon.svg', 'robots.txt']) {
   if (existsSync(`public/${fajl}`)) cpSync(`public/${fajl}`, `${VYVOD}/${fajl}`);
 }

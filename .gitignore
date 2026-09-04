@@ -21,6 +21,10 @@ sayt/dannye/kopii/*
 !sayt/dannye/kopii/.gitkeep
 # Картинки для PHP-версии готовит npm run images, как и для прежней сборки
 sayt/images/
+# Шрифты в sayt/ — копия public/fonts, её кладёт npm run sayt. Сами файлы
+# шрифтов в репозитории есть: без них сайт меняет вид, а качать их с
+# Google при каждой выгрузке незачем
+sayt/fonts/
 
 # Данные, которые появляются только во время работы админки
 sayt/dannye/popytki.json
