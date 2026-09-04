@@ -7,6 +7,15 @@
 const bezDvizheniya = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const uzkiyEkran = () => window.matchMedia('(max-width: 767px)').matches;
 
+/** Ближайший предок, который прокручивается вбок и потому обрезает потомков. */
+function lentaNad(element: HTMLElement): HTMLElement | null {
+  for (let p = element.parentElement; p && p !== document.body; p = p.parentElement) {
+    const os = getComputedStyle(p).overflowX;
+    if (os === 'auto' || os === 'scroll') return p;
+  }
+  return null;
+}
+
 /** Появление при прокрутке: сдвиг снизу и проявление, один раз. */
 function poyavlenie() {
   const elementy = [...document.querySelectorAll<HTMLElement>('[data-poyavlenie]')];
@@ -15,15 +24,35 @@ function poyavlenie() {
     elementy.forEach((el) => el.classList.add('vidno'));
     return;
   }
+
+  // Элемент, уехавший за край прокручиваемой ленты, с экраном не
+  // пересекается: предок его обрезает, и наблюдатель о нём не узнает
+  // никогда — сколько страницу вниз ни листай. Поэтому за такими следим
+  // не поодиночке, а через саму ленту: она в кадре — проявляется вся
+  // группа разом. Без этого на телефоне в ленте завтраков две карточки
+  // из четырёх оставались пустыми, и увидеть их можно было только
+  // пролистав ленту вбок.
+  const gruppy = new Map<HTMLElement, HTMLElement[]>();
+  const otdelnye: HTMLElement[] = [];
+  for (const el of elementy) {
+    const lenta = lentaNad(el);
+    if (!lenta) { otdelnye.push(el); continue; }
+    const svoi = gruppy.get(lenta);
+    if (svoi) { svoi.push(el); } else { gruppy.set(lenta, [el]); }
+  }
+
   const nablyudatel = new IntersectionObserver((zapisi) => {
     for (const zapis of zapisi) {
       if (!zapis.isIntersecting) continue;
-      const el = zapis.target as HTMLElement;
-      el.classList.add('vidno');
-      nablyudatel.unobserve(el);
+      const cel = zapis.target as HTMLElement;
+      const gruppa = gruppy.get(cel);
+      if (gruppa) { gruppa.forEach((el) => el.classList.add('vidno')); } else { cel.classList.add('vidno'); }
+      nablyudatel.unobserve(cel);
     }
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
-  elementy.forEach((el) => nablyudatel.observe(el));
+
+  otdelnye.forEach((el) => nablyudatel.observe(el));
+  gruppy.forEach((_, lenta) => nablyudatel.observe(lenta));
 }
 
 /**
