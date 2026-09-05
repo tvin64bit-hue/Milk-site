@@ -29,9 +29,19 @@ const ZAPRET_ISPOLNENIYA = `# Здесь лежат только картинк�
 # Отдача таких файлов закрыта совсем: что нельзя скачать, то нельзя и
 # запустить. AddHandler cgi-script здесь намеренно не используется — если
 # хостинг не даст переопределить Options, он сделал бы ровно обратное.
+#
+# Запрет записан дважды: у Apache 2.2 и 2.4 разный синтаксис, а mod_authz_core
+# есть только в 2.4 — по нему версия и различается. Со старым вариантом в
+# одиночку на 2.4 без модуля совместимости папка отдавала бы пятисотую
+# ошибку вместо картинок.
 <FilesMatch "\\.(php|php3|php4|php5|php7|php8|phtml|phps|pl|py|cgi|sh)$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Обработчик PHP гасится там, где он есть. Имя модуля у разных сборок своё,
