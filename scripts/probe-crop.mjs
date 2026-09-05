@@ -16,6 +16,9 @@ for (const [n, item] of top.entries()) {
   console.log(`${item.id.padEnd(34)} ${otchet}`);
   plitki.push({ input: await sharp(kvadrat).resize(K, K).toBuffer(), left: (n % kol) * K, top: Math.floor(n / kol) * K });
 }
-mkdirSync('/tmp/claude-0/-home-user-Milk-site/e9b5955b-76a0-50f8-bf06-d8402dfc9488/scratchpad/crop', { recursive: true });
+// Отчёт кладётся в проект: прежний путь вёл во временную папку той машины,
+// где скрипт писали, и на другой его просто некуда было записать.
+mkdirSync('otchety', { recursive: true });
 await sharp({ create: { width: kol * K, height: Math.ceil(top.length / kol) * K, channels: 3, background: '#ffffff' } })
-  .composite(plitki).png().toFile('/tmp/claude-0/-home-user-Milk-site/e9b5955b-76a0-50f8-bf06-d8402dfc9488/scratchpad/crop/avto.png');
+  .composite(plitki).png().toFile('otchety/obrezka.png');
+console.log('\nКонтрольный лист: otchety/obrezka.png');

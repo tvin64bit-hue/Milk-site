@@ -7,7 +7,8 @@
 //
 // Запуск: node scripts/sobrat-statiku.mjs
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, rmSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { basename } from 'node:path';
+import { build } from 'esbuild';
 import { globSync } from 'node:fs';
 
 const VYVOD = 'sayt';
@@ -102,8 +103,17 @@ function stiliIz(fajl) {
 }
 
 const obshchie = ['src/styles/tokens.css', 'src/styles/base.css', 'src/styles/glavnaya.css'];
+
+// Windows отдаёт пути с обратными слешами, и они попадали бы в заголовки
+// внутри собранного CSS: файл, собранный там, отличался бы от собранного
+// здесь на каждой строке-разделителе. Читать файлы это не мешает, но
+// разница уходила бы в гит при каждой пересборке с другой машины.
+const kosyeSlashi = (put) => put.replace(/\\/g, '/');
+
 const istochniki = [
-  ...globSync('src/components/*.astro'),
+  // Порядок задаёт каскад: правило, идущее позже, перебивает равное по весу.
+  // Обход файловой системы порядок не гарантирует, поэтому он задаётся здесь.
+  ...globSync('src/components/*.astro').map(kosyeSlashi).sort(),
   'src/layouts/Bazovyy.astro',
   'src/pages/index.astro',
   'src/pages/menu/index.astro',
@@ -136,10 +146,18 @@ for (const [imya, vyzov] of Object.entries(skripty)) {
   if (!existsSync(vhod)) continue;
   const obertka = `.astro/vhody/${imya}.ts`;
   writeFileSync(obertka, `import { ${vyzov} } from '../../src/scripts/${imya}';\n${vyzov}();\n`);
-  execFileSync('node_modules/.bin/esbuild', [
-    obertka, '--bundle', '--format=esm', '--target=es2020', '--minify',
-    `--outfile=${VYVOD}/statika/${imya}.js`,
-  ], { stdio: 'pipe' });
+  // esbuild вызывается как библиотека, а не как файл из node_modules/.bin.
+  // Путь к бинарнику там был жёстко прописан и на Windows не находился:
+  // исполняемый файл называется esbuild.cmd, и запуск падал с ENOENT.
+  await build({
+    entryPoints: [obertka],
+    outfile: `${VYVOD}/statika/${imya}.js`,
+    bundle: true,
+    format: 'esm',
+    target: 'es2020',
+    minify: true,
+    logLevel: 'silent',
+  });
 }
 
 // Данные. razmery.json и fony-otchet.json считает конвейер изображений,
@@ -148,7 +166,7 @@ for (const [imya, vyzov] of Object.entries(skripty)) {
 // пересборка статики затёрла бы цены, поправленные владельцем.
 mkdirSync(`${VYVOD}/dannye/kopii`, { recursive: true });
 for (const fajl of ['src/lib/razmery.json', 'src/lib/fony-otchet.json']) {
-  cpSync(fajl, `${VYVOD}/dannye/${fajl.split('/').pop()}`);
+  cpSync(fajl, `${VYVOD}/dannye/${basename(fajl)}`);
 }
 if (!existsSync(`${VYVOD}/dannye/menu.json`)) {
   cpSync('menu.json', `${VYVOD}/dannye/menu.json`);

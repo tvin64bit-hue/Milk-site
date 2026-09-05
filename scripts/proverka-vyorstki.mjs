@@ -11,7 +11,8 @@
 // ни один предок, — иначе в нарушители попадают ленты и бегущая строка.
 //
 // Запуск: node scripts/proverka-vyorstki.mjs [адрес]
-import { chromium, devices } from 'playwright';
+import { devices } from 'playwright';
+import { otkrytBrauzer } from './brauzer.mjs';
 
 const BAZA = process.argv[2] ?? 'http://localhost:4321/Milk-site';
 const STRANICY = ['/', '/menu', '/menu/shakshuka', '/menu/set-hit-n1', '/menu/set-goryachiy', '/404'];
@@ -77,7 +78,7 @@ const PROVERKA = () => {
   };
 };
 
-const brauzer = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const brauzer = await otkrytBrauzer();
 const stranica = await brauzer.newPage({ viewport: { width: 1280, height: 900 } });
 // Внешние шрифты только замедляют проверку.
 await stranica.route('**://fonts.g**', (r) => r.abort());

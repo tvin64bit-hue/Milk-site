@@ -176,7 +176,14 @@ JavaScript).
 npm install     # один раз
 npm run images  # готовит картинки, кладёт их в том числе в sayt/images/
 npm run sayt    # собирает стили, графику, шрифты и robots.txt для sayt/
+npm run zip     # складывает всё в milk-site-sayt.zip для загрузки
 ```
+
+Последняя команда собирает архив — заливать через файловый менеджер сотню
+файлов по одному не нужно. Внутри архива лежит **содержимое** папки
+`sayt/`, а не она сама: распаковывать его надо прямо в `milk-site` на
+хостинге, папка внутри не создастся. Скрытые файлы `.htaccess` в архив
+входят — без них не работает ни один адрес, кроме главной.
 
 Шрифты качать не нужно: они лежат в репозитории, в `public/fonts/`, и
 `npm run sayt` переносит их в `sayt/fonts/`. Обновить их до свежих версий
@@ -245,6 +252,7 @@ npm run images          # готовит public/images/ из Referens/ и поп
 npm run dev              # локальный сервер разработки дизайна (Astro)
 npm run build             # сборка Astro-версии — используется для сверки при изменении дизайна
 npm run shrifty             # скачивает шрифты Rubik и Onest в public/fonts (нужен интернет)
+npm run zip                 # собирает milk-site-sayt.zip из готовой папки sayt/
 npm run sayt               # пересобирает sayt/statika/sayt.css и sayt/app/grafika.php из src/
 npm run sayt:server         # локальный сервер PHP-версии, та же подпапка /milk-site, что на хостинге
 npm run check:menu           # проверка menu.json без сборки
@@ -254,6 +262,10 @@ npm run check:seo               # заголовки, описания, alt, м�
 npm run check:fon                # читаемость текста на фоне первого экрана
 npm run check                     # три проверки подряд
 ```
+
+Проверкам нужен браузер: `npx playwright install chromium` один раз. Если
+браузер уже стоит где-то отдельно, путь к нему задаётся переменной —
+`BRAUZER_PUT=/путь/к/chrome npm run check`.
 
 Проверки вёрстки, SEO и фона принимают адрес вторым аргументом и одинаково
 работают что против Astro-версии (`npm run preview`), что против

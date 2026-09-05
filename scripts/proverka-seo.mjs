@@ -1,11 +1,11 @@
 // Сводная проверка SEO и доступности по ключевым страницам.
 // Запуск: node scripts/proverka-seo.mjs [адрес]
-import { chromium } from 'playwright';
+import { otkrytBrauzer } from './brauzer.mjs';
 
 const BAZA = process.argv[2] ?? 'http://localhost:4321/Milk-site';
 const STRANICY = ['/', '/menu', '/menu/shakshuka', '/menu/set-hit-n1', '/404'];
 
-const brauzer = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const brauzer = await otkrytBrauzer();
 const p = await brauzer.newPage({ viewport: { width: 1280, height: 900 } });
 await p.route('**://fonts.g**', (r) => r.abort());
 

@@ -7,7 +7,7 @@
 //
 // Требует запущенного «npm run preview».
 // Запуск: node scripts/proverka-fona.mjs [адрес]
-import { chromium } from 'playwright';
+import { otkrytBrauzer } from './brauzer.mjs';
 import sharp from 'sharp';
 
 const BAZA = process.argv[2] ?? 'http://localhost:4321/Milk-site';
@@ -29,7 +29,7 @@ const kontrast = (a, b) => {
   return (v + 0.05) / (n + 0.05);
 };
 
-const brauzer = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const brauzer = await otkrytBrauzer();
 let plohih = 0;
 
 for (const [w, h] of SHIRINY) {
