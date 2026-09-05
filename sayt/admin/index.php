@@ -4,6 +4,10 @@
 
 declare(strict_types=1);
 
+// Версия PHP проверяется до всего остального: на старой версии файлы
+// с новым синтаксисом не читаются, и объяснить причину будет уже нечем.
+require_once __DIR__ . '/../app/versiya.php';
+
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/../dannye/oshibki.log');

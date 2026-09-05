@@ -3,51 +3,54 @@
 // /milk-site/proverka-ustanovki.php, посмотреть, что красное, — и удалить
 // этот файл, когда сайт заработает.
 //
-// Страница нужна потому, что при сбое посетитель видит только вежливую
-// заглушку, а причина уходит в журнал, куда владельцу лезть незачем.
-// Здесь всё то же самое сказано словами.
+// Написана нарочно на старом синтаксисе: ни объявлений типов, ни оператора
+// ??, ни стрелочных функций. Страница должна открываться там, где не
+// открывается сам сайт, — а самая частая причина этого и есть слишком
+// старая версия PHP. Диагностика, которая падает вместе с пациентом,
+// бесполезна: на PHP 7.1 первая же версия этой страницы не запустилась.
+//
+// По той же причине настройки сайта не подключаются, а читаются как текст:
+// app/konfig.php на старой версии PHP не разбирается вовсе.
 
-declare(strict_types=1);
-
-// Свои ошибки эта страница показывает: она для того и открыта.
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
-$koren = __DIR__;
+$koren = dirname(__FILE__);
 $strok = [];
 
-// Настройки подключаются отдельно и осторожно: если сломаны именно они,
-// страница должна это показать, а не упасть вместе с сайтом.
-$nastroykiCheli = true;
-try {
-    require_once __DIR__ . '/app/konfig.php';
-} catch (Throwable $e) {
-    $nastroykiCheli = false;
-    $bedaNastroek = $e->getMessage();
-}
-
-/** Строка отчёта: имя, признак «хорошо», пояснение. */
-function stroka(string $chto, bool $horosho, string $podrobno = ''): array
+function stroka($chto, $horosho, $podrobno)
 {
     return ['chto' => $chto, 'horosho' => $horosho, 'podrobno' => $podrobno];
 }
 
-// ---- Окружение ---------------------------------------------------------
-$versiya = PHP_VERSION;
+function znachenie($massiv, $klyuch, $inache)
+{
+    return isset($massiv[$klyuch]) ? $massiv[$klyuch] : $inache;
+}
+
+// ---- Версия PHP. Первая и самая частая причина -------------------------
+$hvatit = PHP_VERSION_ID >= 80200;
 $strok[] = stroka(
     'Версия PHP',
-    PHP_VERSION_ID >= 80200,
-    PHP_VERSION_ID >= 80200
-        ? $versiya
-        : "$versiya — нужна 8.2 или новее. Переключается в панели хостинга.",
+    $hvatit,
+    $hvatit
+        ? PHP_VERSION
+        : PHP_VERSION . ' — сайту нужна 8.2 или новее. Это главная причина: на этой '
+          . 'версии он не работает совсем. Версия переключается в панели хостинга, '
+          . 'в настройках сайта или домена.'
 );
 
-foreach (['json' => 'чтение меню', 'gd' => 'обработка фотографий в панели', 'mbstring' => 'русские тексты'] as $rasshirenie => $zachem) {
+$rasshireniya = [
+    'json' => 'чтение меню',
+    'gd' => 'обработка фотографий в панели',
+    'mbstring' => 'русские тексты',
+];
+foreach ($rasshireniya as $rasshirenie => $zachem) {
     $est = extension_loaded($rasshirenie);
     $strok[] = stroka(
-        "Расширение $rasshirenie",
+        'Расширение ' . $rasshirenie,
         $est,
-        $est ? 'на месте' : "не подключено — без него не работает $zachem",
+        $est ? 'на месте' : 'не подключено — без него не работает ' . $zachem
     );
 }
 
@@ -62,92 +65,111 @@ $nuzhnye = [
     'fonts/shrifty.css' => 'шрифты',
 ];
 foreach ($nuzhnye as $put => $zachem) {
-    $polnyy = "$koren/$put";
+    $polnyy = $koren . '/' . $put;
     $est = is_file($polnyy);
+    $chitaetsya = $est && is_readable($polnyy);
     $strok[] = stroka(
-        "Файл $put",
-        $est && is_readable($polnyy),
-        $est ? (is_readable($polnyy) ? 'на месте' : 'есть, но не читается — проверьте права') : "нет ($zachem)",
+        'Файл ' . $put,
+        $chitaetsya,
+        $est
+            ? ($chitaetsya ? 'на месте' : 'есть, но не читается — проверьте права')
+            : 'нет (' . $zachem . ')'
     );
 }
 
 $papki = ['images/menu' => 'фотографии блюд', 'images/photo' => 'снимки для главной'];
 foreach ($papki as $put => $zachem) {
-    $skolko = is_dir("$koren/$put") ? count(glob("$koren/$put/*") ?: []) : -1;
+    $polnyy = $koren . '/' . $put;
+    if (!is_dir($polnyy)) {
+        $strok[] = stroka('Папка ' . $put, false, 'нет');
+        continue;
+    }
+    $spisok = glob($polnyy . '/*');
+    $skolko = $spisok ? count($spisok) : 0;
     $strok[] = stroka(
-        "Папка $put",
+        'Папка ' . $put,
         $skolko > 0,
-        $skolko > 0 ? "файлов: $skolko" : ($skolko === 0 ? "пустая — $zachem не покажутся" : 'нет'),
+        $skolko > 0 ? 'файлов: ' . $skolko : 'пустая — ' . $zachem . ' не покажутся'
     );
 }
 
 // ---- Данные ------------------------------------------------------------
-$syroe = @file_get_contents("$koren/dannye/menu.json");
+$syroe = @file_get_contents($koren . '/dannye/menu.json');
 if ($syroe === false) {
     $strok[] = stroka('Разбор menu.json', false, 'файл не читается');
 } else {
     $razobrano = json_decode($syroe, true);
     if (!is_array($razobrano)) {
         $strok[] = stroka('Разбор menu.json', false, 'повреждён: ' . json_last_error_msg());
-    } elseif (!isset($razobrano['items'], $razobrano['categories'])) {
+    } elseif (!isset($razobrano['items']) || !isset($razobrano['categories'])) {
         $strok[] = stroka('Разбор menu.json', false, 'нет разделов items и categories');
     } else {
-        $strok[] = stroka('Разбор menu.json', true, count($razobrano['items']) . ' позиций, '
-            . count($razobrano['categories']) . ' категорий');
+        $strok[] = stroka('Разбор menu.json', true,
+            count($razobrano['items']) . ' позиций, ' . count($razobrano['categories']) . ' категорий');
     }
 }
 
-$syroeR = @file_get_contents("$koren/dannye/razmery.json");
+$syroeR = @file_get_contents($koren . '/dannye/razmery.json');
 $razmery = $syroeR === false ? null : json_decode($syroeR, true);
 if (!is_array($razmery)) {
     $strok[] = stroka('Разбор razmery.json', false, 'не читается или повреждён');
 } else {
-    $foto = count($razmery['foto'] ?? []);
-    $blyuda = count($razmery['blyuda'] ?? []);
+    $foto = count(znachenie($razmery, 'foto', []));
+    $blyuda = count(znachenie($razmery, 'blyuda', []));
     $strok[] = stroka('Разбор razmery.json', $foto > 0 && $blyuda > 0,
-        "лайфстайл-кадров $foto, блюд $blyuda"
+        'лайфстайл-кадров ' . $foto . ', блюд ' . $blyuda
         . ($foto ? '' : ' — без раздела foto главная не соберётся'));
 }
 
 // ---- Права на запись ---------------------------------------------------
-foreach (['dannye' => 'правки меню из панели', 'images/menu' => 'загрузка фотографий'] as $put => $zachem) {
-    $polnyy = "$koren/$put";
+$zapis = ['dannye' => 'правки меню из панели', 'images/menu' => 'загрузка фотографий'];
+foreach ($zapis as $put => $zachem) {
+    $polnyy = $koren . '/' . $put;
     $mozhno = is_dir($polnyy) && is_writable($polnyy);
-    $strok[] = stroka("Запись в $put", $mozhno,
-        $mozhno ? 'разрешена' : "запрещена — не будет работать $zachem");
+    $strok[] = stroka('Запись в ' . $put, $mozhno,
+        $mozhno ? 'разрешена' : 'запрещена — не будет работать ' . $zachem);
 }
 
-// ---- Адрес -------------------------------------------------------------
-if (!$nastroykiCheli || !defined('BAZA')) {
-    $strok[] = stroka('Настройки app/konfig.php', false,
-        $nastroykiCheli ? 'файл прочитан, но в нём нет BAZA' : ($bedaNastroek ?? 'файл не читается'));
+// ---- Подпапка ----------------------------------------------------------
+// Настройки читаются как текст: на старой версии PHP этот файл не
+// разбирается, и подключить его значило бы упасть вместе с сайтом.
+$nastroyki = @file_get_contents($koren . '/app/konfig.php');
+$baza = null;
+if ($nastroyki !== false && preg_match("~const\s+BAZA\s*=\s*'([^']*)'~", $nastroyki, $sovpadenie)) {
+    $baza = $sovpadenie[1];
+}
+$svoyPut = str_replace('\\', '/', znachenie($_SERVER, 'SCRIPT_NAME', ''));
+$papkaSayta = rtrim(dirname($svoyPut), '/');
+if ($baza === null) {
+    $strok[] = stroka('Подпапка сайта', false, 'в app/konfig.php не нашлась строка с BAZA');
 } else {
-    $svoyPut = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
-    $papkaSayta = rtrim(dirname($svoyPut), '/');
-    $strok[] = stroka(
-        'Подпапка сайта',
-        $papkaSayta === BAZA,
-        $papkaSayta === BAZA
-            ? BAZA
-            : "сайт лежит в «$papkaSayta», а в app/konfig.php записано «" . BAZA . "» — ссылки и стили будут вести не туда",
-    );
+    $sovpalo = $papkaSayta === $baza;
+    $strok[] = stroka('Подпапка сайта', $sovpalo,
+        $sovpalo
+            ? $baza
+            : 'сайт лежит в «' . $papkaSayta . '», а в app/konfig.php записано «' . $baza
+              . '» — ссылки и картинки будут вести не туда');
 }
 
-$perepisyvaet = function_exists('apache_get_modules')
-    ? in_array('mod_rewrite', apache_get_modules(), true)
-    : null;
+$moduli = function_exists('apache_get_modules') ? apache_get_modules() : null;
+$perepisyvaet = $moduli === null ? null : in_array('mod_rewrite', $moduli, true);
 $strok[] = stroka('Переписывание адресов (mod_rewrite)', $perepisyvaet !== false,
-    $perepisyvaet === null ? 'проверить отсюда нельзя — откройте /menu и посмотрите' : ($perepisyvaet ? 'включено' : 'выключено'));
+    $perepisyvaet === null
+        ? 'проверить отсюда нельзя — откройте /menu и посмотрите'
+        : ($perepisyvaet ? 'включено' : 'выключено — работать будет только главная'));
 
 // ---- Журнал ------------------------------------------------------------
-$zhurnal = "$koren/dannye/oshibki.log";
-$hvost = is_file($zhurnal) ? trim((string) file_get_contents($zhurnal)) : '';
+$zhurnal = $koren . '/dannye/oshibki.log';
+$hvost = is_file($zhurnal) ? trim(strval(file_get_contents($zhurnal))) : '';
 // Полный путь до папки сайта из сообщений вырезается: страница открыта
 // всем, кто знает адрес, а устройство хостинга посторонним знать незачем.
 $hvost = str_replace([str_replace('\\', '/', $koren), $koren], '…', $hvost);
 $posledniye = $hvost === '' ? [] : array_slice(explode("\n", $hvost), -8);
 
-$ploho = count(array_filter($strok, static fn($s) => !$s['horosho']));
+$ploho = 0;
+foreach ($strok as $s) {
+    if (!$s['horosho']) { $ploho++; }
+}
 ?>
 <!doctype html>
 <html lang="ru">
@@ -177,10 +199,10 @@ $ploho = count(array_filter($strok, static fn($s) => !$s['horosho']));
 <main>
   <h1>Проверка установки</h1>
 
-  <div class="itog <?= $ploho ? 'itog--ploho' : '' ?>">
+  <div class="itog <?php echo $ploho ? 'itog--ploho' : ''; ?>">
     <?php if ($ploho): ?>
-      <strong>Не в порядке: <?= $ploho ?>.</strong> Красные строки ниже — причина того,
-      что сайт показывает «Что-то пошло не так».
+      <strong>Не в порядке: <?php echo $ploho; ?>.</strong> Красные строки ниже — причина того,
+      что сайт показывает «Что-то пошло не так». Начинать надо с самой верхней.
     <?php else: ?>
       <strong>Всё на месте.</strong> Если сайт всё равно не открывается, посмотрите
       журнал ошибок внизу страницы.
@@ -189,17 +211,17 @@ $ploho = count(array_filter($strok, static fn($s) => !$s['horosho']));
 
   <ul>
     <?php foreach ($strok as $s): ?>
-      <li class="<?= $s['horosho'] ? '' : 'ploho' ?>">
-        <span class="znak <?= $s['horosho'] ? 'znak--ok' : 'znak--net' ?>"><?= $s['horosho'] ? '✓' : '✗' ?></span>
-        <span><span class="chto"><?= htmlspecialchars($s['chto'], ENT_QUOTES) ?></span>
-        <?php if ($s['podrobno']): ?><br /><span class="podrobno"><?= htmlspecialchars($s['podrobno'], ENT_QUOTES) ?></span><?php endif; ?></span>
+      <li class="<?php echo $s['horosho'] ? '' : 'ploho'; ?>">
+        <span class="znak <?php echo $s['horosho'] ? 'znak--ok' : 'znak--net'; ?>"><?php echo $s['horosho'] ? '✓' : '✗'; ?></span>
+        <span><span class="chto"><?php echo htmlspecialchars($s['chto'], ENT_QUOTES); ?></span>
+        <?php if ($s['podrobno']): ?><br /><span class="podrobno"><?php echo htmlspecialchars($s['podrobno'], ENT_QUOTES); ?></span><?php endif; ?></span>
       </li>
     <?php endforeach; ?>
   </ul>
 
   <h2>Журнал ошибок</h2>
   <?php if ($posledniye): ?>
-    <pre><?= htmlspecialchars(implode("\n", $posledniye), ENT_QUOTES) ?></pre>
+    <pre><?php echo htmlspecialchars(implode("\n", $posledniye), ENT_QUOTES); ?></pre>
   <?php else: ?>
     <p class="podrobno">Пусто — либо сбоев не было, либо в папку <code>dannye</code> нельзя писать.</p>
   <?php endif; ?>

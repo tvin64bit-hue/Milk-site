@@ -18,7 +18,8 @@
     "sayt:server": "php -S 127.0.0.1:8080 -t .php-koren .php-koren/router.php",
     "check:php": "node scripts/proverka-php.mjs",
     "shrifty": "node scripts/shrifty.mjs",
-    "zip": "node scripts/upakovat.mjs"
+    "zip": "node scripts/upakovat.mjs",
+    "check:staryy-php": "node scripts/proverka-starogo-php.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
